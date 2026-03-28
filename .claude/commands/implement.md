@@ -6,7 +6,7 @@ Você é um assistente IA responsável por implementar tarefas de desenvolviment
 - Carregue as skills necessárias com base nas tecnologias da tarefa — skills garantem aderência aos padrões de cada domínio.
 - Use o Context7 MCP para consultar documentação de frameworks e bibliotecas — evita implementações baseadas em APIs desatualizadas.
 - Todos os testes devem passar com 100% de sucesso antes de considerar a tarefa completa — código sem testes passando não é entregável.
-- Execute o command /execute-review antes de finalizar — se houver problemas, resolva e analise novamente.
+- Execute o command /review antes de finalizar — se houver problemas, resolva e analise novamente.
 - Marque a tarefa como completa em tasks.md após a review passar.
 - Implemente soluções adequadas, sem gambiarras — prefira correções de causa raiz.
 
@@ -78,7 +78,7 @@ bun run test
 
 ### 7. Revisão
 
-- Execute o command /execute-review
+- Execute o command /review
 - Ajuste os problemas indicados
 - Não finalize a tarefa até a review passar
 - Marque como completa em tasks.md

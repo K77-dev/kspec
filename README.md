@@ -26,18 +26,18 @@ Este repositório resolve isso fornecendo:
 ```
 .claude/
 ├── commands/          # Comandos executáveis (/command-name)
-│   ├── create-prd.md
-│   ├── create-techspec.md
-│   ├── create-tasks.md
-│   ├── execute-task.md
-│   ├── execute-review.md
-│   ├── execute-qa.md
-│   └── execute-bugfix.md
+│   ├── prd.md
+│   ├── techspec.md
+│   ├── tasks.md
+│   ├── implement.md
+│   ├── review.md
+│   ├── qa.md
+│   └── bugfix.md
 ├── rules/             # Padrões de código por domínio
 │   ├── code-standards.md
 │   ├── http.md
 │   ├── logging.md
-│   ├── node.md
+│   ├── typescript.md
 │   ├── react.md
 │   └── tests.md
 spec/
@@ -56,10 +56,10 @@ Os comandos seguem um fluxo sequencial de desenvolvimento. Cada etapa produz art
 ### Fluxo completo
 
 ```
-/create-prd → /create-techspec → /create-tasks → /execute-task → /execute-review → /execute-qa → /execute-bugfix
+/prd → /techspec → /tasks → /implement → /review → /qa → /bugfix
 ```
 
-### /create-prd
+### /prd
 
 Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação de funcionalidade.
 
@@ -67,7 +67,7 @@ Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação d
 - Foca no **O QUÊ** e **POR QUÊ**, nunca no como
 - Salva em `spec/tasks/prd-[nome]/prd.md`
 
-### /create-techspec
+### /techspec
 
 Traduz um PRD em especificação técnica com decisões arquiteturais.
 
@@ -75,7 +75,7 @@ Traduz um PRD em especificação técnica com decisões arquiteturais.
 - Foca no **COMO** implementar os requisitos do PRD
 - Salva em `spec/tasks/prd-[nome]/techspec.md`
 
-### /create-tasks
+### /tasks
 
 Quebra a Tech Spec em tarefas incrementais e independentes.
 
@@ -83,15 +83,15 @@ Quebra a Tech Spec em tarefas incrementais e independentes.
 - Cada tarefa é um entregável funcional com testes
 - Salva em `spec/tasks/prd-[nome]/tasks.md` e `[num]_task.md`
 
-### /execute-task
+### /implement
 
 Implementa a próxima tarefa disponível.
 
 - Lê PRD, Tech Spec e definição da tarefa antes de codar
 - Carrega skills relevantes e executa checks obrigatórios
-- Aciona `/execute-review` antes de marcar como completa
+- Aciona `/review` antes de marcar como completa
 
-### /execute-review
+### /review
 
 Realiza code review do código implementado.
 
@@ -99,7 +99,7 @@ Realiza code review do código implementado.
 - Executa todos os checks (`lint`, `typecheck`, `build`, `test`)
 - Gera relatório em `spec/tasks/prd-[nome]/review.md`
 
-### /execute-qa
+### /qa
 
 Valida a implementação completa com testes E2E e acessibilidade.
 
@@ -107,7 +107,7 @@ Valida a implementação completa com testes E2E e acessibilidade.
 - Verifica acessibilidade seguindo WCAG 2.2
 - Documenta bugs em `bugs.md`, relatório em `spec/tasks/prd-[nome]/qa.md`
 
-### /execute-bugfix
+### /bugfix
 
 Corrige bugs documentados pelo QA.
 
@@ -122,7 +122,7 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 | Rule | Escopo | Conteúdo |
 |---|---|---|
 | `code-standards.md` | Global | Nomenclatura, formatação, constantes, funções, condicionais |
-| `node.md` | Global | TypeScript, bun, variáveis, imports, tipagem forte |
+| `typescript.md` | Global | TypeScript, bun, variáveis, imports, tipagem forte |
 | `http.md` | Backend | Hono, REST, status HTTP, middlewares, fetch |
 | `logging.md` | Backend | Níveis de log, dados sensíveis, estrutura |
 | `react.md` | Frontend | Componentes funcionais, hooks, Tailwind v4, shadcn/ui |
@@ -133,7 +133,7 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 1. Copie a pasta `.claude/`, `spec/` e o `CLAUDE.md` para a raiz do seu projeto
 2. Ajuste o `CLAUDE.md` com a stack e estrutura do seu projeto
 3. Ajuste as rules conforme suas convenções
-4. Execute os comandos no Claude Code: `/create-prd`, `/create-techspec`, etc.
+4. Execute os comandos no Claude Code: `/prd`, `/techspec`, etc.
 
 ## Princípios de design
 
