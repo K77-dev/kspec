@@ -49,7 +49,8 @@ Este repositório resolve isso fornecendo:
 │   ├── prd-template.md
 │   ├── techspec-template.md
 │   ├── tasks-template.md
-│   └── task-template.md
+│   ├── task-template.md
+│   └── claude-md-template.md
 spec/
 └── tasks/             # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md              # Guia principal do projeto
@@ -129,12 +130,10 @@ Implementa a próxima tarefa disponível. Uso manual, uma task por vez.
 
 ```
 /kspec-implement-task
-  └→ lê PRD, Tech Spec e definição da tarefa
-  └→ carrega skills relevantes
-  └→ implementa o código
-  └→ roda checks (conforme CLAUDE.md)
+  └→ identifica próxima task pendente
+  └→ delega ao agent kspec-task-runner (contexto isolado)
   └→ delega ao agent kspec-review-runner (contexto isolado)
-  └→ se reprovado, corrige e re-submete
+  └→ se reprovado 2x na mesma task, para e reporta
   └→ marca como completa em tasks.md
 ```
 
@@ -195,7 +194,7 @@ spec/tasks/[NNN]-prd-[nome]/
 ├── techspec.md     ← /kspec-techspec
 ├── tasks.md        ← /kspec-tasks
 ├── [num]_task.md   ← /kspec-tasks
-├── review.md       ← agent kspec-review-runner
+├── review_[num].md ← agent kspec-review-runner (um por task)
 ├── qa.md           ← agent kspec-qa-runner
 ├── bugs.md         ← agent kspec-qa-runner
 └── bugfix.md       ← /kspec-bugfix
@@ -207,7 +206,7 @@ Os agents rodam em contexto isolado e são acionados pelas skills — não preci
 
 | Agent | Acionado por | Função |
 |---|---|---|
-| `kspec-task-runner` | `/kspec-implement-all-tasks` | Implementa uma task individual em contexto isolado |
+| `kspec-task-runner` | `/kspec-implement-task`, `/kspec-implement-all-tasks` | Implementa uma task individual em contexto isolado |
 | `kspec-review-runner` | `/kspec-implement-task`, `/kspec-implement-all-tasks` | Code review contra TechSpec, Tasks e rules |
 | `kspec-qa-runner` | `/kspec-qa` | Testa E2E, acessibilidade, visual |
 
@@ -222,7 +221,7 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 | `http.md` | Backend | `backend/src/**/*.ts` |
 | `logging.md` | Backend | `backend/src/**/*.ts` |
 | `react.md` | Frontend | `frontend/src/**/*.tsx`, `frontend/src/**/*.ts` |
-| `tests.md` | Global | Sempre |
+| `tests.md` | Testes | `**/__tests__/**`, `**/*.test.ts`, `**/*.test.tsx`, `**/*.spec.ts` |
 
 ## Como usar
 

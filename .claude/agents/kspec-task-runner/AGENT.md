@@ -15,9 +15,9 @@ Você é um assistente IA responsável por implementar tarefas de desenvolviment
 
 ## Localização dos Arquivos
 
-- PRD: `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
-- Tech Spec: `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
-- Tasks: `@spec/tasks/prd-[nome-funcionalidade]/tasks.md`
+- PRD: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
+- Tech Spec: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
+- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
 - Regras do Projeto: @.claude/rules
 
 ## Etapas para Executar

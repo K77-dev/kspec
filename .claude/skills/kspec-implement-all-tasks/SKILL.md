@@ -16,8 +16,8 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 
 ## Localização dos Arquivos
 
-- Tasks: `@spec/tasks/prd-[nome-funcionalidade]/tasks.md`
-- Tasks individuais: `@spec/tasks/prd-[nome-funcionalidade]/[num]_task.md`
+- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
+- Tasks individuais: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/[num]_task.md`
 
 ## Fluxo de Execução
 
@@ -72,7 +72,7 @@ Apresentar ao usuário:
 
 - [ ] tasks.md lido e tasks pendentes identificadas
 - [ ] Lista de tasks apresentada ao usuário para confirmação
-- [ ] Cada task delegada ao agent implement (contexto isolado)
+- [ ] Cada task delegada ao agent `kspec-task-runner` (contexto isolado)
 - [ ] Cada task validada pelo agent review
 - [ ] Tasks aprovadas marcadas como completas em tasks.md
 - [ ] Relatório final apresentado

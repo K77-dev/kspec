@@ -18,8 +18,8 @@ Você é um assistente especializado em gerenciamento de projetos de desenvolvim
 
 A funcionalidade em que você trabalhará é identificada por este slug:
 
-- PRD requerido: `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
-- Tech Spec requerido: `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
+- PRD requerido: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
+- Tech Spec requerido: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
 
 ## Etapas do Processo
 
@@ -52,11 +52,11 @@ A funcionalidade em que você trabalhará é identificada por este slug:
 
 ### Localização dos Arquivos
 
-- Pasta da funcionalidade: `@spec/tasks/prd-[nome-funcionalidade]/`
+- Pasta da funcionalidade: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/`
 - Template para a lista de tarefas: @.claude/templates/tasks-template.md
-- Lista de tarefas: `@spec/tasks/prd-[nome-funcionalidade]/tasks.md`
+- Lista de tarefas: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
 - Template para cada tarefa individual: @.claude/templates/task-template.md
-- Tarefas individuais: `@spec/tasks/prd-[nome-funcionalidade]/[num]_task.md`
+- Tarefas individuais: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/[num]_task.md`
 
 ### Formato do Resumo de Tarefas (tasks.md)
 

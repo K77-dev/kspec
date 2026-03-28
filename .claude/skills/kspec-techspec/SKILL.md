@@ -17,12 +17,12 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 ## Template e Entradas
 
 - Template Tech Spec: @.claude/templates/techspec-template.md
-- PRD requerido: `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
-- Documento de saída: `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
+- PRD requerido: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
+- Documento de saída: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
 
 ## Pré-requisitos
 
-- Confirmar que o PRD existe em `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
+- Confirmar que o PRD existe em `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
 
 ## Fluxo de Trabalho
 
@@ -64,7 +64,7 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 
 ### 6. Salvar Tech Spec (Obrigatório)
 
-- Salvar como: `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
+- Salvar como: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
 - Confirmar operação de escrita e caminho
 
 ## Princípios Fundamentais
@@ -88,5 +88,5 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 - [ ] Esclarecimentos técnicos principais respondidos
 - [ ] Tech Spec gerada usando o template
 - [ ] Verificou as rules em @.claude/rules
-- [ ] Arquivo escrito em `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
+- [ ] Arquivo escrito em `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
 - [ ] Caminho final de saída fornecido e confirmação

@@ -9,7 +9,7 @@
 <skills>
 ### Conformidade com Skills Padrões
 
-[Pesquisa as skills na pasta @.claude/skills que se encaixam e se apliquem nesta techspec e liste-as abaixo:]
+[Consulte a tabela "Stack e skills recomendadas" no CLAUDE.md e liste as skills de domínio aplicáveis a esta tarefa:]
 </skills>
 
 <requirements>

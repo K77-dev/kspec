@@ -20,10 +20,10 @@
 
 [Defina interfaces de serviço principais (≤20 linhas por exemplo):
 
-```go
+```typescript
 // Exemplo de definição de interface
-type NomeServico interface {
-    NomeMetodo(ctx context.Context, entrada Tipo) (saida Tipo, error)
+interface NomeServico {
+  nomeMetodo(entrada: Tipo): Promise<Tipo>
 }
 ```
 
@@ -122,7 +122,7 @@ type NomeServico interface {
 
 ### Conformidade com Skills Padrões
 
-[Pesquisa as skills na pasta @.claude/skills que se encaixam e se apliquem nesta techspec e liste-as abaixo:]
+[Consulte a tabela "Stack e skills recomendadas" no CLAUDE.md e liste as skills de domínio aplicáveis a esta techspec:]
 
 ### Arquivos relevantes e dependentes
 

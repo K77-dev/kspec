@@ -1,3 +1,7 @@
+---
+paths: ["**/__tests__/**", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"]
+---
+
 # Testes
 
 ## Framework

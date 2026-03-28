@@ -16,11 +16,11 @@ Você é um assistente IA especializado em correção de bugs. Sua tarefa é ler
 
 ## Localização dos Arquivos
 
-- Bugs: `@spec/tasks/prd-[nome-funcionalidade]/bugs.md`
-- PRD: `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
-- TechSpec: `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
-- Tasks: `@spec/tasks/prd-[nome-funcionalidade]/tasks.md`
-- Relatório de saída: `@spec/tasks/prd-[nome-funcionalidade]/bugfix.md`
+- Bugs: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugs.md`
+- PRD: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
+- TechSpec: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
+- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
+- Relatório de saída: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugfix.md`
 - Regras do Projeto: @.claude/rules
 
 ## Etapas para Executar
@@ -113,7 +113,7 @@ Se descobrir novos bugs durante a correção, documente-os no `bugs.md`.
 
 ### 9. Relatório Final (Obrigatório)
 
-Salvar em: `@spec/tasks/prd-[nome-funcionalidade]/bugfix.md`
+Salvar em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugfix.md`
 
 Gerar relatório final no formato:
 
