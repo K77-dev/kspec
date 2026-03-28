@@ -62,13 +62,13 @@ bun run test             # Vitest
 | Backend           | Hono, Bun runtime                   | `hono`                                                                |
 | Testes            | Vitest (unit), Playwright (e2e)     | `vitest`, `a11y-testing`                                              |
 | Design / UX       | Interface, acessibilidade           | `ui-ux-pro-max`, `web-design-guidelines`                              |
-| PRD               | Requisitos de produto               | skill `kspec-prd`                                                        |
-| Tech Spec         | Especificação técnica               | skill `kspec-techspec`                                                   |
-| Tasks             | Planejamento de tarefas             | skill `kspec-tasks`                                                      |
-| Implementação     | Execução de tarefas                 | skill `kspec-implement-task`, skill `kspec-implement-all-tasks`                        |
-| Code Review       | Revisão de código                   | agent `kspec-review-runner`                                                     |
-| QA                | Quality Assurance                   | agent `kspec-qa-runner`                                                         |
-| Bugfix            | Correção de bugs                    | skill `kspec-bugfix`                                                     |
+| PRD               | Requisitos de produto               | skill `kspec-prd`                                                     |
+| Tech Spec         | Especificação técnica               | skill `kspec-techspec`                                                |
+| Tasks             | Planejamento de tarefas             | skill `kspec-tasks`                                                   |
+| Implementação     | Execução de tarefas                 | skill `kspec-implement-task`, skill `kspec-implement-all-tasks`       |
+| Code Review       | Revisão de código                   | agent `kspec-review-runner`                                           |
+| QA                | Quality Assurance                   | agent `kspec-qa-runner`                                               |
+| Bugfix            | Correção de bugs                    | skill `kspec-bugfix`                                                  |
 
 ### Estrutura do projeto
 
