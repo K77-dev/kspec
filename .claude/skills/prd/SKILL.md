@@ -15,13 +15,24 @@ Você é um especialista em criar PRDs focado em produzir documentos de requisit
 
 - Template fonte: @.claude/templates/prd-template.md
 - Nome do arquivo final: `prd.md`
-- Diretório final: `@spec/tasks/prd-[nome-funcionalidade]/` (nome em kebab-case)
+- Diretório final: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/` (nome em kebab-case)
 
 ## Fluxo de Trabalho
 
 Ao ser invocado com uma solicitação de funcionalidade, siga a sequência abaixo.
 
-### 1. Esclarecer (Obrigatório)
+### 1. Criar Branch (Obrigatório)
+
+Antes de qualquer coisa, crie uma branch para a funcionalidade:
+
+1. Verifique a branch atual com `git branch --show-current`. Se for `main` ou `master`, **alerte o usuário** que ele está na branch principal e sugira trocar para uma branch de desenvolvimento (ex: `develop`) antes de continuar. Aguarde confirmação antes de prosseguir.
+2. Liste as branches existentes com `git branch -a` e identifique o maior número sequencial no padrão `NNN-*`
+3. Incremente o número (se não houver nenhuma, comece em `001`)
+4. Crie a branch: `git checkout -b [NNN]-prd-[nome-funcionalidade]` (nome em kebab-case)
+
+Exemplo: se a última branch for `002-prd-sistema-avaliacoes`, a próxima será `003-prd-[nome-funcionalidade]`.
+
+### 2. Esclarecer (Obrigatório)
 
 Faça perguntas para entender:
 
@@ -30,7 +41,7 @@ Faça perguntas para entender:
 - Restrições
 - O que **NÃO está no escopo**
 
-### 2. Planejar (Obrigatório)
+### 3. Planejar (Obrigatório)
 
 Crie um plano de desenvolvimento do PRD incluindo:
 
@@ -38,18 +49,18 @@ Crie um plano de desenvolvimento do PRD incluindo:
 - Áreas que precisam pesquisa (**usar Web Search para buscar regras de negócio**)
 - Premissas e dependências
 
-### 3. Redigir o PRD (Obrigatório)
+### 4. Redigir o PRD (Obrigatório)
 
 - Use o template @.claude/templates/prd-template.md
 - Inclua requisitos funcionais numerados
 - Mantenha o documento principal com no máximo 2.000 palavras
 
-### 4. Criar Diretório e Salvar (Obrigatório)
+### 5. Criar Diretório e Salvar (Obrigatório)
 
-- Crie o diretório: `@spec/tasks/prd-[nome-funcionalidade]/`
-- Salve o PRD em: `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
+- Crie o diretório: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/`
+- Salve o PRD em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
 
-### 5. Reportar Resultados
+### 6. Reportar Resultados
 
 - Forneça o caminho do arquivo final
 - Forneça um resumo **BEM BREVE** sobre o resultado final do PRD
@@ -70,9 +81,10 @@ Crie um plano de desenvolvimento do PRD incluindo:
 
 ## Checklist de Qualidade
 
+- [ ] Branch `[NNN]-prd-[nome-funcionalidade]` criada a partir da branch atual
 - [ ] Perguntas esclarecedoras completas e respondidas
 - [ ] Plano detalhado criado
 - [ ] PRD gerado usando o template
 - [ ] Requisitos funcionais numerados incluídos
-- [ ] Arquivo salvo em `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
+- [ ] Arquivo salvo em `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
 - [ ] Caminho final fornecido
