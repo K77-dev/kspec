@@ -159,13 +159,19 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 
 Na raiz do seu projeto, execute um dos comandos abaixo:
 
+**Repo público:**
+
 ```bash
 bunx degit K77-dev/claude-kspec/.claude .claude --force   # bun
 npx degit K77-dev/claude-kspec/.claude .claude --force    # npm
 pnpm dlx degit K77-dev/claude-kspec/.claude .claude --force  # pnpm
 ```
 
-> Use `--force` para sobrescrever uma pasta `.claude/` existente.
+**Repo privado** (usa suas credenciais SSH):
+
+```bash
+git clone --depth 1 git@github.com:K77-dev/claude-kspec.git /tmp/claude-kspec && cp -r /tmp/claude-kspec/.claude . && rm -rf /tmp/claude-kspec
+```
 
 ### Configuração
 
