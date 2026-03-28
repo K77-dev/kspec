@@ -160,10 +160,12 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 Na raiz do seu projeto, execute um dos comandos abaixo:
 
 ```bash
-bunx degit K77-dev/claude-kspec/.claude .claude   # bun
-npx degit K77-dev/claude-kspec/.claude .claude    # npm
-pnpm dlx degit K77-dev/claude-kspec/.claude .claude  # pnpm
+bunx degit K77-dev/claude-kspec/.claude .claude --force   # bun
+npx degit K77-dev/claude-kspec/.claude .claude --force    # npm
+pnpm dlx degit K77-dev/claude-kspec/.claude .claude --force  # pnpm
 ```
+
+> Use `--force` para sobrescrever uma pasta `.claude/` existente.
 
 ### Configuração
 
