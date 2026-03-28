@@ -155,11 +155,24 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 
 ## Como usar
 
-1. Copie a pasta `.claude/` para a raiz do seu projeto
-2. Execute `/bootstrap` — ele analisa o projeto e gera tudo automaticamente (CLAUDE.md, rules, templates)
-3. Revise o `CLAUDE.md` gerado e ajuste se necessário
-4. Use o fluxo: `/prd` → `/techspec` → `/tasks` → `/implement` → `/bugfix`
-5. Os agents `review` e `qa` são acionados automaticamente pelo fluxo
+### Instalação
+
+Na raiz do seu projeto, execute um dos comandos abaixo:
+
+```bash
+# Com bun
+bunx degit K77-dev/claude-kspec/.claude .claude
+
+# Com npm
+npx degit K77-dev/claude-kspec/.claude .claude
+```
+
+### Configuração
+
+1. Execute `/bootstrap` no Claude Code — ele analisa o projeto e gera `CLAUDE.bootstrap.md`, rules e templates adaptados
+2. Revise o `CLAUDE.bootstrap.md` gerado e renomeie para `CLAUDE.md` (ou mescle com um existente)
+3. Use o fluxo: `/prd` → `/techspec` → `/tasks` → `/implement` → `/bugfix`
+4. Os agents `review` e `qa` são acionados automaticamente pelo fluxo
 
 ## Princípios de design
 
