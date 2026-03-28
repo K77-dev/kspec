@@ -72,14 +72,7 @@ Após o resumo e plano, comece a implementar:
 
 ### 6. Verificação
 
-Executar os checks obrigatórios antes de prosseguir para a review:
-
-```bash
-bun run lint
-bun run typecheck
-bun run build
-bun run test
-```
+Executar os checks obrigatórios conforme definido em "Comandos do projeto" no CLAUDE.md antes de prosseguir para a review.
 
 ### 7. Revisão
 

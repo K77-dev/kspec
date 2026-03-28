@@ -86,14 +86,7 @@ Para bugs que afetam a interface do usuário:
 
 ### 6. Verificação (Obrigatório)
 
-Executar todos os checks obrigatórios:
-
-```bash
-bun run lint
-bun run typecheck
-bun run build
-bun run test
-```
+Executar os checks obrigatórios conforme definido em "Comandos do projeto" no CLAUDE.md.
 
 ### 7. Atualização do bugs.md (Obrigatório)
 

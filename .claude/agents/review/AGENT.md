@@ -78,13 +78,7 @@ Para cada task marcada como completa:
 
 ### 6. Execução dos Testes (Obrigatório)
 
-```bash
-bun run test
-bun run test:coverage
-bun run lint
-bun run typecheck
-bun run build
-```
+Executar os checks obrigatórios conforme definido em "Comandos do projeto" no CLAUDE.md.
 
 Verificar:
 - [ ] Todos os testes passam
