@@ -160,11 +160,9 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 Na raiz do seu projeto, execute um dos comandos abaixo:
 
 ```bash
-# Com bun
-bunx degit K77-dev/claude-kspec/.claude .claude
-
-# Com npm
-npx degit K77-dev/claude-kspec/.claude .claude
+bunx degit K77-dev/claude-kspec/.claude .claude   # bun
+npx degit K77-dev/claude-kspec/.claude .claude    # npm
+pnpm dlx degit K77-dev/claude-kspec/.claude .claude  # pnpm
 ```
 
 ### Configuração
