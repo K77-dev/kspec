@@ -1,4 +1,5 @@
 ---
+name: implement
 description: Implementa a próxima tarefa de desenvolvimento disponível. Lê PRD, Tech Spec e a definição da tarefa, implementa o código, executa checks e aciona o agent de review.
 ---
 

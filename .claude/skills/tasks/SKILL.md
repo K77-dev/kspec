@@ -1,4 +1,5 @@
 ---
+name: tasks
 description: Cria lista de tarefas incrementais a partir de um PRD e Tech Spec. Mostra lista high-level para aprovação antes de gerar arquivos individuais.
 ---
 

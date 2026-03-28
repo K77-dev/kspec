@@ -1,4 +1,5 @@
 ---
+name: techspec
 description: Cria uma Tech Spec a partir de um PRD existente. Analisa o projeto, faz perguntas técnicas e produz especificação arquitetural seguindo o template padronizado.
 ---
 

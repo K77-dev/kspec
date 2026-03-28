@@ -1,4 +1,5 @@
 ---
+name: bugfix
 description: Corrige bugs documentados em bugs.md. Analisa causa raiz, implementa correções, cria testes de regressão e gera relatório.
 ---
 

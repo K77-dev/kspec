@@ -1,4 +1,5 @@
 ---
+name: qa
 description: Executa Quality Assurance da implementação. Testa fluxos E2E com Playwright MCP, verifica acessibilidade (WCAG 2.2), documenta bugs e gera relatório. Use este agent após a review passar.
 ---
 
