@@ -30,7 +30,8 @@ Este repositório resolve isso fornecendo:
 │   ├── techspec/SKILL.md
 │   ├── tasks/SKILL.md
 │   ├── implement/SKILL.md
-│   └── bugfix/SKILL.md
+│   ├── bugfix/SKILL.md
+│   └── bootstrap/SKILL.md
 ├── agents/            # Agents — rodam em contexto isolado
 │   ├── review/AGENT.md
 │   └── qa/AGENT.md
@@ -60,6 +61,16 @@ CLAUDE.md              # Guia principal do projeto
 | **Skills** | Principal — descrição carrega no início, conteúdo ao invocar | Workflows que precisam de interação com o usuário |
 | **Agents** | Isolado — contexto separado, só o resultado volta | Tarefas autocontidas que produzem relatórios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padrões de código por domínio |
+
+### Configuração inicial
+
+#### /bootstrap
+
+Analisa um projeto existente e gera a configuração completa do Claude Code.
+
+- Detecta stack, package manager, frameworks e estrutura automaticamente
+- Confirma detecções com o usuário antes de gerar
+- Cria CLAUDE.md, rules, skills, agents e templates adaptados ao projeto
 
 ## Fluxo de desenvolvimento
 
@@ -144,10 +155,10 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 
 ## Como usar
 
-1. Copie a pasta `.claude/` e o `CLAUDE.md` para a raiz do seu projeto (a pasta `spec/` será criada automaticamente pelas skills)
-2. Ajuste o `CLAUDE.md` com a stack e estrutura do seu projeto
-3. Ajuste as rules conforme suas convenções
-4. Execute as skills no Claude Code: `/prd`, `/techspec`, `/tasks`, `/implement`, `/bugfix`
+1. Copie a pasta `.claude/` para a raiz do seu projeto
+2. Execute `/bootstrap` — ele analisa o projeto e gera tudo automaticamente (CLAUDE.md, rules, templates)
+3. Revise o `CLAUDE.md` gerado e ajuste se necessário
+4. Use o fluxo: `/prd` → `/techspec` → `/tasks` → `/implement` → `/bugfix`
 5. Os agents `review` e `qa` são acionados automaticamente pelo fluxo
 
 ## Princípios de design
