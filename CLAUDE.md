@@ -65,7 +65,7 @@ bun run test             # Vitest
 | PRD               | Requisitos de produto               | skill `prd`                                                           |
 | Tech Spec         | Especificação técnica               | skill `techspec`                                                      |
 | Tasks             | Planejamento de tarefas             | skill `tasks`                                                         |
-| Implementação     | Execução de tarefas                 | skill `implement`                                                     |
+| Implementação     | Execução de tarefas                 | skill `implement`, skill `implement-all`                              |
 | Code Review       | Revisão de código                   | agent `review`                                                        |
 | QA                | Quality Assurance                   | agent `qa`                                                            |
 | Bugfix            | Correção de bugs                    | skill `bugfix`                                                        |
