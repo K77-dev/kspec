@@ -41,23 +41,15 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 
 ### 3. Esclarecimentos Técnicos (Obrigatório)
 
-Fazer perguntas focadas. Quando houver opções possíveis, apresente como checkboxes para o usuário selecionar:
-
-```
-Qual estratégia de autenticação para esta API?
-- [ ] JWT com refresh token
-- [ ] Session-based
-- [ ] OAuth2
-- [ ] Sem autenticação (endpoint público)
-- [ ] Outro: ___
-```
-
-Tópicos a cobrir:
-- Posicionamento de domínio
-- Fluxo de dados
-- Dependências externas
-- Interfaces principais
-- Cenários de testes
+1. Faça perguntas técnicas ao usuário usando a ferramenta AskUserQuestion antes de gerar qualquer conteúdo.
+2. Cubra os seguintes tópicos:
+   - **Posicionamento de domínio**: Limites e propriedade de módulos.
+   - **Fluxo de dados**: Entradas/saídas, contratos e transformações.
+   - **Dependências externas**: Serviços/APIs externos, modos de falha.
+   - **Interfaces principais**: Lógica central, modelos de dados.
+   - **Cenários de testes**: Caminhos críticos, testes unitários/integração/e2e.
+3. Quando houver opções possíveis, apresente como lista numerada para o usuário selecionar (ex: "responda com o número").
+4. NÃO prossiga para o Passo 5 até receber as respostas de clarificação.
 
 ### 4. Mapeamento de Conformidade com Padrões (Obrigatório)
 
