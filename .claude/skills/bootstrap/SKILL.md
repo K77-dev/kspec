@@ -1,6 +1,6 @@
 ---
 name: bootstrap
-description: Analisa um projeto existente e gera a configuração completa do Claude Code (.claude/, CLAUDE.md) adaptada à stack, estrutura e convenções detectadas.
+description: Analisa um projeto existente e gera a configuração completa do Claude Code (CLAUDE.bootstrap.md, rules adaptadas) baseada na stack, estrutura e convenções detectadas.
 ---
 
 Você é um assistente especializado em configurar projetos para uso com Claude Code. Sua tarefa é analisar um projeto existente, detectar a stack e gerar os arquivos de configuração adaptados.
@@ -10,13 +10,14 @@ Você é um assistente especializado em configurar projetos para uso com Claude 
 - Analise o projeto antes de perguntar — detectar automaticamente evita perguntas óbvias.
 - Confirme as detecções com o usuário antes de gerar — evita arquivos incorretos.
 - Gere apenas rules relevantes para a stack detectada — rules desnecessárias consomem contexto sem valor.
-- Não sobrescreva arquivos existentes sem permissão — o projeto pode já ter configuração parcial.
+- Sempre gere `CLAUDE.bootstrap.md` e rules adaptadas, mesmo que já existam — os arquivos em `.claude/rules/` vindos do degit são templates genéricos, não configuração do projeto.
+- Ignore o conteúdo existente de `.claude/rules/`, `CLAUDE.md` e `CLAUDE.bootstrap.md` ao gerar — baseie-se exclusivamente no que foi detectado no projeto (package.json, lockfiles, estrutura de pastas, configs).
 
 ## Fluxo de Trabalho
 
 ### 1. Análise do Projeto (Obrigatório)
 
-Detectar automaticamente:
+Detectar automaticamente a partir dos **arquivos do projeto** (não dos arquivos em `.claude/`):
 
 **Package manager** — verificar existência de lockfiles:
 - `bun.lock` → bun
@@ -31,17 +32,19 @@ Detectar automaticamente:
 - CSS: Tailwind, CSS Modules, styled-components, etc.
 - Testes: Vitest, Jest, Playwright, Cypress, etc.
 - Validação: Zod, Yup, Joi, etc.
+- ORM: Prisma, Drizzle, TypeORM, etc.
+- State: TanStack Query, Redux, Zustand, etc.
+- Realtime: Socket.IO, ws, etc.
+- Auth: JWT, NextAuth, Lucia, etc.
 
 **Estrutura** — mapear diretórios e entry points:
 - Monorepo (workspaces) vs single-package
-- Diretórios de código-fonte (src/, app/, lib/, etc.)
+- Diretórios de código-fonte (src/, app/, lib/, packages/, etc.)
 - Diretórios de testes
 - Diretórios de config
 
-**Scripts** — ler scripts do `package.json`:
+**Scripts** — ler scripts do `package.json` (raiz e workspaces):
 - dev, build, test, lint, typecheck, etc.
-
-**Configs existentes** — verificar se já existe `.claude/`, `CLAUDE.md`, etc.
 
 ### 2. Apresentar Detecções (Obrigatório)
 
@@ -67,65 +70,58 @@ Perguntar:
 
 ### 3. Gerar CLAUDE.bootstrap.md (Obrigatório)
 
-Criar `CLAUDE.bootstrap.md` na raiz — nunca sobrescrever um `CLAUDE.md` existente. O usuário decide o que aproveitar.
+Sempre gerar `CLAUDE.bootstrap.md` na raiz — nunca sobrescrever um `CLAUDE.md` existente. O usuário decide o que aproveitar.
 
-Seguir a mesma estrutura de seções do CLAUDE.md de referência (@CLAUDE.md), adaptando o conteúdo ao projeto detectado:
+Seguir a mesma estrutura de seções do CLAUDE.md de referência (@CLAUDE.md), adaptando **todo o conteúdo** ao projeto detectado:
 
 - Descrição do projeto (baseada no `package.json`)
 - Idioma (código vs specs)
-- Prioridades (baseadas na stack detectada)
-- Comandos do projeto (extraídos dos scripts)
-- Stack e skills recomendadas (tabela)
-- Estrutura do projeto (árvore de diretórios)
-- React / Testes (resumo com ponteiro para rules)
+- Prioridades (baseadas na stack detectada — ex: "Sempre use pnpm" se detectou pnpm)
+- Comandos do projeto (extraídos dos scripts reais)
+- Stack e skills recomendadas (tabela com tecnologias reais do projeto)
+- Estrutura do projeto (árvore de diretórios real)
+- Resumo de frameworks com ponteiro para rules (ex: "Express — detalhes em `.claude/rules/http.md`")
 - Git (restrições de segurança)
-- Anti-padrões (baseados na stack — ex: "nunca use Express" se usa Hono)
+- Anti-padrões (baseados na stack real — ex: "nunca use npm" se usa pnpm)
 
 ### 4. Gerar Rules (Obrigatório)
 
-Gerar apenas as rules relevantes para a stack em `.claude/rules/`:
+Sobrescrever as rules existentes em `.claude/rules/` com conteúdo adaptado à stack real do projeto:
 
 | Condição | Rule gerada |
 |---|---|
 | Sempre | `code-standards.md` (nomenclatura, formatação) |
-| TypeScript detectado | `typescript.md` (tipagem, imports, async/await) |
-| Framework HTTP detectado | `http.md` (adaptado ao framework: Hono, Express, Fastify) |
+| TypeScript detectado | `typescript.md` (tipagem, imports, async/await — com o package manager correto) |
+| Framework HTTP detectado | `http.md` (adaptado ao framework real: Hono, Express, Fastify) |
 | React/Vue/Svelte detectado | `[framework].md` (padrões de componentes) |
-| Vitest/Jest detectado | `tests.md` (adaptado ao test runner) |
+| Vitest/Jest detectado | `tests.md` (adaptado ao test runner real) |
 | Logging configurado | `logging.md` (níveis, estrutura) |
+
+Remover rules que não se aplicam (ex: remover `react.md` se o projeto não usa React).
 
 Cada rule deve:
 - Usar `paths:` no frontmatter quando aplicável
 - Conter exemplos com a stack real do projeto (não genéricos)
 
-### 5. Copiar Skills, Agents e Templates (Obrigatório)
+### 5. Criar Diretório de Artefatos (Obrigatório)
 
-Copiar de @.claude/ para o projeto:
-- `skills/` — prd, techspec, tasks, implement, bugfix
-- `agents/` — review, qa
-- `templates/` — prd-template, techspec-template, tasks-template, task-template
+- Criar `spec/tasks/` para os artefatos gerados (se não existir)
 
-Ajustar referências internas se a estrutura de saída for diferente.
-
-### 6. Criar Diretório de Artefatos (Obrigatório)
-
-- Criar `spec/tasks/` para os artefatos gerados
-
-### 7. Relatório Final
+### 6. Relatório Final
 
 Apresentar ao usuário:
 
-- Lista de arquivos gerados
-- Resumo das rules criadas (e quais foram omitidas, com justificativa)
-- Próximos passos recomendados (ex: "Ajuste o CLAUDE.md se necessário, depois use /prd para criar seu primeiro PRD")
+- Lista de arquivos gerados/atualizados
+- Rules criadas e quais foram removidas (com justificativa)
+- Próximo passo: "Revise o `CLAUDE.bootstrap.md`, renomeie para `CLAUDE.md` quando estiver satisfeito, depois use `/prd` para criar seu primeiro PRD"
 
 ## Checklist de Qualidade
 
-- [ ] Projeto analisado (package.json, lockfiles, configs)
+- [ ] Projeto analisado (package.json, lockfiles, configs — não os arquivos em .claude/)
 - [ ] Detecções confirmadas com o usuário
-- [ ] CLAUDE.bootstrap.md gerado e adaptado à stack
-- [ ] Rules geradas apenas para tecnologias detectadas
+- [ ] CLAUDE.bootstrap.md gerado com conteúdo adaptado à stack real
+- [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
+- [ ] Rules irrelevantes removidas
 - [ ] Path-specific rules configuradas onde aplicável
-- [ ] Skills, agents e templates copiados
 - [ ] Diretório spec/tasks/ criado
 - [ ] Relatório final apresentado
