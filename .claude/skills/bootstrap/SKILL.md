@@ -79,7 +79,7 @@ Seguir a mesma estrutura de seções do CLAUDE.md de referência (@CLAUDE.md), a
 - Idioma (código vs specs)
 - Prioridades (baseadas na stack detectada — ex: "Sempre use pnpm" se detectou pnpm)
 - Comandos do projeto (extraídos dos scripts reais)
-- Stack e skills recomendadas (tabela com tecnologias reais do projeto)
+- Stack e skills recomendadas (tabela com colunas alinhadas, usando separadores com traços para alinhar visualmente — seguir o formato de @CLAUDE.md)
 - Estrutura do projeto (árvore de diretórios real)
 - Resumo de frameworks com ponteiro para rules (ex: "Express — detalhes em `.claude/rules/http.md`")
 - Git (restrições de segurança)
