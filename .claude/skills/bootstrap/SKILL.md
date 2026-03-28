@@ -65,17 +65,20 @@ Perguntar:
 - Há algo que não foi detectado?
 - Qual idioma para specs? (padrão: português Brasil)
 
-### 3. Gerar CLAUDE.md (Obrigatório)
+### 3. Gerar CLAUDE.bootstrap.md (Obrigatório)
 
-Criar `CLAUDE.md` na raiz com:
+Criar `CLAUDE.bootstrap.md` na raiz — nunca sobrescrever um `CLAUDE.md` existente. O usuário decide o que aproveitar.
+
+Seguir a mesma estrutura de seções do CLAUDE.md de referência (@CLAUDE.md), adaptando o conteúdo ao projeto detectado:
 
 - Descrição do projeto (baseada no `package.json`)
-- Seção de idioma (código vs specs)
+- Idioma (código vs specs)
 - Prioridades (baseadas na stack detectada)
 - Comandos do projeto (extraídos dos scripts)
 - Stack e skills recomendadas (tabela)
 - Estrutura do projeto (árvore de diretórios)
-- Referências a rules relevantes
+- React / Testes (resumo com ponteiro para rules)
+- Git (restrições de segurança)
 - Anti-padrões (baseados na stack — ex: "nunca use Express" se usa Hono)
 
 ### 4. Gerar Rules (Obrigatório)
@@ -120,7 +123,7 @@ Apresentar ao usuário:
 
 - [ ] Projeto analisado (package.json, lockfiles, configs)
 - [ ] Detecções confirmadas com o usuário
-- [ ] CLAUDE.md gerado e adaptado à stack
+- [ ] CLAUDE.bootstrap.md gerado e adaptado à stack
 - [ ] Rules geradas apenas para tecnologias detectadas
 - [ ] Path-specific rules configuradas onde aplicável
 - [ ] Skills, agents e templates copiados
