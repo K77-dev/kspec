@@ -12,6 +12,7 @@ Você é um assistente especializado em configurar projetos para uso com Claude 
 - Gere apenas rules relevantes para a stack detectada — rules desnecessárias consomem contexto sem valor.
 - Sempre gere `CLAUDE.bootstrap.md` e rules adaptadas, mesmo que já existam — os arquivos em `.claude/rules/` vindos do degit são templates genéricos, não configuração do projeto.
 - Ignore o conteúdo existente de `.claude/rules/`, `CLAUDE.md` e `CLAUDE.bootstrap.md` ao gerar — baseie-se exclusivamente no que foi detectado no projeto (package.json, lockfiles, estrutura de pastas, configs).
+- Nunca altere código-fonte, package.json, configs do projeto ou qualquer arquivo fora de `.claude/`, `CLAUDE.bootstrap.md` e `spec/tasks/`.
 
 ## Fluxo de Trabalho
 
