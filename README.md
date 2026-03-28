@@ -26,15 +26,17 @@ Este repositório resolve isso fornecendo:
 ```
 .claude/
 ├── skills/            # Skills invocáveis (/skill-name) — rodam no contexto principal
-│   ├── prd/SKILL.md
-│   ├── techspec/SKILL.md
-│   ├── tasks/SKILL.md
-│   ├── implement/SKILL.md
-│   ├── bugfix/SKILL.md
-│   └── bootstrap/SKILL.md
+│   ├── kspec-prd/SKILL.md
+│   ├── kspec-techspec/SKILL.md
+│   ├── kspec-tasks/SKILL.md
+│   ├── kspec-implement-task/SKILL.md
+│   ├── kspec-implement-all-tasks/SKILL.md
+│   ├── kspec-bugfix/SKILL.md
+│   └── kspec-bootstrap/SKILL.md
 ├── agents/            # Agents — rodam em contexto isolado
-│   ├── review/AGENT.md
-│   └── qa/AGENT.md
+│   ├── kspec-task-runner/AGENT.md
+│   ├── kspec-review/AGENT.md
+│   └── kspec-qa/AGENT.md
 ├── rules/             # Padrões de código por domínio
 │   ├── code-standards.md
 │   ├── http.md
@@ -64,23 +66,23 @@ CLAUDE.md              # Guia principal do projeto
 
 ### Configuração inicial
 
-#### /bootstrap
+#### /kspec-bootstrap
 
 Analisa um projeto existente e gera a configuração completa do Claude Code.
 
 - Detecta stack, package manager, frameworks e estrutura automaticamente
 - Confirma detecções com o usuário antes de gerar
-- Cria CLAUDE.md, rules, skills, agents e templates adaptados ao projeto
+- Cria CLAUDE.bootstrap.md, rules e templates adaptados ao projeto
 
 ## Fluxo de desenvolvimento
 
 ```
-/prd → /techspec → /tasks → /implement → agent review → agent qa → /bugfix
+/kspec-prd → /kspec-techspec → /kspec-tasks → /kspec-implement-task ou /kspec-implement-all-tasks → agent kspec-review → agent kspec-qa → /kspec-bugfix
 ```
 
 ### Skills (contexto principal)
 
-#### /prd
+#### /kspec-prd
 
 Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação de funcionalidade.
 
@@ -88,7 +90,7 @@ Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação d
 - Foca no **O QUÊ** e **POR QUÊ**, nunca no como
 - Salva em `spec/tasks/prd-[nome]/prd.md`
 
-#### /techspec
+#### /kspec-techspec
 
 Traduz um PRD em especificação técnica com decisões arquiteturais.
 
@@ -96,7 +98,7 @@ Traduz um PRD em especificação técnica com decisões arquiteturais.
 - Foca no **COMO** implementar os requisitos do PRD
 - Salva em `spec/tasks/prd-[nome]/techspec.md`
 
-#### /tasks
+#### /kspec-tasks
 
 Quebra a Tech Spec em tarefas incrementais e independentes.
 
@@ -104,15 +106,23 @@ Quebra a Tech Spec em tarefas incrementais e independentes.
 - Cada tarefa é um entregável funcional com testes
 - Salva em `spec/tasks/prd-[nome]/tasks.md` e `[num]_task.md`
 
-#### /implement
+#### /kspec-implement-task
 
 Implementa a próxima tarefa disponível.
 
 - Lê PRD, Tech Spec e definição da tarefa antes de codar
 - Carrega skills relevantes e executa checks obrigatórios
-- Aciona o agent `review` antes de marcar como completa
+- Aciona o agent `kspec-review` antes de marcar como completa
 
-#### /bugfix
+#### /kspec-implement-all-tasks
+
+Executa todas as tasks pendentes sequencialmente.
+
+- Delega cada task ao agent `kspec-task-runner` (contexto isolado)
+- Valida com o agent `kspec-review` após cada implementação
+- Respeita a ordem de dependências definida em tasks.md
+
+#### /kspec-bugfix
 
 Corrige bugs documentados pelo QA.
 
@@ -122,7 +132,14 @@ Corrige bugs documentados pelo QA.
 
 ### Agents (contexto isolado)
 
-#### review
+#### kspec-task-runner
+
+Implementa uma task individual em contexto isolado.
+
+- Mesmo fluxo do skill `/kspec-implement-task`, mas sem interação com o usuário
+- Usado internamente pelo `/kspec-implement-all-tasks`
+
+#### kspec-review
 
 Realiza code review do código implementado.
 
@@ -131,7 +148,7 @@ Realiza code review do código implementado.
 - Gera relatório em `spec/tasks/prd-[nome]/review.md`
 - **Roda em contexto isolado** — a análise detalhada não consome o contexto principal
 
-#### qa
+#### kspec-qa
 
 Valida a implementação completa com testes E2E e acessibilidade.
 
@@ -175,10 +192,10 @@ git clone --depth 1 git@github.com:K77-dev/claude-kspec.git /tmp/claude-kspec &&
 
 ### Configuração
 
-1. Execute `/bootstrap` no Claude Code — ele analisa o projeto e gera `CLAUDE.bootstrap.md`, rules e templates adaptados
+1. Execute `/kspec-bootstrap` no Claude Code — ele analisa o projeto e gera `CLAUDE.bootstrap.md`, rules e templates adaptados
 2. Revise o `CLAUDE.bootstrap.md` gerado e renomeie para `CLAUDE.md` (ou mescle com um existente)
-3. Use o fluxo: `/prd` → `/techspec` → `/tasks` → `/implement` → `/bugfix`
-4. Os agents `review` e `qa` são acionados automaticamente pelo fluxo
+3. Use o fluxo: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement-task` → `/kspec-bugfix`
+4. Os agents `kspec-review` e `kspec-qa` são acionados automaticamente pelo fluxo
 
 ## Princípios de design
 

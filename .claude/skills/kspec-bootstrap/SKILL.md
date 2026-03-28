@@ -1,5 +1,5 @@
 ---
-name: bootstrap
+name: kspec-bootstrap
 description: Analisa um projeto existente e gera a configuração completa do Claude Code (CLAUDE.bootstrap.md, rules adaptadas) baseada na stack, estrutura e convenções detectadas.
 ---
 

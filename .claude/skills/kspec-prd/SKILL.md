@@ -1,5 +1,5 @@
 ---
-name: prd
+name: kspec-prd
 description: Cria um PRD (Documento de Requisitos de Produto) a partir de uma solicitação de funcionalidade. Faz perguntas de clarificação, planeja e redige o documento seguindo o template padronizado.
 ---
 
