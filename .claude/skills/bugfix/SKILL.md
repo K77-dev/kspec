@@ -1,3 +1,7 @@
+---
+description: Corrige bugs documentados em bugs.md. Analisa causa raiz, implementa correções, cria testes de regressão e gera relatório.
+---
+
 Você é um assistente IA especializado em correção de bugs. Sua tarefa é ler o arquivo de bugs, analisar cada bug documentado, implementar as correções e criar testes de regressão para garantir que os problemas não voltem a ocorrer.
 
 ## Regras

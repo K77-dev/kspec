@@ -9,7 +9,7 @@ Agentes de IA produzem código melhor quando recebem contexto estruturado. Sem r
 Este repositório resolve isso fornecendo:
 
 - **Padrões de código** — regras consistentes para TypeScript, React, Hono, testes e logging
-- **Fluxo de desenvolvimento estruturado** — do requisito ao bugfix, cada etapa tem um comando dedicado
+- **Fluxo de desenvolvimento estruturado** — do requisito ao bugfix, cada etapa tem uma skill ou agent dedicado
 - **Templates padronizados** — PRD, Tech Spec e Tasks seguem formatos previsíveis que se referenciam entre si
 
 ## Stack
@@ -25,14 +25,15 @@ Este repositório resolve isso fornecendo:
 
 ```
 .claude/
-├── commands/          # Comandos executáveis (/command-name)
-│   ├── prd.md
-│   ├── techspec.md
-│   ├── tasks.md
-│   ├── implement.md
-│   ├── review.md
-│   ├── qa.md
-│   └── bugfix.md
+├── skills/            # Skills invocáveis (/skill-name) — rodam no contexto principal
+│   ├── prd/SKILL.md
+│   ├── techspec/SKILL.md
+│   ├── tasks/SKILL.md
+│   ├── implement/SKILL.md
+│   └── bugfix/SKILL.md
+├── agents/            # Agents — rodam em contexto isolado
+│   ├── review/AGENT.md
+│   └── qa/AGENT.md
 ├── rules/             # Padrões de código por domínio
 │   ├── code-standards.md
 │   ├── http.md
@@ -41,7 +42,7 @@ Este repositório resolve isso fornecendo:
 │   ├── react.md
 │   └── tests.md
 spec/
-└── templates/         # Templates usados pelos comandos
+└── templates/         # Templates usados pelas skills
     ├── prd-template.md
     ├── techspec-template.md
     ├── tasks-template.md
@@ -49,17 +50,25 @@ spec/
 CLAUDE.md              # Guia principal do projeto
 ```
 
-## Comandos
+## Skills, Agents e Rules
 
-Os comandos seguem um fluxo sequencial de desenvolvimento. Cada etapa produz artefatos que alimentam a próxima.
+### Por que separar em skills e agents?
 
-### Fluxo completo
+| Tipo | Contexto | Quando usar |
+|---|---|---|
+| **Skills** | Principal — descrição carrega no início, conteúdo ao invocar | Workflows que precisam de interação com o usuário |
+| **Agents** | Isolado — contexto separado, só o resultado volta | Tarefas autocontidas que produzem relatórios |
+| **Rules** | Carregam automaticamente (com ou sem path filter) | Padrões de código por domínio |
+
+## Fluxo de desenvolvimento
 
 ```
-/prd → /techspec → /tasks → /implement → /review → /qa → /bugfix
+/prd → /techspec → /tasks → /implement → agent review → agent qa → /bugfix
 ```
 
-### /prd
+### Skills (contexto principal)
+
+#### /prd
 
 Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação de funcionalidade.
 
@@ -67,7 +76,7 @@ Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação d
 - Foca no **O QUÊ** e **POR QUÊ**, nunca no como
 - Salva em `spec/tasks/prd-[nome]/prd.md`
 
-### /techspec
+#### /techspec
 
 Traduz um PRD em especificação técnica com decisões arquiteturais.
 
@@ -75,7 +84,7 @@ Traduz um PRD em especificação técnica com decisões arquiteturais.
 - Foca no **COMO** implementar os requisitos do PRD
 - Salva em `spec/tasks/prd-[nome]/techspec.md`
 
-### /tasks
+#### /tasks
 
 Quebra a Tech Spec em tarefas incrementais e independentes.
 
@@ -83,31 +92,15 @@ Quebra a Tech Spec em tarefas incrementais e independentes.
 - Cada tarefa é um entregável funcional com testes
 - Salva em `spec/tasks/prd-[nome]/tasks.md` e `[num]_task.md`
 
-### /implement
+#### /implement
 
 Implementa a próxima tarefa disponível.
 
 - Lê PRD, Tech Spec e definição da tarefa antes de codar
 - Carrega skills relevantes e executa checks obrigatórios
-- Aciona `/review` antes de marcar como completa
+- Aciona o agent `review` antes de marcar como completa
 
-### /review
-
-Realiza code review do código implementado.
-
-- Analisa mudanças via git diff contra TechSpec, Tasks e rules
-- Executa todos os checks (`lint`, `typecheck`, `build`, `test`)
-- Gera relatório em `spec/tasks/prd-[nome]/review.md`
-
-### /qa
-
-Valida a implementação completa com testes E2E e acessibilidade.
-
-- Usa Playwright MCP para testar cada fluxo
-- Verifica acessibilidade seguindo WCAG 2.2
-- Documenta bugs em `bugs.md`, relatório em `spec/tasks/prd-[nome]/qa.md`
-
-### /bugfix
+#### /bugfix
 
 Corrige bugs documentados pelo QA.
 
@@ -115,25 +108,46 @@ Corrige bugs documentados pelo QA.
 - Cria testes de regressão para cada correção
 - Gera relatório em `spec/tasks/prd-[nome]/bugfix.md`
 
+### Agents (contexto isolado)
+
+#### review
+
+Realiza code review do código implementado.
+
+- Analisa mudanças via git diff contra TechSpec, Tasks e rules
+- Executa todos os checks (`lint`, `typecheck`, `build`, `test`)
+- Gera relatório em `spec/tasks/prd-[nome]/review.md`
+- **Roda em contexto isolado** — a análise detalhada não consome o contexto principal
+
+#### qa
+
+Valida a implementação completa com testes E2E e acessibilidade.
+
+- Usa Playwright MCP para testar cada fluxo
+- Verifica acessibilidade seguindo WCAG 2.2
+- Documenta bugs em `bugs.md`, relatório em `spec/tasks/prd-[nome]/qa.md`
+- **Roda em contexto isolado** — output verboso fica separado
+
 ## Rules
 
 As rules são carregadas automaticamente pelo Claude Code e definem padrões de código por domínio:
 
-| Rule | Escopo | Conteúdo |
+| Rule | Escopo | Carrega quando |
 |---|---|---|
-| `code-standards.md` | Global | Nomenclatura, formatação, constantes, funções, condicionais |
-| `typescript.md` | Global | TypeScript, bun, variáveis, imports, tipagem forte |
-| `http.md` | Backend | Hono, REST, status HTTP, middlewares, fetch |
-| `logging.md` | Backend | Níveis de log, dados sensíveis, estrutura |
-| `react.md` | Frontend | Componentes funcionais, hooks, Tailwind v4, shadcn/ui |
-| `tests.md` | Global | Vitest, estrutura AAA/GWT, mocks, cobertura |
+| `code-standards.md` | Global | Sempre |
+| `typescript.md` | Global | Sempre |
+| `http.md` | Backend | `backend/src/**/*.ts` |
+| `logging.md` | Backend | `backend/src/**/*.ts` |
+| `react.md` | Frontend | `frontend/src/**/*.tsx`, `frontend/src/**/*.ts` |
+| `tests.md` | Global | Sempre |
 
 ## Como usar
 
 1. Copie a pasta `.claude/`, `spec/` e o `CLAUDE.md` para a raiz do seu projeto
 2. Ajuste o `CLAUDE.md` com a stack e estrutura do seu projeto
 3. Ajuste as rules conforme suas convenções
-4. Execute os comandos no Claude Code: `/prd`, `/techspec`, etc.
+4. Execute as skills no Claude Code: `/prd`, `/techspec`, `/tasks`, `/implement`, `/bugfix`
+5. Os agents `review` e `qa` são acionados automaticamente pelo fluxo
 
 ## Princípios de design
 
@@ -141,3 +155,4 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 - **Sem repetição** — cada regra aparece uma vez, no lugar certo
 - **Rastreabilidade** — PRD → Tech Spec → Tasks → Review → QA → Bugfix
 - **Código em inglês, specs em português** — públicos e propósitos diferentes
+- **Contexto otimizado** — skills para interação, agents para trabalho isolado

@@ -1,3 +1,7 @@
+---
+description: Implementa a próxima tarefa de desenvolvimento disponível. Lê PRD, Tech Spec e a definição da tarefa, implementa o código, executa checks e aciona o agent de review.
+---
+
 Você é um assistente IA responsável por implementar tarefas de desenvolvimento. Sua tarefa é identificar a próxima tarefa disponível, analisar o contexto e implementar.
 
 ## Regras
@@ -6,7 +10,7 @@ Você é um assistente IA responsável por implementar tarefas de desenvolviment
 - Carregue as skills necessárias com base nas tecnologias da tarefa — skills garantem aderência aos padrões de cada domínio.
 - Use o Context7 MCP para consultar documentação de frameworks e bibliotecas — evita implementações baseadas em APIs desatualizadas.
 - Todos os testes devem passar com 100% de sucesso antes de considerar a tarefa completa — código sem testes passando não é entregável.
-- Execute o command /review antes de finalizar — se houver problemas, resolva e analise novamente.
+- Após a verificação, use o agent `review` para validar o código — se houver problemas, resolva e analise novamente.
 - Marque a tarefa como completa em tasks.md após a review passar.
 - Implemente soluções adequadas, sem gambiarras — prefira correções de causa raiz.
 
@@ -78,7 +82,7 @@ bun run test
 
 ### 7. Revisão
 
-- Execute o command /review
+- Use o agent `review` para validar o código
 - Ajuste os problemas indicados
 - Não finalize a tarefa até a review passar
 - Marque como completa em tasks.md

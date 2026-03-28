@@ -62,13 +62,13 @@ bun run test             # Vitest
 | Backend           | Hono, Bun runtime                   | `hono`                                                                |
 | Testes            | Vitest (unit), Playwright (e2e)     | `vitest`, `a11y-testing`                                              |
 | Design / UX       | Interface, acessibilidade           | `ui-ux-pro-max`, `web-design-guidelines`                              |
-| PRD               | Requisitos de produto               | `cria-prd`                                                            |
-| Tech Spec         | Especificação técnica               | `cria-techspec`                                                       |
-| Tasks             | Planejamento de tarefas             | `criar-tasks`                                                         |
-| Implementação     | Execução de tarefas                 | `executar-task`                                                       |
-| Code Review       | Revisão de código                   | `executar-review`                                                     |
-| QA                | Quality Assurance                   | `executar-qa`                                                         |
-| Bugfix            | Correção de bugs                    | `executar-bugfix`                                                     |
+| PRD               | Requisitos de produto               | skill `prd`                                                           |
+| Tech Spec         | Especificação técnica               | skill `techspec`                                                      |
+| Tasks             | Planejamento de tarefas             | skill `tasks`                                                         |
+| Implementação     | Execução de tarefas                 | skill `implement`                                                     |
+| Code Review       | Revisão de código                   | agent `review`                                                        |
+| QA                | Quality Assurance                   | agent `qa`                                                            |
+| Bugfix            | Correção de bugs                    | skill `bugfix`                                                        |
 
 ### Estrutura do projeto
 
