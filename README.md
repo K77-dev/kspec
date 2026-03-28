@@ -41,12 +41,13 @@ Este repositório resolve isso fornecendo:
 │   ├── typescript.md
 │   ├── react.md
 │   └── tests.md
+├── templates/         # Templates usados pelas skills
+│   ├── prd-template.md
+│   ├── techspec-template.md
+│   ├── tasks-template.md
+│   └── task-template.md
 spec/
-└── templates/         # Templates usados pelas skills
-    ├── prd-template.md
-    ├── techspec-template.md
-    ├── tasks-template.md
-    └── task-template.md
+└── tasks/             # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md              # Guia principal do projeto
 ```
 
@@ -143,7 +144,7 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 
 ## Como usar
 
-1. Copie a pasta `.claude/`, `spec/` e o `CLAUDE.md` para a raiz do seu projeto
+1. Copie a pasta `.claude/` e o `CLAUDE.md` para a raiz do seu projeto (a pasta `spec/` será criada automaticamente pelas skills)
 2. Ajuste o `CLAUDE.md` com a stack e estrutura do seu projeto
 3. Ajuste as rules conforme suas convenções
 4. Execute as skills no Claude Code: `/prd`, `/techspec`, `/tasks`, `/implement`, `/bugfix`

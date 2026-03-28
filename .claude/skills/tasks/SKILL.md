@@ -52,18 +52,18 @@ A funcionalidade em que você trabalhará é identificada por este slug:
 ### Localização dos Arquivos
 
 - Pasta da funcionalidade: `@spec/tasks/prd-[nome-funcionalidade]/`
-- Template para a lista de tarefas: @spec/templates/tasks-template.md
+- Template para a lista de tarefas: @.claude/templates/tasks-template.md
 - Lista de tarefas: `@spec/tasks/prd-[nome-funcionalidade]/tasks.md`
-- Template para cada tarefa individual: @spec/templates/task-template.md
+- Template para cada tarefa individual: @.claude/templates/task-template.md
 - Tarefas individuais: `@spec/tasks/prd-[nome-funcionalidade]/[num]_task.md`
 
 ### Formato do Resumo de Tarefas (tasks.md)
 
-- Seguir o template em @spec/templates/tasks-template.md
+- Seguir o template em @.claude/templates/tasks-template.md
 
 ### Formato de Tarefa Individual ([num]_task.md)
 
-- Seguir o template em @spec/templates/task-template.md
+- Seguir o template em @.claude/templates/task-template.md
 
 ## Diretrizes Finais
 

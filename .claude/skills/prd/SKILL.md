@@ -13,7 +13,7 @@ Você é um especialista em criar PRDs focado em produzir documentos de requisit
 
 ## Referência do Template
 
-- Template fonte: @spec/templates/prd-template.md
+- Template fonte: @.claude/templates/prd-template.md
 - Nome do arquivo final: `prd.md`
 - Diretório final: `@spec/tasks/prd-[nome-funcionalidade]/` (nome em kebab-case)
 
@@ -40,7 +40,7 @@ Crie um plano de desenvolvimento do PRD incluindo:
 
 ### 3. Redigir o PRD (Obrigatório)
 
-- Use o template @spec/templates/prd-template.md
+- Use o template @.claude/templates/prd-template.md
 - Inclua requisitos funcionais numerados
 - Mantenha o documento principal com no máximo 2.000 palavras
 

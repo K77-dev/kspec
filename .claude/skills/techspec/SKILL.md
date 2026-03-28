@@ -16,7 +16,7 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 
 ## Template e Entradas
 
-- Template Tech Spec: @spec/templates/techspec-template.md
+- Template Tech Spec: @.claude/templates/techspec-template.md
 - PRD requerido: `@spec/tasks/prd-[nome-funcionalidade]/prd.md`
 - Documento de saída: `@spec/tasks/prd-[nome-funcionalidade]/techspec.md`
 
@@ -55,7 +55,7 @@ Fazer perguntas focadas sobre:
 
 ### 5. Gerar Tech Spec (Obrigatório)
 
-- Usar @spec/templates/techspec-template.md como estrutura exata
+- Usar @.claude/templates/techspec-template.md como estrutura exata
 - Fornecer: visão geral da arquitetura, design de componentes, interfaces, modelos, endpoints, pontos de integração, análise de impacto, estratégia de testes, observabilidade
 - Manter até ~2.000 palavras
 - Evitar repetir requisitos funcionais do PRD; focar em como implementar
