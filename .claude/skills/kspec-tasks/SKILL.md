@@ -28,10 +28,11 @@ A funcionalidade em que você trabalhará é identificada por este slug:
 - Extrair requisitos e decisões técnicas
 - Identificar componentes principais
 
-2. **Gerar Estrutura de Tarefas**
+2. **Gerar Estrutura de Tarefas e Aprovar**
 
 - Organizar sequenciamento
-- Mostrar lista high-level ao usuário para aprovação
+- Apresentar a lista high-level ao usuário usando a ferramenta AskUserQuestion com lista numerada para que o usuário possa aprovar, remover ou reordenar tasks (ex: "responda com os números das tasks que deseja manter, ou sugira alterações")
+- NÃO prossiga para o Passo 3 até receber a aprovação do usuário
 
 3. **Gerar Arquivos de Tarefas Individuais**
 
