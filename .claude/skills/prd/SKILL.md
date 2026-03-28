@@ -21,9 +21,32 @@ Você é um especialista em criar PRDs focado em produzir documentos de requisit
 
 Ao ser invocado com uma solicitação de funcionalidade, siga a sequência abaixo.
 
-### 1. Criar Branch (Obrigatório)
+### 1. Esclarecer (Obrigatório)
 
-Antes de qualquer coisa, crie uma branch para a funcionalidade:
+Faça perguntas para entender:
+
+- Problema a resolver
+- Funcionalidade principal
+- Restrições
+- O que **NÃO está no escopo**
+
+### 2. Planejar (Obrigatório)
+
+Crie um plano de desenvolvimento do PRD incluindo:
+
+- Abordagem seção por seção
+- Áreas que precisam pesquisa (**usar Web Search para buscar regras de negócio**)
+- Premissas e dependências
+
+### 3. Redigir o PRD (Obrigatório)
+
+- Use o template @.claude/templates/prd-template.md
+- Inclua requisitos funcionais numerados
+- Mantenha o documento principal com no máximo 2.000 palavras
+
+### 4. Criar Branch, Diretório e Salvar (Obrigatório)
+
+Antes de salvar o arquivo, crie a branch:
 
 1. Verifique a branch atual com `git branch --show-current`. Se for `main` ou `master`, **alerte o usuário** que ele está na branch principal e sugira trocar para uma branch de desenvolvimento (ex: `develop`) antes de continuar. Aguarde confirmação antes de prosseguir.
 2. Liste as branches existentes com `git branch -a` e identifique o maior número sequencial no padrão `NNN-*`
@@ -32,45 +55,12 @@ Antes de qualquer coisa, crie uma branch para a funcionalidade:
 
 Exemplo: se a última branch for `002-prd-sistema-avaliacoes`, a próxima será `003-prd-[nome-funcionalidade]`.
 
-### 2. Esclarecer (Obrigatório)
-
-Faça perguntas para entender o escopo. Quando houver opções possíveis, apresente como checkboxes para o usuário selecionar:
-
-```
-Quais ações administrativas você precisa?
-- [ ] Bloquear usuário
-- [ ] Alterar senha
-- [ ] Excluir conta
-- [ ] Editar dados do perfil
-- [ ] Outro: ___
-```
-
-Tópicos a cobrir:
-- Problema a resolver
-- Funcionalidade principal
-- Restrições
-- O que **NÃO está no escopo**
-
-### 3. Planejar (Obrigatório)
-
-Crie um plano de desenvolvimento do PRD incluindo:
-
-- Abordagem seção por seção
-- Áreas que precisam pesquisa (**usar Web Search para buscar regras de negócio**)
-- Premissas e dependências
-
-### 4. Redigir o PRD (Obrigatório)
-
-- Use o template @.claude/templates/prd-template.md
-- Inclua requisitos funcionais numerados
-- Mantenha o documento principal com no máximo 2.000 palavras
-
-### 5. Criar Diretório e Salvar (Obrigatório)
+Depois, salve o arquivo:
 
 - Crie o diretório: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/`
 - Salve o PRD em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
 
-### 6. Reportar Resultados
+### 5. Reportar Resultados
 
 - Forneça o caminho do arquivo final
 - Forneça um resumo **BEM BREVE** sobre o resultado final do PRD

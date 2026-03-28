@@ -28,6 +28,7 @@ Você é um assistente IA especializado em correção de bugs. Sua tarefa é ler
 ### 1. Análise de Contexto (Obrigatório)
 
 - Ler o arquivo `bugs.md` e extrair todos os bugs documentados
+- Verificar a branch atual com `git branch --show-current`. Se for `main` ou `master`, **alerte o usuário** que ele está na branch principal e sugira trocar para uma branch de desenvolvimento (ex: `develop`) antes de continuar. Aguarde confirmação antes de prosseguir.
 - Ler o PRD para entender os requisitos afetados por cada bug
 - Ler a TechSpec para entender as decisões técnicas relevantes
 - Revisar as regras do projeto para garantir conformidade nas correções
@@ -49,7 +50,17 @@ Testes de Regressão Planejados:
   - [Teste E2E]: [descrição]
 ```
 
-### 3. Implementação das Correções (Obrigatório)
+### 3. Criar Branch (Obrigatório)
+
+Antes de implementar, crie uma branch para o bugfix:
+
+1. Liste as branches existentes com `git branch -a` e identifique o maior número sequencial no padrão `NNN-*`
+2. Incremente o número (se não houver nenhuma, comece em `001`)
+3. Crie a branch: `git checkout -b [NNN]-bugfix-[nome-funcionalidade]` (nome em kebab-case)
+
+Exemplo: se a última branch for `003-prd-sistema-avaliacoes`, a próxima será `004-bugfix-[nome-funcionalidade]`.
+
+### 4. Implementação das Correções (Obrigatório)
 
 Para cada bug, seguir esta sequência:
 
@@ -58,7 +69,7 @@ Para cada bug, seguir esta sequência:
 3. Implementar a correção — aplicar a solução na causa raiz
 4. Executar testes existentes — garantir que nenhum teste quebrou com a mudança
 
-### 4. Criação de Testes de Regressão (Obrigatório)
+### 5. Criação de Testes de Regressão (Obrigatório)
 
 Para cada bug corrigido, crie testes que:
 
@@ -74,7 +85,7 @@ Tipos de testes a considerar:
 | Teste de integração | Bug na comunicação entre módulos (ex: route + service) |
 | Teste E2E | Bug visível na interface do usuário ou no fluxo completo |
 
-### 5. Validação com Playwright MCP (Obrigatório para bugs visuais/frontend)
+### 6. Validação com Playwright MCP (Obrigatório para bugs visuais/frontend)
 
 Para bugs que afetam a interface do usuário:
 
@@ -84,11 +95,11 @@ Para bugs que afetam a interface do usuário:
 4. Usar `browser_take_screenshot` para capturar evidência da correção
 5. Verificar que o comportamento está correto
 
-### 6. Verificação (Obrigatório)
+### 7. Verificação (Obrigatório)
 
 Executar os checks obrigatórios conforme definido em "Comandos do projeto" no CLAUDE.md.
 
-### 7. Atualização do bugs.md (Obrigatório)
+### 8. Atualização do bugs.md (Obrigatório)
 
 Após corrigir cada bug, atualize o arquivo `bugs.md` adicionando ao final de cada bug:
 
@@ -100,7 +111,7 @@ Após corrigir cada bug, atualize o arquivo `bugs.md` adicionando ao final de ca
 
 Se descobrir novos bugs durante a correção, documente-os no `bugs.md`.
 
-### 8. Relatório Final (Obrigatório)
+### 9. Relatório Final (Obrigatório)
 
 Salvar em: `@spec/tasks/prd-[nome-funcionalidade]/bugfix.md`
 
@@ -132,6 +143,7 @@ Gerar relatório final no formato:
 
 - [ ] Arquivo bugs.md lido e todos os bugs identificados
 - [ ] PRD e TechSpec revisados para contexto
+- [ ] Branch `[NNN]-bugfix-[nome-funcionalidade]` criada a partir da branch atual
 - [ ] Planejamento de correção feito para cada bug
 - [ ] Correções implementadas na causa raiz
 - [ ] Testes de regressão criados para cada bug

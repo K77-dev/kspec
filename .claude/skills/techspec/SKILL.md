@@ -41,8 +41,18 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 
 ### 3. Esclarecimentos Técnicos (Obrigatório)
 
-Fazer perguntas focadas sobre:
+Fazer perguntas focadas. Quando houver opções possíveis, apresente como checkboxes para o usuário selecionar:
 
+```
+Qual estratégia de autenticação para esta API?
+- [ ] JWT com refresh token
+- [ ] Session-based
+- [ ] OAuth2
+- [ ] Sem autenticação (endpoint público)
+- [ ] Outro: ___
+```
+
+Tópicos a cobrir:
 - Posicionamento de domínio
 - Fluxo de dados
 - Dependências externas
