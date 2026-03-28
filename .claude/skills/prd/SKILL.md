@@ -34,8 +34,18 @@ Exemplo: se a última branch for `002-prd-sistema-avaliacoes`, a próxima será 
 
 ### 2. Esclarecer (Obrigatório)
 
-Faça perguntas para entender:
+Faça perguntas para entender o escopo. Quando houver opções possíveis, apresente como checkboxes para o usuário selecionar:
 
+```
+Quais ações administrativas você precisa?
+- [ ] Bloquear usuário
+- [ ] Alterar senha
+- [ ] Excluir conta
+- [ ] Editar dados do perfil
+- [ ] Outro: ___
+```
+
+Tópicos a cobrir:
 - Problema a resolver
 - Funcionalidade principal
 - Restrições
