@@ -66,8 +66,8 @@ bun run test             # Vitest
 | Tech Spec         | Especificação técnica               | skill `kspec-techspec`                                                   |
 | Tasks             | Planejamento de tarefas             | skill `kspec-tasks`                                                      |
 | Implementação     | Execução de tarefas                 | skill `kspec-implement-task`, skill `kspec-implement-all-tasks`                        |
-| Code Review       | Revisão de código                   | agent `kspec-review`                                                     |
-| QA                | Quality Assurance                   | agent `kspec-qa`                                                         |
+| Code Review       | Revisão de código                   | agent `kspec-review-runner`                                                     |
+| QA                | Quality Assurance                   | agent `kspec-qa-runner`                                                         |
 | Bugfix            | Correção de bugs                    | skill `kspec-bugfix`                                                     |
 
 ### Estrutura do projeto

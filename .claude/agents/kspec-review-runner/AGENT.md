@@ -1,5 +1,5 @@
 ---
-name: kspec-review
+name: kspec-review-runner
 description: Realiza code review do código implementado. Analisa mudanças via git diff, verifica conformidade com rules, TechSpec e Tasks, executa testes e gera relatório. Use este agent após implementar código.
 ---
 

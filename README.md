@@ -31,12 +31,13 @@ Este repositório resolve isso fornecendo:
 │   ├── kspec-tasks/SKILL.md
 │   ├── kspec-implement-task/SKILL.md
 │   ├── kspec-implement-all-tasks/SKILL.md
+│   ├── kspec-qa/SKILL.md
 │   ├── kspec-bugfix/SKILL.md
 │   └── kspec-bootstrap/SKILL.md
 ├── agents/            # Agents — rodam em contexto isolado
 │   ├── kspec-task-runner/AGENT.md
-│   ├── kspec-review/AGENT.md
-│   └── kspec-qa/AGENT.md
+│   ├── kspec-review-runner/AGENT.md
+│   └── kspec-qa-runner/AGENT.md
 ├── rules/             # Padrões de código por domínio
 │   ├── code-standards.md
 │   ├── http.md
@@ -56,15 +57,15 @@ CLAUDE.md              # Guia principal do projeto
 
 ## Skills, Agents e Rules
 
-### Por que separar em skills e agents?
-
 | Tipo | Contexto | Quando usar |
 |---|---|---|
 | **Skills** | Principal — descrição carrega no início, conteúdo ao invocar | Workflows que precisam de interação com o usuário |
 | **Agents** | Isolado — contexto separado, só o resultado volta | Tarefas autocontidas que produzem relatórios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padrões de código por domínio |
 
-### Configuração inicial
+## Fluxo de desenvolvimento
+
+### Setup (uma vez por projeto)
 
 #### /kspec-bootstrap
 
@@ -74,88 +75,141 @@ Analisa um projeto existente e gera a configuração completa do Claude Code.
 - Confirma detecções com o usuário antes de gerar
 - Cria CLAUDE.bootstrap.md, rules e templates adaptados ao projeto
 
-## Fluxo de desenvolvimento
-
 ```
-/kspec-prd → /kspec-techspec → /kspec-tasks → /kspec-implement-task ou /kspec-implement-all-tasks → agent kspec-review → agent kspec-qa → /kspec-bugfix
+/kspec-bootstrap
+  └→ detecta stack, package manager, frameworks e estrutura
+  └→ confirma detecções com o usuário
+  └→ gera CLAUDE.bootstrap.md + rules adaptadas
+  └→ dev revisa e renomeia para CLAUDE.md
 ```
 
-### Skills (contexto principal)
+### Especificação (por funcionalidade)
 
 #### /kspec-prd
 
 Cria um Documento de Requisitos de Produto (PRD) a partir de uma solicitação de funcionalidade.
 
-- Faz perguntas de clarificação antes de redigir
-- Foca no **O QUÊ** e **POR QUÊ**, nunca no como
-- Salva em `spec/tasks/prd-[nome]/prd.md`
+```
+/kspec-prd
+  └→ faz perguntas de clarificação ao usuário
+  └→ planeja abordagem seção por seção
+  └→ redige o PRD seguindo o template
+  └→ salva em spec/tasks/[NNN]-prd-[nome]/prd.md
+```
 
 #### /kspec-techspec
 
 Traduz um PRD em especificação técnica com decisões arquiteturais.
 
-- Analisa o código existente antes de especificar
-- Foca no **COMO** implementar os requisitos do PRD
-- Salva em `spec/tasks/prd-[nome]/techspec.md`
+```
+/kspec-techspec
+  └→ lê o PRD e analisa o projeto existente
+  └→ faz perguntas técnicas ao usuário
+  └→ gera spec arquitetural seguindo o template
+  └→ salva em spec/tasks/[NNN]-prd-[nome]/techspec.md
+```
 
 #### /kspec-tasks
 
 Quebra a Tech Spec em tarefas incrementais e independentes.
 
-- Mostra lista high-level para aprovação antes de detalhar
-- Cada tarefa é um entregável funcional com testes
-- Salva em `spec/tasks/prd-[nome]/tasks.md` e `[num]_task.md`
+```
+/kspec-tasks
+  └→ lê PRD + Tech Spec
+  └→ mostra lista high-level para aprovação
+  └→ gera arquivos de tasks individuais
+  └→ salva em spec/tasks/[NNN]-prd-[nome]/tasks.md + [num]_task.md
+```
+
+### Implementação (por task)
 
 #### /kspec-implement-task
 
-Implementa a próxima tarefa disponível.
+Implementa a próxima tarefa disponível. Uso manual, uma task por vez.
 
-- Lê PRD, Tech Spec e definição da tarefa antes de codar
-- Carrega skills relevantes e executa checks obrigatórios
-- Aciona o agent `kspec-review` antes de marcar como completa
+```
+/kspec-implement-task
+  └→ lê PRD, Tech Spec e definição da tarefa
+  └→ carrega skills relevantes
+  └→ implementa o código
+  └→ roda checks (conforme CLAUDE.md)
+  └→ delega ao agent kspec-review-runner (contexto isolado)
+  └→ se reprovado, corrige e re-submete
+  └→ marca como completa em tasks.md
+```
 
 #### /kspec-implement-all-tasks
 
-Executa todas as tasks pendentes sequencialmente.
+Executa todas as tasks pendentes sequencialmente de forma automatizada.
 
-- Delega cada task ao agent `kspec-task-runner` (contexto isolado)
-- Valida com o agent `kspec-review` após cada implementação
-- Respeita a ordem de dependências definida em tasks.md
+```
+/kspec-implement-all-tasks
+  └→ lê tasks.md e identifica tasks pendentes
+  └→ apresenta lista ao usuário para confirmação
+  └→ para cada task (sequencial, respeitando dependências):
+      └→ delega ao agent kspec-task-runner (contexto isolado)
+      └→ delega ao agent kspec-review-runner (contexto isolado)
+      └→ se reprovado 2x na mesma task, para e reporta
+      └→ marca como completa em tasks.md
+  └→ gera relatório final com status de todas as tasks
+```
+
+### QA (manual, por funcionalidade)
+
+#### /kspec-qa
+
+Executa Quality Assurance da funcionalidade completa. Invocação manual — o dev decide quando a funcionalidade está pronta.
+
+```
+/kspec-qa
+  └→ delega ao agent kspec-qa-runner (contexto isolado)
+  └→ testa fluxos E2E com Playwright MCP
+  └→ verifica acessibilidade (WCAG 2.2)
+  └→ gera qa.md + bugs.md
+  └→ APROVADO → funcionalidade pronta
+  └→ REPROVADO → dev roda /kspec-bugfix
+```
+
+### Bugfix (manual, se necessário)
 
 #### /kspec-bugfix
 
-Corrige bugs documentados pelo QA.
+Corrige bugs documentados pelo QA. Resolve causa raiz e cria testes de regressão.
 
-- Resolve causa raiz, na ordem de severidade
-- Cria testes de regressão para cada correção
-- Gera relatório em `spec/tasks/prd-[nome]/bugfix.md`
+```
+/kspec-bugfix
+  └→ lê bugs.md
+  └→ corrige causa raiz na ordem de severidade (Alta → Média → Baixa)
+  └→ cria testes de regressão para cada correção
+  └→ roda checks (conforme CLAUDE.md)
+  └→ atualiza bugs.md com status das correções
+  └→ gera bugfix.md
+  └→ dev pode rodar /kspec-qa novamente
+```
 
-### Agents (contexto isolado)
+### Artefatos gerados por funcionalidade
 
-#### kspec-task-runner
+```
+spec/tasks/[NNN]-prd-[nome]/
+├── prd.md          ← /kspec-prd
+├── techspec.md     ← /kspec-techspec
+├── tasks.md        ← /kspec-tasks
+├── [num]_task.md   ← /kspec-tasks
+├── review.md       ← agent kspec-review-runner
+├── qa.md           ← agent kspec-qa-runner
+├── bugs.md         ← agent kspec-qa-runner
+└── bugfix.md       ← /kspec-bugfix
+```
 
-Implementa uma task individual em contexto isolado.
+## Agents
 
-- Mesmo fluxo do skill `/kspec-implement-task`, mas sem interação com o usuário
-- Usado internamente pelo `/kspec-implement-all-tasks`
+Os agents rodam em contexto isolado e são acionados pelas skills — não precisam ser invocados diretamente.
 
-#### kspec-review
-
-Realiza code review do código implementado.
-
-- Analisa mudanças via git diff contra TechSpec, Tasks e rules
-- Executa todos os checks (`lint`, `typecheck`, `build`, `test`)
-- Gera relatório em `spec/tasks/prd-[nome]/review.md`
-- **Roda em contexto isolado** — a análise detalhada não consome o contexto principal
-
-#### kspec-qa
-
-Valida a implementação completa com testes E2E e acessibilidade.
-
-- Usa Playwright MCP para testar cada fluxo
-- Verifica acessibilidade seguindo WCAG 2.2
-- Documenta bugs em `bugs.md`, relatório em `spec/tasks/prd-[nome]/qa.md`
-- **Roda em contexto isolado** — output verboso fica separado
+| Agent | Acionado por | Função |
+|---|---|---|
+| `kspec-task-runner` | `/kspec-implement-all-tasks` | Implementa uma task individual em contexto isolado |
+| `kspec-review-runner` | `/kspec-implement-task`, `/kspec-implement-all-tasks` | Code review contra TechSpec, Tasks e rules |
+| `kspec-qa-runner` | `/kspec-qa` | Testa E2E, acessibilidade, visual |
 
 ## Rules
 
@@ -192,10 +246,9 @@ git clone --depth 1 git@github.com:K77-dev/claude-kspec.git /tmp/claude-kspec &&
 
 ### Configuração
 
-1. Execute `/kspec-bootstrap` no Claude Code — ele analisa o projeto e gera `CLAUDE.bootstrap.md`, rules e templates adaptados
-2. Revise o `CLAUDE.bootstrap.md` gerado e renomeie para `CLAUDE.md` (ou mescle com um existente)
-3. Use o fluxo: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement-task` → `/kspec-bugfix`
-4. Os agents `kspec-review` e `kspec-qa` são acionados automaticamente pelo fluxo
+1. Execute `/kspec-bootstrap` no Claude Code
+2. Revise o `CLAUDE.bootstrap.md` gerado e renomeie para `CLAUDE.md`
+3. Use o fluxo de desenvolvimento descrito acima
 
 ## Princípios de design
 

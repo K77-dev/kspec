@@ -1,16 +1,16 @@
 ---
 name: kspec-implement-all-tasks
-description: Executa todas as tasks pendentes sequencialmente. Para cada task, delega ao agent implement (contexto isolado), depois ao agent review. Respeita a ordem de dependências.
+description: Executa todas as tasks pendentes sequencialmente. Para cada task, delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Respeita a ordem de dependências.
 ---
 
-Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as tasks pendentes de uma funcionalidade, delegando cada uma ao agent `kspec-task-runner` e validando com o agent `kspec-review`.
+Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as tasks pendentes de uma funcionalidade, delegando cada uma ao agent `kspec-task-runner` e validando com o agent `kspec-review-runner`.
 
 ## Regras
 
 - Execute as tasks na ordem definida em `tasks.md` — a ordem já respeita dependências (definida pelo /tasks).
 - Antes de executar uma task, verifique se suas dependências estão marcadas como completas — executar fora de ordem pode quebrar o código.
 - Delegue cada task ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
-- Após cada implementação, delegue ao agent `kspec-review` — código sem review não pode ser marcado como completo.
+- Após cada implementação, delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
 - Se a review reprovar, delegue novamente ao agent `kspec-task-runner` com os problemas encontrados. Se falhar 2 vezes na mesma task, pare e reporte ao usuário.
 - Mantenha apenas o resumo de cada task no contexto principal — os detalhes ficam nos agents.
 
@@ -38,7 +38,7 @@ Para cada task na ordem do arquivo:
      - Caminho do arquivo da task ([num]_task.md)
      - Caminho do PRD e Tech Spec
   3. Aguardar resultado do implement
-  4. Delegar ao agent `kspec-review`
+  4. Delegar ao agent `kspec-review-runner`
   5. Avaliar resultado da review:
      - APROVADO → marcar task como completa em tasks.md
      - REPROVADO → delegar novamente ao implement com os problemas

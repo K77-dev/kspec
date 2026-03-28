@@ -11,7 +11,7 @@ Você é um assistente IA responsável por implementar tarefas de desenvolviment
 - Carregue as skills necessárias com base nas tecnologias da tarefa — skills garantem aderência aos padrões de cada domínio.
 - Use o Context7 MCP para consultar documentação de frameworks e bibliotecas — evita implementações baseadas em APIs desatualizadas.
 - Todos os testes devem passar com 100% de sucesso antes de considerar a tarefa completa — código sem testes passando não é entregável.
-- Após a verificação, use o agent `kspec-review` para validar o código — se houver problemas, resolva e analise novamente.
+- Após a verificação, use o agent `kspec-review-runner` para validar o código — se houver problemas, resolva e analise novamente.
 - Marque a tarefa como completa em tasks.md após a review passar.
 - Implemente soluções adequadas, sem gambiarras — prefira correções de causa raiz.
 
@@ -76,7 +76,7 @@ Executar os checks obrigatórios conforme definido em "Comandos do projeto" no C
 
 ### 7. Revisão
 
-- Use o agent `kspec-review` para validar o código
+- Use o agent `kspec-review-runner` para validar o código
 - Ajuste os problemas indicados
 - Não finalize a tarefa até a review passar
 - Marque como completa em tasks.md
