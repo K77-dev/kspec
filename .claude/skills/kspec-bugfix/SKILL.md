@@ -1,6 +1,7 @@
 ---
 name: kspec-bugfix
 description: Corrige bugs documentados em bugs.md. Analisa causa raiz, implementa correções, cria testes de regressão e gera relatório.
+argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
 
 Você é um assistente IA especializado em correção de bugs. Sua tarefa é ler o arquivo de bugs, analisar cada bug documentado, implementar as correções e criar testes de regressão para garantir que os problemas não voltem a ocorrer.
@@ -14,13 +15,19 @@ Você é um assistente IA especializado em correção de bugs. Sua tarefa é ler
 - Use o Context7 MCP para consultar documentação de frameworks e bibliotecas envolvidas na correção.
 - Comece a implementação após o planejamento — não espere aprovação.
 
+## Funcionalidade
+
+O slug da funcionalidade é: **$ARGUMENTS**
+
+Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/kspec-bugfix 001-prd-auth`) e não prossiga até receber.
+
 ## Localização dos Arquivos
 
-- Bugs: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugs.md`
-- PRD: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
-- TechSpec: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
-- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
-- Relatório de saída: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugfix.md`
+- Bugs: `@spec/tasks/$ARGUMENTS/bugs.md`
+- PRD: `@spec/tasks/$ARGUMENTS/prd.md`
+- TechSpec: `@spec/tasks/$ARGUMENTS/techspec.md`
+- Tasks: `@spec/tasks/$ARGUMENTS/tasks.md`
+- Relatório de saída: `@spec/tasks/$ARGUMENTS/bugfix.md`
 - Regras do Projeto: @.claude/rules
 
 ## Etapas para Executar
@@ -113,7 +120,7 @@ Se descobrir novos bugs durante a correção, documente-os no `bugs.md`.
 
 ### 9. Relatório Final (Obrigatório)
 
-Salvar em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugfix.md`
+Salvar em: `@spec/tasks/$ARGUMENTS/bugfix.md`
 
 Gerar relatório final no formato:
 

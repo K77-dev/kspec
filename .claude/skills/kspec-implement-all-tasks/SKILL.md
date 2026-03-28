@@ -1,6 +1,7 @@
 ---
 name: kspec-implement-all-tasks
 description: Executa todas as tasks pendentes sequencialmente. Para cada task, delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Respeita a ordem de dependências.
+argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
 
 Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as tasks pendentes de uma funcionalidade, delegando cada uma ao agent `kspec-task-runner` e validando com o agent `kspec-review-runner`.
@@ -14,10 +15,16 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 - Se a review reprovar, delegue novamente ao agent `kspec-task-runner` com os problemas encontrados. Se falhar 2 vezes na mesma task, pare e reporte ao usuário.
 - Mantenha apenas o resumo de cada task no contexto principal — os detalhes ficam nos agents.
 
+## Funcionalidade
+
+O slug da funcionalidade é: **$ARGUMENTS**
+
+Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/kspec-implement-all-tasks 001-prd-auth`) e não prossiga até receber.
+
 ## Localização dos Arquivos
 
-- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
-- Tasks individuais: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/[num]_task.md`
+- Tasks: `@spec/tasks/$ARGUMENTS/tasks.md`
+- Tasks individuais: `@spec/tasks/$ARGUMENTS/[num]_task.md`
 
 ## Fluxo de Execução
 

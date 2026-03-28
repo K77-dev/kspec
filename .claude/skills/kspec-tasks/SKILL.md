@@ -1,6 +1,7 @@
 ---
 name: kspec-tasks
 description: Cria lista de tarefas incrementais a partir de um PRD e Tech Spec. Mostra lista high-level para aprovação antes de gerar arquivos individuais.
+argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
 
 Você é um assistente especializado em gerenciamento de projetos de desenvolvimento de software. Sua tarefa é criar uma lista detalhada de tarefas baseada em um PRD e uma Tech Spec para uma funcionalidade específica.
@@ -14,12 +15,16 @@ Você é um assistente especializado em gerenciamento de projetos de desenvolvim
 - Referencie a techspec em vez de repetir detalhes de implementação — evita divergência entre documentos.
 - Siga rigorosamente os templates — tasks fora do padrão quebram a rastreabilidade PRD → Tech Spec → Tasks.
 
+## Funcionalidade
+
+O slug da funcionalidade é: **$ARGUMENTS**
+
+Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/kspec-tasks 001-prd-auth`) e não prossiga até receber.
+
 ## Pré-requisitos
 
-A funcionalidade em que você trabalhará é identificada por este slug:
-
-- PRD requerido: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
-- Tech Spec requerido: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
+- PRD requerido: `@spec/tasks/$ARGUMENTS/prd.md`
+- Tech Spec requerido: `@spec/tasks/$ARGUMENTS/techspec.md`
 
 ## Etapas do Processo
 
@@ -52,11 +57,11 @@ A funcionalidade em que você trabalhará é identificada por este slug:
 
 ### Localização dos Arquivos
 
-- Pasta da funcionalidade: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/`
+- Pasta da funcionalidade: `@spec/tasks/$ARGUMENTS/`
 - Template para a lista de tarefas: @.claude/templates/tasks-template.md
-- Lista de tarefas: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
+- Lista de tarefas: `@spec/tasks/$ARGUMENTS/tasks.md`
 - Template para cada tarefa individual: @.claude/templates/task-template.md
-- Tarefas individuais: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/[num]_task.md`
+- Tarefas individuais: `@spec/tasks/$ARGUMENTS/[num]_task.md`
 
 ### Formato do Resumo de Tarefas (tasks.md)
 

@@ -1,6 +1,7 @@
 ---
 name: kspec-implement-task
 description: Implementa a próxima tarefa de desenvolvimento disponível. Delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Uso manual, uma task por vez.
+argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
 
 Você é um orquestrador de tarefas. Sua responsabilidade é identificar a próxima task pendente, delegar a implementação ao agent `kspec-task-runner` e validar com o agent `kspec-review-runner`.
@@ -12,11 +13,17 @@ Você é um orquestrador de tarefas. Sua responsabilidade é identificar a próx
 - Se a review reprovar, delegue novamente ao agent `kspec-task-runner` com os problemas encontrados. Se falhar 2 vezes na mesma task, pare e reporte ao usuário.
 - Marque a tarefa como completa em tasks.md após a review passar.
 
+## Funcionalidade
+
+O slug da funcionalidade é: **$ARGUMENTS**
+
+Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/kspec-implement-task 001-prd-auth`) e não prossiga até receber.
+
 ## Localização dos Arquivos
 
-- PRD: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
-- Tech Spec: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
-- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
+- PRD: `@spec/tasks/$ARGUMENTS/prd.md`
+- Tech Spec: `@spec/tasks/$ARGUMENTS/techspec.md`
+- Tasks: `@spec/tasks/$ARGUMENTS/tasks.md`
 - Regras do Projeto: @.claude/rules
 
 ## Etapas para Executar

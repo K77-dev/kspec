@@ -30,7 +30,7 @@ Ao ser invocado com uma solicitação de funcionalidade, siga a sequência abaix
    - **Funcionalidade Principal**: Entradas/saídas de dados, ações.
    - **Escopo e Planejamento**: O que NÃO está incluído, dependências.
    - **Design e Experiência**: Diretrizes de UI/UX e acessibilidade.
-3. NÃO prossiga para o Passo 3 até receber as respostas de clarificação.
+3. NÃO prossiga para o Passo 2 até receber as respostas de clarificação.
 
 
 ### 2. Planejar (Obrigatório)
