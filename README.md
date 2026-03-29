@@ -133,8 +133,10 @@ Implementa a próxima tarefa disponível. Uso manual, uma task por vez.
   └→ identifica próxima task pendente
   └→ delega ao agent kspec-task-runner (contexto isolado)
   └→ delega ao agent kspec-review-runner (contexto isolado)
-  └→ se reprovado 2x na mesma task, para e reporta
+  └→ aprovado com ressalvas → reimplementa para corrigir (1 chance)
+  └→ reprovado → reimplementa (até 2x), depois para com lista de problemas
   └→ marca como completa em tasks.md
+  └→ apresenta resumo com status real da review e arquivo gerado
 ```
 
 #### /kspec-implement-all-tasks
@@ -150,9 +152,10 @@ Executa todas as tasks pendentes de forma automatizada (sequencial ou paralelo).
   └→ para cada task (ou lote de tasks em paralelo):
       └→ delega ao agent kspec-task-runner (contexto isolado)
       └→ delega ao agent kspec-review-runner (contexto isolado)
-      └→ se reprovado 2x na mesma task, para e reporta
+      └→ aprovado com ressalvas → reimplementa para corrigir (1 chance)
+      └→ reprovado → reimplementa (até 2x), depois para com lista de problemas
       └→ marca como completa em tasks.md
-  └→ gera relatório final com status de todas as tasks
+  └→ gera relatório final com status real de cada review e arquivos gerados
 ```
 
 ### QA (manual, por funcionalidade)

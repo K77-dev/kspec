@@ -10,7 +10,8 @@ Você é um orquestrador de tarefas. Sua responsabilidade é identificar a próx
 
 - Delegue a implementação ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
 - Após cada implementação, delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
-- Se a review reprovar, delegue novamente ao agent `kspec-task-runner` com os problemas encontrados. Se falhar 2 vezes na mesma task, pare e reporte ao usuário.
+- Se a review retornar **APROVADO COM RESSALVAS**, delegue novamente ao `kspec-task-runner` com as ressalvas para correção. Se após correção ainda tiver ressalvas ou reprovar, pare e reporte ao usuário.
+- Se a review **REPROVAR**, delegue novamente ao `kspec-task-runner` com os problemas. Se reprovar 2x, pare e reporte ao usuário com a lista de problemas não resolvidos.
 - Marque a tarefa como completa em tasks.md após a review passar.
 
 ## Funcionalidade
@@ -50,13 +51,21 @@ Delegar ao agent `kspec-review-runner` com:
 
 Avaliar resultado da review:
 - **APROVADO** → prosseguir para o passo 4
+- **APROVADO COM RESSALVAS** → delegar novamente ao `kspec-task-runner` com as ressalvas para correção
+  - Se após correção a review ainda tiver ressalvas ou reprovar → parar e reportar ao usuário
 - **REPROVADO** → delegar novamente ao `kspec-task-runner` com os problemas encontrados
-  - Se reprovar 2x → parar e reportar ao usuário
+  - Se reprovar 2x → parar e reportar ao usuário com:
+    - Lista dos problemas não resolvidos (do último review)
+    - Sugestão: corrigir manualmente e rodar `/kspec-implement-task` novamente
 
 ### 4. Finalizar (Obrigatório)
 
 - Marcar a task como completa em `tasks.md`
-- Apresentar resumo ao usuário (ID, nome, status da review)
+- Apresentar resumo ao usuário:
+  - ID e nome da task
+  - Status final da review (Aprovado / Aprovado com Ressalvas → Aprovado / Reprovado)
+  - Arquivo da review gerado (ex: `review_1.0.md`)
+  - Se houve ressalvas: resumo do que foi encontrado e se foi corrigido
 
 ## Checklist de Qualidade
 
