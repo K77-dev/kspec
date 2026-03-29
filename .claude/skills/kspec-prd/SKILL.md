@@ -52,11 +52,11 @@ Crie um plano de desenvolvimento do PRD incluindo:
 Antes de salvar o arquivo, crie a branch:
 
 1. Verifique a branch atual com `git branch --show-current`. Se for `main` ou `master`, **alerte o usuário** que ele está na branch principal e sugira trocar para uma branch de desenvolvimento (ex: `develop`) antes de continuar. Aguarde confirmação antes de prosseguir.
-2. Liste as branches existentes com `git branch -a` e identifique o maior número sequencial no padrão `NNN-*`
-3. Incremente o número (se não houver nenhuma, comece em `001`)
+2. Liste os diretórios existentes em `spec/tasks/` e identifique o maior número sequencial no padrão `NNN-*`
+3. Incremente o número (se não houver nenhum, comece em `001`)
 4. Crie a branch: `git checkout -b [NNN]-prd-[nome-funcionalidade]` (nome em kebab-case)
 
-Exemplo: se a última branch for `002-prd-sistema-avaliacoes`, a próxima será `003-prd-[nome-funcionalidade]`.
+Exemplo: se o último diretório for `002-prd-sistema-avaliacoes`, a próxima será `003-prd-[nome-funcionalidade]`.
 
 Depois, salve o arquivo:
 

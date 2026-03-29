@@ -61,11 +61,11 @@ Testes de Regressão Planejados:
 
 Antes de implementar, crie uma branch para o bugfix:
 
-1. Liste as branches existentes com `git branch -a` e identifique o maior número sequencial no padrão `NNN-*`
-2. Incremente o número (se não houver nenhuma, comece em `001`)
+1. Liste os diretórios existentes em `spec/tasks/` e identifique o maior número sequencial no padrão `NNN-*`
+2. Incremente o número (se não houver nenhum, comece em `001`)
 3. Crie a branch: `git checkout -b [NNN]-bugfix-[nome-funcionalidade]` (nome em kebab-case)
 
-Exemplo: se a última branch for `003-prd-sistema-avaliacoes`, a próxima será `004-bugfix-[nome-funcionalidade]`.
+Exemplo: se o último diretório for `003-prd-sistema-avaliacoes`, o próximo será `004-bugfix-[nome-funcionalidade]`.
 
 ### 4. Implementação das Correções (Obrigatório)
 

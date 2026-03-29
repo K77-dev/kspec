@@ -37,6 +37,8 @@ Analise considerando:
 - Como a tarefa se encaixa no contexto do projeto
 - Alinhamento com regras e padrões do projeto
 - Possíveis soluções ou abordagens
+- **Edge cases e cenários de erro**: entradas inválidas, estados vazios, limites numéricos, falhas de rede, concorrência, dados ausentes ou malformados
+- **Pré-condições e pós-condições**: o que deve ser verdade antes e depois da execução
 
 ### 3. Resumo da Tarefa
 
@@ -68,6 +70,21 @@ Após o resumo e plano, comece a implementar:
 - Seguir padrões estabelecidos do projeto
 - Garantir que todos os requisitos sejam atendidos
 
-### 6. Verificação
+### 6. Escrever Testes (Obrigatório)
+
+Toda task deve incluir testes que validem o código implementado. Escrever testes para:
+
+- **Caminho feliz**: o comportamento esperado funciona corretamente
+- **Edge cases**: os cenários identificados no passo 2 (entradas inválidas, estados vazios, limites, dados malformados)
+- **Cenários de erro**: falhas esperadas retornam erros adequados (não silenciam)
+
+Os testes devem ser significativos — testar comportamento real, não apenas que o código executa sem erro.
+
+### 7. Verificação
 
 Executar os checks obrigatórios conforme definido em "Comandos do projeto" no CLAUDE.md.
+
+Confirmar que:
+- Todos os testes passam (incluindo os novos)
+- Os testes novos cobrem os cenários identificados no passo 2
+- Nenhum teste existente quebrou

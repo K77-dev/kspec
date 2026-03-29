@@ -85,6 +85,11 @@ Verificar:
 - [ ] Novos testes foram adicionados para o código novo
 - [ ] Coverage não diminuiu
 - [ ] Testes são significativos (não apenas para cobertura)
+- [ ] Testes cobrem edge cases (entradas inválidas, estados vazios, limites, dados malformados)
+- [ ] Testes cobrem cenários de erro (falhas esperadas retornam erros adequados)
+- [ ] Testes verificam comportamento real, não apenas que o código executa sem erro
+
+Se os testes forem insuficientes (cobrem apenas o caminho feliz), isso é motivo de **REPROVAÇÃO**.
 
 ### 7. Análise de Qualidade de Código (Obrigatório)
 
@@ -158,7 +163,7 @@ Gerar relatório final no formato:
 
 **APROVADO COM RESSALVAS**: Critérios principais atendidos, mas há melhorias recomendadas não bloqueantes.
 
-**REPROVADO**: Testes falhando, violação grave de rules, não aderência à TechSpec, ou problemas de segurança.
+**REPROVADO**: Testes falhando, testes insuficientes (apenas caminho feliz, sem edge cases), violação grave de rules, não aderência à TechSpec, ou problemas de segurança.
 
 ## Checklist de Qualidade
 
