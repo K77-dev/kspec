@@ -2,6 +2,10 @@
 
 <critical>Ler os arquivos de prd.md e techspec.md desta pasta, se você não ler esses arquivos sua tarefa será invalidada</critical>
 
+## Dependências
+
+- Nenhuma | Lista de tasks das quais esta depende (ex: 1.0, 2.0)
+
 ## Visão Geral
 
 [Breve descrição da tarefa]

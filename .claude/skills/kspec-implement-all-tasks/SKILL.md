@@ -1,6 +1,6 @@
 ---
 name: kspec-implement-all-tasks
-description: Executa todas as tasks pendentes sequencialmente. Para cada task, delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Respeita a ordem de dependências.
+description: Executa todas as tasks pendentes (sequencial ou paralelo). Para cada task, delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Respeita dependências e oferece paralelismo quando possível.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
 
@@ -32,9 +32,17 @@ Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/ksp
 
 - Ler `tasks.md`
 - Listar todas as tasks não marcadas como completas
-- Apresentar ao usuário a lista de tasks que serão executadas e aguardar confirmação
+- Analisar dependências de cada task (formato `depende: X.0, Y.0`)
+- Identificar tasks que podem ser executadas em paralelo (dependências já completas e sem conflito entre si)
+- Se houver oportunidade de paralelismo, perguntar ao usuário usando AskUserQuestion:
+  - "As seguintes tasks podem ser executadas em paralelo: [lista]. Deseja execução paralela ou sequencial?"
+  - Se o usuário escolher sequencial, executar na ordem do arquivo
+  - Se o usuário escolher paralelo, agrupar tasks independentes em lotes
+- Apresentar ao usuário a lista de tasks (com ordem/lotes) e aguardar confirmação
 
-### 2. Para Cada Task Pendente (Sequencial)
+### 2. Executar Tasks
+
+#### Modo Sequencial (padrão)
 
 ```
 Para cada task na ordem do arquivo:
@@ -51,6 +59,25 @@ Para cada task na ordem do arquivo:
      - REPROVADO → delegar novamente ao implement com os problemas
        - Se reprovar 2x → parar e reportar ao usuário
   6. Registrar resumo da task (ID, status, tempo)
+```
+
+#### Modo Paralelo (quando autorizado pelo usuário)
+
+```
+Agrupar tasks pendentes em lotes por dependência:
+  Lote 1: tasks sem dependências pendentes → executar em paralelo
+  Lote 2: tasks que dependem do Lote 1 → aguardar Lote 1, depois executar em paralelo
+  ...
+
+Para cada lote:
+  1. Delegar TODAS as tasks do lote ao agent `kspec-task-runner` em paralelo
+  2. Aguardar todos os resultados
+  3. Para cada task concluída, delegar ao agent `kspec-review-runner`
+  4. Avaliar resultados:
+     - APROVADO → marcar task como completa em tasks.md
+     - REPROVADO → delegar novamente (sequencial) com os problemas
+       - Se reprovar 2x → parar e reportar ao usuário
+  5. Só avançar para o próximo lote quando TODAS as tasks do lote atual estiverem completas
 ```
 
 ### 3. Relatório Final

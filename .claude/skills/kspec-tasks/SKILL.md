@@ -49,6 +49,7 @@ Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/ksp
 
 - Agrupar tarefas por entregável lógico
 - Ordenar logicamente, com dependências antes de dependentes (ex: backend antes do frontend, backend e frontend antes dos testes E2E)
+- Declarar dependências explícitas para cada task usando o formato `(depende: X.0, Y.0)` no tasks.md e na seção "Dependências" de cada task individual — tasks sem dependência entre si podem ser executadas em paralelo
 - Tornar cada tarefa principal independentemente completável
 - Definir escopo e entregáveis claros para cada tarefa
 - Incluir testes como subtarefas dentro de cada tarefa principal

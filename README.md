@@ -139,13 +139,15 @@ Implementa a próxima tarefa disponível. Uso manual, uma task por vez.
 
 #### /kspec-implement-all-tasks
 
-Executa todas as tasks pendentes sequencialmente de forma automatizada.
+Executa todas as tasks pendentes de forma automatizada (sequencial ou paralelo).
 
 ```
 /kspec-implement-all-tasks
   └→ lê tasks.md e identifica tasks pendentes
+  └→ analisa dependências e identifica oportunidades de paralelismo
+  └→ se houver paralelismo possível, pergunta ao usuário: sequencial ou paralelo?
   └→ apresenta lista ao usuário para confirmação
-  └→ para cada task (sequencial, respeitando dependências):
+  └→ para cada task (ou lote de tasks em paralelo):
       └→ delega ao agent kspec-task-runner (contexto isolado)
       └→ delega ao agent kspec-review-runner (contexto isolado)
       └→ se reprovado 2x na mesma task, para e reporta
