@@ -25,11 +25,11 @@ Você é um assistente IA especializado em Quality Assurance. Sua tarefa é vali
 
 ## Localização dos Arquivos
 
-- PRD: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
-- TechSpec: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
-- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
-- Bugs: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/bugs.md`
-- Relatório de saída: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/qa.md`
+- PRD: `@spec/tasks/$ARGUMENTS/prd.md`
+- TechSpec: `@spec/tasks/$ARGUMENTS/techspec.md`
+- Tasks: `@spec/tasks/$ARGUMENTS/tasks.md`
+- Bugs: `@spec/tasks/$ARGUMENTS/bugs.md`
+- Relatório de saída: `@spec/tasks/$ARGUMENTS/qa.md`
 - Regras do Projeto: @.claude/rules
 - Ambiente: localhost
 
@@ -95,7 +95,7 @@ Use `browser_snapshot` para verificar labels e estrutura semântica.
 
 ### 6. Relatório de QA (Obrigatório)
 
-Salvar em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/qa.md`
+Salvar em: `@spec/tasks/$ARGUMENTS/qa.md`
 
 Gerar relatório final no formato:
 

@@ -15,9 +15,9 @@ Você é um assistente IA especializado em Code Review. Sua tarefa é analisar o
 
 ## Localização dos Arquivos
 
-- PRD: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
-- TechSpec: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/techspec.md`
-- Tasks: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/tasks.md`
+- PRD: `@spec/tasks/$ARGUMENTS/prd.md`
+- TechSpec: `@spec/tasks/$ARGUMENTS/techspec.md`
+- Tasks: `@spec/tasks/$ARGUMENTS/tasks.md`
 - Regras do Projeto: @.claude/rules
 
 ## Etapas do Processo
@@ -106,7 +106,7 @@ Se os testes forem insuficientes (cobrem apenas o caminho feliz), isso é motivo
 
 ### 8. Relatório de Code Review (Obrigatório)
 
-Salvar em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/review_[num].md` (onde `[num]` é o número da task, ex: `review_1.0.md`, `review_2.0.md`)
+Salvar em: `@spec/tasks/$ARGUMENTS/review_[num].md` (onde `[num]` é o número da task, ex: `review_1.0.md`, `review_2.0.md`)
 
 Gerar relatório final no formato:
 
