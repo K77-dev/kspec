@@ -74,7 +74,7 @@ interface NomeServico {
 
 [Se necessário, descreva testes E2E:
 
-- Teste o frontend junto com o backend usando o Playwright]
+- Teste o frontend junto com o backend usando o TestSprite]
 
 ## Sequenciamento de Desenvolvimento
 

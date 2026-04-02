@@ -46,7 +46,7 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 - Backend: Hono, Express, Fastify, NestJS, etc.
 - UI: shadcn/ui, Radix, Material UI, Chakra, etc.
 - CSS: Tailwind, CSS Modules, styled-components, etc.
-- Testes: Vitest, Jest, Playwright, Cypress, etc.
+- Testes: Vitest, Jest, TestSprite, Cypress, etc.
 - Validação: Zod, Yup, Joi, etc.
 - ORM: Prisma, Drizzle, TypeORM, etc.
 - State: TanStack Query, Redux, Zustand, etc.

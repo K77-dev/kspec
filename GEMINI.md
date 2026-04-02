@@ -30,8 +30,7 @@ bun run typecheck        # Typecheck de todos os workspaces
 bun run test             # Testes unitários (vitest) de todos os workspaces
 bun run test:watch       # Testes em modo watch
 bun run test:coverage    # Testes com cobertura
-bun run test:e2e         # Testes E2E (Playwright)
-bun run test:e2e:ui      # Testes E2E com UI do Playwright
+bun run test:e2e         # Testes E2E (TestSprite)
 
 # Frontend (dentro de frontend/)
 cd frontend
@@ -60,7 +59,7 @@ bun run test             # Vitest
 | Componentes React | React 19, hooks                     | `vercel-react-best-practices`, `vercel-composition-patterns`          |
 | UI / shadcn       | shadcn/ui (base-nova), Tailwind v4  | `shadcn`, `frontend-design`                                           |
 | Backend           | Hono, Bun runtime                   | `hono`                                                                |
-| Testes            | Vitest (unit), Playwright (e2e)     | `vitest`, `a11y-testing`                                              |
+| Testes            | Vitest (unit), TestSprite (e2e)     | `vitest`, `a11y-testing`                                              |
 | Design / UX       | Interface, acessibilidade           | `ui-ux-pro-max`, `web-design-guidelines`                              |
 | PRD               | Requisitos de produto               | skill `kspec-prd`                                                     |
 | Tech Spec         | Especificação técnica               | skill `kspec-techspec`                                                |
@@ -80,51 +79,50 @@ bun run test             # Vitest
 ├── tsconfig.base.json     # Config TS base compartilhada
 ├── tsconfig.json          # Config TS da raiz
 ├── vitest.config.ts       # Config vitest raiz (projects: frontend, backend)
-├── playwright.config.ts   # Config Playwright (e2e)
 ├── e2e/
 │   └── app.spec.ts        # Testes E2E
 ├── frontend/
 │   ├── src/
-│   │   ├── main.tsx              # Entry point (renderiza App)
-│   │   ├── App.tsx               # Componente raiz, define rotas e providers globais
-│   │   ├── index.css             # CSS global (Tailwind v4)
-│   │   ├── components/           # Componentes reutilizáveis da aplicação
-│   │   │   ├── ui/               # Componentes shadcn (base-nova) — não editar manualmente
-│   │   │   └── weather/          # Componentes de domínio (ex: weather-card.tsx, forecast-list.tsx)
-│   │   ├── pages/                # Componentes de página (uma por rota)
-│   │   │   └── home.tsx          # Página inicial
-│   │   ├── hooks/                # Custom hooks reutilizáveis
-│   │   │   └── use-weather.ts    # Hook para buscar dados de clima (fetch + estado)
-│   │   ├── services/             # Funções de acesso a APIs externas (fetch wrappers)
-│   │   │   └── weather-api.ts    # Client HTTP para /api/weather
-│   │   ├── types/                # Tipos e interfaces compartilhados
-│   │   │   └── weather.ts        # Tipos de domínio (WeatherData, ForecastDay, etc.)
-│   │   ├── lib/                  # Utilitários genéricos (utils.ts)
-│   │   ├── assets/               # Assets estáticos (imagens, SVGs)
-│   │   └── __tests__/            # Testes unitários do frontend
-│   │       ├── components/       # Testes de componentes (render + interação)
-│   │       ├── hooks/            # Testes de custom hooks
-│   │       └── services/         # Testes de services (mocks de fetch)
-│   ├── components.json           # Config shadcn (style: base-nova, icons: lucide)
-│   ├── vite.config.ts            # Vite + React + @tailwindcss/vite
-│   └── eslint.config.js          # ESLint flat config
+│   │   ├── main.tsx                          # Entry point (renderiza App)
+│   │   ├── App.tsx                           # Componente raiz, define rotas e providers globais
+│   │   ├── index.css                         # CSS global (Tailwind v4)
+│   │   ├── components/                       # Componentes reutilizáveis da aplicação
+│   │   │   ├── ui/                           # Componentes shadcn (base-nova) — não editar manualmente
+│   │   │   └── nome-funcionalidade/          # Componentes de domínio (ex: weather-card.tsx, forecast-list.tsx)
+│   │   ├── pages/                            # Componentes de página (uma por rota)
+│   │   │   └── home.tsx                      # Página inicial
+│   │   ├── hooks/                            # Custom hooks reutilizáveis
+│   │   │   └── use-weather.ts                # Hook para buscar dados de clima (fetch + estado)
+│   │   ├── services/                         # Funções de acesso a APIs externas (fetch wrappers)
+│   │   │   └── nome-funcionalidade-api.ts    # Client HTTP para /api/weather
+│   │   ├── types/                            # Tipos e interfaces compartilhados
+│   │   │   └── nome-funcionalidade.ts        # Tipos de domínio (WeatherData, ForecastDay, etc.)
+│   │   ├── lib/                              # Utilitários genéricos (utils.ts)
+│   │   ├── assets/                           # Assets estáticos (imagens, SVGs)
+│   │   └── __tests__/                        # Testes unitários do frontend
+│   │       ├── components/                   # Testes de componentes (render + interação)
+│   │       ├── hooks/                        # Testes de custom hooks
+│   │       └── services/                     # Testes de services (mocks de fetch)
+│   ├── components.json                       # Config shadcn (style: base-nova, icons: lucide)
+│   ├── vite.config.ts                        # Vite + React + @tailwindcss/vite
+│   └── eslint.config.js                      # ESLint flat config
 └── backend/
     ├── src/
-    │   ├── index.ts              # Entry point: cria app Hono, registra middleware global (CORS) e exporta server
-    │   ├── routes/               # Definição de rotas e controllers (camada HTTP)
-    │   │   ├── health.ts         # GET /health
-    │   │   └── weather.ts        # GET /api/weather (validação Zod, chama service)
-    │   ├── services/             # Regras de negócio e orquestração (camada de aplicação)
-    │   │   └── weather.ts        # Orquestra geocoding + forecast, retorna dados formatados
-    │   ├── data/                 # Acesso a dados e integrações externas (camada de dados)
-    │   │   ├── geocoding.ts      # Client para Geocoding API (Open-Meteo)
-    │   │   └── forecast.ts       # Client para Forecast API (Open-Meteo)
-    │   └── __tests__/            # Testes unitários do backend
-    │       ├── routes/           # Testes de rotas (integração HTTP)
-    │       ├── services/         # Testes de services (lógica de negócio)
-    │       └── data/             # Testes de clients de dados
-    ├── vitest.config.ts          # Config vitest backend
-    └── tsconfig.json             # TS config (types: bun)
+    │   ├── index.ts                          # Entry point: cria app Hono, registra middleware global (CORS) e exporta server
+    │   ├── routes/                           # Definição de rotas e controllers (camada HTTP)
+    │   │   ├── health.ts                     # GET /health
+    │   │   └── nome-funcionalidade.ts        # GET /api/weather (validação Zod, chama service)
+    │   ├── services/                         # Regras de negócio e orquestração (camada de aplicação)
+    │   │   └── nome-funcionalidade.ts        # Orquestra geocoding + forecast, retorna dados formatados
+    │   ├── data/                             # Acesso a dados e integrações externas (camada de dados)
+    │   │   ├── geocoding.ts                  # Client para Geocoding API (Open-Meteo)
+    │   │   └── forecast.ts                   # Client para Forecast API (Open-Meteo)
+    │   └── __tests__/                        # Testes unitários do backend
+    │       ├── routes/                       # Testes de rotas (integração HTTP)
+    │       ├── services/                     # Testes de services (lógica de negócio)
+    │       └── data/                         # Testes de clients de dados
+    ├── vitest.config.ts                      # Config vitest backend
+    └── tsconfig.json                         # TS config (types: bun)
 ```
 
 ### React
@@ -135,7 +133,7 @@ bun run test             # Vitest
 
 ### Testes
 
-- **Unit**: Vitest | **E2E**: Playwright
+- **Unit**: Vitest | **E2E**: TestSprite
 
 @./.gemini/rules/tests.md
 

@@ -54,7 +54,7 @@ Guia para agentes de IA ao trabalhar com o código deste repositório.
 
 ### Testes
 
-[Resumo breve com ponteiro para rule — ex: "Unit: Vitest | E2E: Playwright — detalhes em `.gemini/rules/tests.md`"]
+[Resumo breve com ponteiro para rule — ex: "Unit: Vitest | E2E: TestSprite — detalhes em `.gemini/rules/tests.md`"]
 
 ### Git
 

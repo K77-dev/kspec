@@ -89,15 +89,14 @@ Tipos de testes a considerar:
 | Teste de integração | Bug na comunicação entre módulos (ex: route + service) |
 | Teste E2E | Bug visível na interface do usuário ou no fluxo completo |
 
-### 6. Validação com Playwright MCP (Obrigatório para bugs visuais/frontend)
+### 6. Validação com TestSprite MCP (Obrigatório para bugs visuais/frontend)
 
 Para bugs que afetam a interface do usuário:
 
-1. Usar `browser_navigate` para acessar a aplicação
-2. Usar `browser_snapshot` para verificar o estado da página
-3. Reproduzir o fluxo que causava o bug
-4. Usar `browser_take_screenshot` para capturar evidência da correção
-5. Verificar que o comportamento está correto
+1. Usar `testsprite_generate_frontend_test_plan` para gerar plano de teste focado no bug
+2. Usar `testsprite_generate_code_and_execute` para executar o teste de validação
+3. Verificar os resultados com `testsprite_open_test_result_dashboard`
+4. Confirmar que o comportamento está correto
 
 ### 7. Verificação (Obrigatório)
 

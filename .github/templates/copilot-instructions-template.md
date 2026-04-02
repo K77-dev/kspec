@@ -54,7 +54,7 @@ Guia para o Copilot ao trabalhar com o código deste repositório.
 
 ### Testes
 
-[Resumo breve com ponteiro para instruction — ex: "Unit: Vitest | E2E: Playwright — detalhes em `.github/instructions/tests.instructions.md`"]
+[Resumo breve com ponteiro para instruction — ex: "Unit: Vitest | E2E: TestSprite — detalhes em `.github/instructions/tests.instructions.md`"]
 
 ### Git
 

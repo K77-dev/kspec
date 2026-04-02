@@ -1,6 +1,6 @@
 ---
 name: kspec-qa
-description: Executa Quality Assurance da funcionalidade completa. Testa fluxos E2E com Playwright MCP, verifica acessibilidade (WCAG 2.2), documenta bugs em bugs.md e gera relatório qa.md. Execute após todas as tasks estarem implementadas e revisadas.
+description: Executa Quality Assurance da funcionalidade completa. Testa fluxos E2E com TestSprite MCP, verifica acessibilidade (WCAG 2.2), documenta bugs em bugs.md e gera relatório qa.md. Execute após todas as tasks estarem implementadas e revisadas.
 ---
 
 ## Funcionalidade

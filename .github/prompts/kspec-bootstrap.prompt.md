@@ -45,7 +45,7 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 - Backend: Hono, Express, Fastify, NestJS, etc.
 - UI: shadcn/ui, Radix, Material UI, Chakra, etc.
 - CSS: Tailwind, CSS Modules, styled-components, etc.
-- Testes: Vitest, Jest, Playwright, Cypress, etc.
+- Testes: Vitest, Jest, TestSprite, Cypress, etc.
 
 **Estrutura** — mapear diretórios e entry points:
 - Monorepo (workspaces) vs single-package

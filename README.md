@@ -18,42 +18,28 @@ Este repositório resolve isso fornecendo:
 |---|---|
 | Frontend | React 19, Vite 8, Tailwind v4, shadcn/ui (base-nova) |
 | Backend | Hono, Bun runtime |
-| Testes | Vitest (unit), Playwright (E2E) |
+| Testes | Vitest (unit), TestSprite (E2E) |
 | Package Manager | bun |
 
 ## Estrutura
 
 ```
 .claude/
-├── skills/            # Skills invocáveis (/skill-name) — rodam no contexto principal
-│   ├── kspec-prd/SKILL.md
-│   ├── kspec-techspec/SKILL.md
-│   ├── kspec-tasks/SKILL.md
-│   ├── kspec-implement-task/SKILL.md
-│   ├── kspec-implement-all-tasks/SKILL.md
-│   ├── kspec-qa/SKILL.md
-│   ├── kspec-bugfix/SKILL.md
-│   └── kspec-bootstrap/SKILL.md
-├── agents/            # Agents — rodam em contexto isolado
-│   ├── kspec-task-runner/AGENT.md
-│   ├── kspec-review-runner/AGENT.md
-│   └── kspec-qa-runner/AGENT.md
-├── rules/             # Padrões de código por domínio
-│   ├── code-standards.md
-│   ├── http.md
-│   ├── logging.md
-│   ├── typescript.md
-│   ├── react.md
-│   └── tests.md
-├── templates/         # Templates usados pelas skills
-│   ├── prd-template.md
-│   ├── techspec-template.md
-│   ├── tasks-template.md
-│   ├── task-template.md
-│   └── claude-md-template.md
+├── skills/         # Skills invocáveis (cada uma em sua pasta)
+├── agents/         # Agents (executam tarefas isoladas)
+├── rules/          # Padrões de código por domínio
+├── templates/      # Templates usados pelas skills
+.gemini/
+├── skills/         # Skills Gemini
+├── rules/          # Regras Gemini
+.github/
+├── workflows/      # GitHub Actions
+├── templates/      # Templates de PR, issues, specs
+├── instructions/   # Instruções de domínio para agentes
 spec/
-└── tasks/             # Artefatos gerados (PRDs, techspecs, tasks, reviews)
-CLAUDE.md              # Guia principal do projeto
+└── tasks/          # Artefatos gerados (PRDs, techspecs, tasks, reviews)
+CLAUDE.md           # Guia principal do projeto
+README.md           # Este arquivo
 ```
 
 ## Skills, Agents e Rules
@@ -167,7 +153,7 @@ Executa Quality Assurance da funcionalidade completa. Invocação manual — o d
 ```
 /kspec-qa
   └→ delega ao agent kspec-qa-runner (contexto isolado)
-  └→ testa fluxos E2E com Playwright MCP
+  └→ testa fluxos E2E com TestSprite MCP
   └→ verifica acessibilidade (WCAG 2.2)
   └→ gera qa.md + bugs.md
   └→ APROVADO → funcionalidade pronta

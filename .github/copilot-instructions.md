@@ -22,7 +22,7 @@ bun run build            # Build de todos os workspaces
 bun run typecheck        # Typecheck de todos os workspaces
 bun run lint             # ESLint (rodar dentro de frontend/)
 bun run test             # Testes unitários (Vitest)
-bun run test:e2e         # Testes E2E (Playwright)
+bun run test:e2e         # Testes E2E (TestSprite)
 bun run test:coverage    # Testes com cobertura
 ```
 
@@ -34,7 +34,7 @@ Frontend: `localhost:5173` | Backend: `localhost:3000`
 |---|---|
 | Frontend | React 19, Vite 8, Tailwind v4, shadcn/ui (base-nova) |
 | Backend | Hono, Bun runtime |
-| Testes | Vitest (unit), Playwright (E2E) |
+| Testes | Vitest (unit), TestSprite (E2E) |
 
 ## Estrutura
 
@@ -46,7 +46,6 @@ Frontend: `localhost:5173` | Backend: `localhost:3000`
 ├── tsconfig.base.json     # Config TS base compartilhada
 ├── tsconfig.json          # Config TS da raiz
 ├── vitest.config.ts       # Config vitest raiz (projects: frontend, backend)
-├── playwright.config.ts   # Config Playwright (e2e)
 ├── e2e/
 │   └── app.spec.ts        # Testes E2E
 ├── frontend/
