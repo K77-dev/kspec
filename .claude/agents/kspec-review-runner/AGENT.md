@@ -22,6 +22,12 @@ Você é um assistente IA especializado em Code Review. Sua tarefa é analisar o
 
 ## Etapas do Processo
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @.claude/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
 ### 1. Análise de Documentação (Obrigatório)
 
 - Ler a TechSpec para entender as decisões arquiteturais esperadas

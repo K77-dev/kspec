@@ -22,6 +22,12 @@ Você é um assistente IA responsável por implementar tarefas de desenvolviment
 
 ## Etapas para Executar
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @.claude/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
 ### 1. Configuração Pré-Tarefa
 
 - Ler a definição da tarefa

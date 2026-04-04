@@ -22,6 +22,12 @@ Você é um especialista em criar PRDs focado em produzir documentos de requisit
 
 Ao ser invocado com uma solicitação de funcionalidade, siga a sequência abaixo.
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @.claude/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
 ### 1. Esclarecer Requisitos (Obrigatório)
 1. Faça perguntas de clarificação ao usuário usando a ferramenta AskUserQuestion antes de gerar qualquer conteúdo.
 2. Cubra todas as áreas do checklist de clarificação:

@@ -33,6 +33,12 @@ Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/ksp
 
 ## Fluxo de Trabalho
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @.claude/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
 ### 1. Analisar PRD (Obrigatório)
 
 - Ler o PRD completo antes de qualquer outra ação

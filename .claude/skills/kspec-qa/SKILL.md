@@ -10,6 +10,12 @@ O slug da funcionalidade é: **$ARGUMENTS**
 
 Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/kspec-qa 001-prd-auth`) e não prossiga até receber.
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @.claude/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
 Delegue a execução ao agent `kspec-qa-runner` para rodar em contexto isolado — o QA produz output verboso que não deve consumir o contexto principal.
 
 Passe ao agent:
