@@ -6,6 +6,11 @@
 
 - Nenhuma | Lista de tasks das quais esta depende (ex: 1.0, 2.0)
 
+## Estimativa
+
+- **Tamanho**: [P | M | G | GG]
+- **Horas estimadas**: [faixa em horas, ex: 2-4h]
+
 ## Visão Geral
 
 [Breve descrição da tarefa]
