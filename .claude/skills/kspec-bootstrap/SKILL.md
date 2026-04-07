@@ -99,24 +99,63 @@ Sempre gerar `CLAUDE.bootstrap.md` na raiz — nunca sobrescrever um `CLAUDE.md`
 
 Seguir a estrutura de seções do template @.claude/templates/claude-md-template.md, adaptando **todo o conteúdo** ao projeto detectado.
 
-### 5. Gerar Rules (Obrigatório)
+### 5. Selecionar Rules do Enterprise (Obrigatório)
 
-Sobrescrever as rules existentes em `.claude/rules/` com conteúdo adaptado à stack real do projeto:
+As rules de stack estão no repositório enterprise (não no core kspec). O bootstrap seleciona as rules relevantes baseado na stack detectada no passo 2.
 
-| Condição | Rule gerada |
+**5.1. Listar rules disponíveis no enterprise cache:**
+
+```bash
+ls .claude/.enterprise-skills-cache/.agents/rules/
+```
+
+O enterprise repo organiza rules por categoria:
+```
+rules/
+├── languages/        # typescript.md, java.md, python.md
+├── backend/          # hono.md, express.md, spring-boot.md
+├── frontend/         # react.md, angular.md, vue.md
+├── styling/          # tailwind.md, css-modules.md
+├── testing/          # vitest.md, jest.md, junit.md
+├── package-managers/ # bun.md, npm.md, maven.md
+└── validation/       # zod.md, joi.md
+```
+
+**5.2. Selecionar rules baseado na stack detectada:**
+
+| Condição | Rule selecionada do enterprise |
 |---|---|
-| Sempre | `code-standards.md` (nomenclatura, formatação) |
-| TypeScript detectado | `typescript.md` (tipagem, imports, async/await — com o package manager correto) |
-| Framework HTTP detectado | `http.md` (adaptado ao framework real: Hono, Express, Fastify) |
-| React/Vue/Svelte detectado | `[framework].md` (padrões de componentes) |
-| Vitest/Jest detectado | `tests.md` (adaptado ao test runner real) |
-| Logging configurado | `logging.md` (níveis, estrutura) |
+| TypeScript detectado | `languages/typescript.md` |
+| Framework HTTP detectado | `backend/{framework}.md` |
+| React/Vue/Angular detectado | `frontend/{framework}.md` |
+| Tailwind/CSS Modules detectado | `styling/{framework}.md` |
+| Vitest/Jest detectado | `testing/{test-runner}.md` |
+| bun/npm/pnpm detectado | `package-managers/{pm}.md` |
+| Zod/Joi/Yup detectado | `validation/{lib}.md` |
 
-Remover rules que não se aplicam (ex: remover `react.md` se o projeto não usa React).
+**5.3. Copiar rules selecionadas para o projeto:**
 
-Cada rule deve:
-- Usar `paths:` no frontmatter quando aplicável
-- Conter exemplos com a stack real do projeto (não genéricos)
+```bash
+cp .claude/.enterprise-skills-cache/.agents/rules/{category}/{rule}.md .agents/rules/{rule}.md
+```
+
+**5.4. Rules do core kspec (sempre presentes):**
+
+| Rule | Descrição |
+|---|---|
+| `code-standards.md` | Nomenclatura, formatação, SOLID — universal |
+| `database.md` | Padrões genéricos de ORM/DB |
+| `logging.md` | Níveis e estrutura de logging |
+
+Não remover estas rules — elas vêm com o core kspec e são technology-agnostic.
+
+**5.5. Remover rules que não se aplicam:**
+
+Se existirem rules de stack em `.agents/rules/` que não correspondem a nenhuma tecnologia detectada, removê-las (ex: `react.md` num projeto Angular).
+
+**5.6. Ajustar `paths:` no frontmatter:**
+
+Após copiar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`).
 
 ### 6. Gerar CI/CD (Opcional)
 

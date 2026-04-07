@@ -1,6 +1,6 @@
 ---
 name: kspec-apidoc
-description: Gera documentação OpenAPI 3.1 a partir da TechSpec e do código-fonte. Lê endpoints Hono, schemas Zod e produz spec/api/openapi.yaml.
+description: Gera documentação OpenAPI 3.1 a partir da TechSpec e do código-fonte. Analisa rotas e schemas do projeto e produz spec/api/openapi.yaml.
 ---
 
 Gera documentação de API no formato OpenAPI 3.1 a partir da TechSpec e do código-fonte do projeto.
@@ -11,9 +11,9 @@ Gera documentação de API no formato OpenAPI 3.1 a partir da TechSpec e do cód
 
 ## Localização dos Arquivos
 
-- TechSpec: @./.gemini/templates/ e `spec/tasks/<SLUG>/techspec.md`
-- Controllers: `backend/src/controllers/`
-- Schemas Zod: `backend/src/schemas/`
+- TechSpec: @spec/tasks/<SLUG>/techspec.md
+- Controllers/Routes: diretório de rotas HTTP do projeto (consultar GEMINI.md para localização)
+- Schemas de validação: diretório de schemas do projeto (consultar GEMINI.md para localização)
 - Output: `spec/api/openapi.yaml`
 
 ## Fluxo de Trabalho
@@ -32,8 +32,8 @@ bloquear a execução.
 
 ### 2. Análise do Código-Fonte (Obrigatório)
 
-- Ler os controllers em `backend/src/controllers/` para identificar rotas implementadas
-- Ler os schemas Zod em `backend/src/schemas/` para extrair validações
+- Identificar e ler os controllers/routes do projeto para identificar rotas implementadas
+- Identificar e ler os schemas de validação do projeto para extrair validações
 - Mapear rotas reais com os endpoints da TechSpec
 - Identificar discrepâncias entre spec e implementação
 
@@ -49,7 +49,7 @@ Gerar `spec/api/openapi.yaml` no formato OpenAPI 3.1 com:
   - Request body schema (quando aplicável)
   - Response schemas (200, 400, 404, 500)
   - Tags para agrupamento por domínio
-- `components/schemas`: schemas derivados dos tipos TypeScript e Zod
+- `components/schemas`: schemas derivados dos tipos e validações do projeto
 
 Seguir as convenções:
 - Nomes de schemas em PascalCase
@@ -70,7 +70,7 @@ Seguir as convenções:
 
 - [ ] TechSpec lida e endpoints extraídos
 - [ ] Controllers analisados
-- [ ] Schemas Zod mapeados
+- [ ] Schemas de validação mapeados
 - [ ] OpenAPI 3.1 gerado em spec/api/openapi.yaml
 - [ ] Todos os endpoints da TechSpec documentados
 - [ ] Discrepâncias reportadas ao usuário

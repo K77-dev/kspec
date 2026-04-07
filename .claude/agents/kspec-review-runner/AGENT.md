@@ -66,15 +66,15 @@ Para cada mudança de código, verificar:
 
 Para cada mudança de código, verificar:
 
-- [ ] Inputs validados com Zod schemas (nunca confiar em dados do cliente)
+- [ ] Inputs validados com a biblioteca de validação do projeto (nunca confiar em dados do cliente)
 - [ ] Endpoints protegidos exigem autenticação/autorização
 - [ ] CORS configurado corretamente (origens permitidas explícitas, não wildcard em produção)
 - [ ] Sem secrets ou API keys hardcoded no código (usar variáveis de ambiente)
 - [ ] Erros não vazam stack traces ou detalhes internos para o cliente
-- [ ] Sem uso de `dangerouslySetInnerHTML` ou renderização de HTML não sanitizado
+- [ ] Sem renderização de HTML não sanitizado (ex: `dangerouslySetInnerHTML`, `v-html`, `[innerHTML]`)
 - [ ] Queries parametrizadas (sem concatenação de strings em queries SQL/NoSQL)
 - [ ] Rate limiting em endpoints sensíveis (login, signup, reset password)
-- [ ] Headers de segurança configurados (HSTS, CSP, X-Content-Type-Options via middleware Hono)
+- [ ] Headers de segurança configurados (HSTS, CSP, X-Content-Type-Options via middleware do framework)
 - [ ] Dados sensíveis (PII, tokens, senhas) não aparecem em logs
 
 Se a funcionalidade não envolve backend/API, marcar como N/A e justificar.

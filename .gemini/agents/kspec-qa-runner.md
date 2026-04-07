@@ -78,11 +78,11 @@ Para cada requisito funcional do PRD:
 Analisar o código implementado e o build para identificar problemas de performance:
 
 **Build e Bundle:**
-- [ ] Executar `bun run build` e verificar tamanho do bundle (alertar se JS > 500KB gzipped)
+- [ ] Executar o comando de build do projeto e verificar tamanho do bundle (alertar se JS > 500KB gzipped)
 - [ ] Verificar se há imports desnecessários ou bibliotecas duplicadas
 
 **Anti-patterns no Frontend:**
-- [ ] Sem re-renders desnecessários (componentes pesados sem `useMemo`/`React.memo`)
+- [ ] Sem re-renders desnecessários (usar memoização quando aplicável ao framework do projeto)
 - [ ] Imagens otimizadas (formatos modernos: WebP/AVIF, dimensões adequadas)
 - [ ] Lazy loading para rotas e componentes pesados
 
@@ -104,10 +104,11 @@ Incluir resultados na seção de performance do relatório de QA.
 Executar auditoria de dependências para identificar vulnerabilidades conhecidas:
 
 ```bash
-bun audit
+# Usar o comando de auditoria do package manager do projeto:
+# bun audit | npm audit | pnpm audit | yarn audit
 ```
 
-Se o comando não estiver disponível ou o projeto usar outro package manager, usar o equivalente (`npm audit`, `pnpm audit`).
+Consultar o GEMINI.md para identificar o package manager do projeto e usar o comando equivalente.
 
 Para cada vulnerabilidade encontrada:
 - [ ] Classificar por severidade (critical, high, medium, low)

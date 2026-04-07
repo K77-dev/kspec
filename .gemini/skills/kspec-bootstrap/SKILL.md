@@ -20,9 +20,8 @@ Você é um assistente especializado em configurar projetos para uso com Gemini 
 Antes de qualquer detecção, verificar se já existe configuração no projeto:
 
 - Verificar se existe `GEMINI.md` ou `GEMINI.bootstrap.md` na raiz
-- Verificar se existe `.gemini/` com arquivos de configuração
+- Verificar se existe `.gemini/rules/` com arquivos `.md`
 - Verificar se existe `.github/copilot-instructions.md`
-- Verificar se existe `CLAUDE.md` (pode ser usado como referência)
 
 Se encontrar configuração existente:
 - **Ler o conteúdo** e extrair: stack, comandos, estrutura, padrões já definidos
@@ -34,8 +33,12 @@ Se não encontrar nenhuma configuração, seguir o fluxo normal.
 ### 1. Validação de Skills Empresariais (Obrigatório)
 
 Siga as instruções em @./.gemini/validation/enterprise-skills-check.md para validar e instalar
-as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
-bloquear a execução.
+as skills empresariais obrigatórias.
+
+**Comportamento específico do bootstrap:**
+- Exibir mensagem detalhada para cada skill instalada/atualizada
+- NÃO permitir fallback offline — se o repositório empresarial não estiver acessível, bloquear o bootstrap com mensagem de erro
+- NÃO prossiga para o próximo passo se a validação bloquear a execução
 
 ### 2. Análise do Projeto (Obrigatório)
 
@@ -94,26 +97,65 @@ Perguntar:
 
 Sempre gerar `GEMINI.bootstrap.md` na raiz — nunca sobrescrever um `GEMINI.md` existente. O usuário decide o que aproveitar.
 
-Seguir a estrutura de seções do template @./.gemini/templates/gemini-md-template.md, adaptando **todo o conteúdo** ao projeto detectado e ao formato GEMINI.md (com imports `@./` para rules).
+Seguir a estrutura de seções do template @./.gemini/templates/gemini-md-template.md, adaptando **todo o conteúdo** ao projeto detectado.
 
-### 5. Gerar Rules (Obrigatório)
+### 5. Selecionar Rules do Enterprise (Obrigatório)
 
-Gerar rules em `.gemini/rules/` com conteúdo adaptado à stack real do projeto:
+As rules de stack estão no repositório enterprise (não no core kspec). O bootstrap seleciona as rules relevantes baseado na stack detectada no passo 2.
 
-| Condição | Rule gerada |
+**5.1. Listar rules disponíveis no enterprise cache:**
+
+```bash
+ls .claude/.enterprise-skills-cache/.agents/rules/
+```
+
+O enterprise repo organiza rules por categoria:
+```
+rules/
+├── languages/        # typescript.md, java.md, python.md
+├── backend/          # hono.md, express.md, spring-boot.md
+├── frontend/         # react.md, angular.md, vue.md
+├── styling/          # tailwind.md, css-modules.md
+├── testing/          # vitest.md, jest.md, junit.md
+├── package-managers/ # bun.md, npm.md, maven.md
+└── validation/       # zod.md, joi.md
+```
+
+**5.2. Selecionar rules baseado na stack detectada:**
+
+| Condição | Rule selecionada do enterprise |
 |---|---|
-| Sempre | `code-standards.md` (nomenclatura, formatação) |
-| TypeScript detectado | `typescript.md` (tipagem, imports, async/await — com o package manager correto) |
-| Framework HTTP detectado | `http.md` (adaptado ao framework real: Hono, Express, Fastify) |
-| React/Vue/Svelte detectado | `[framework].md` (padrões de componentes) |
-| Vitest/Jest detectado | `tests.md` (adaptado ao test runner real) |
-| Logging configurado | `logging.md` (níveis, estrutura) |
+| TypeScript detectado | `languages/typescript.md` |
+| Framework HTTP detectado | `backend/{framework}.md` |
+| React/Vue/Angular detectado | `frontend/{framework}.md` |
+| Tailwind/CSS Modules detectado | `styling/{framework}.md` |
+| Vitest/Jest detectado | `testing/{test-runner}.md` |
+| bun/npm/pnpm detectado | `package-managers/{pm}.md` |
+| Zod/Joi/Yup detectado | `validation/{lib}.md` |
 
-Remover rules que não se aplicam (ex: remover `react.md` se o projeto não usa React).
+**5.3. Copiar rules selecionadas para o projeto:**
 
-Cada rule deve:
-- Usar `paths:` no frontmatter quando aplicável
-- Conter exemplos com a stack real do projeto (não genéricos)
+```bash
+cp .claude/.enterprise-skills-cache/.agents/rules/{category}/{rule}.md .agents/rules/{rule}.md
+```
+
+**5.4. Rules do core kspec (sempre presentes):**
+
+| Rule | Descrição |
+|---|---|
+| `code-standards.md` | Nomenclatura, formatação, SOLID — universal |
+| `database.md` | Padrões genéricos de ORM/DB |
+| `logging.md` | Níveis e estrutura de logging |
+
+Não remover estas rules — elas vêm com o core kspec e são technology-agnostic.
+
+**5.5. Remover rules que não se aplicam:**
+
+Se existirem rules de stack em `.agents/rules/` que não correspondem a nenhuma tecnologia detectada, removê-las (ex: `react.md` num projeto Angular).
+
+**5.6. Ajustar `paths:` no frontmatter:**
+
+Após copiar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`).
 
 ### 6. Gerar CI/CD (Opcional)
 

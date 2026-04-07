@@ -1,17 +1,19 @@
 ---
-description: "Planeja e executa upgrades de frameworks e dependências com análise de breaking changes e migração incremental"
+description: "Planeja e executa upgrades de frameworks e dependências. Analisa breaking changes, gera plano de migração como tasks e executa incrementalmente."
 agent: agent
 ---
 
-Você é um assistente especializado em migração de frameworks e dependências. Sua tarefa é analisar a dependência atual, consultar guias de migração, avaliar o impacto e executar o upgrade de forma incremental.
+Planeja e guia upgrades de frameworks, bibliotecas e dependências do projeto de forma estruturada e incremental.
 
 ## Argumento
 
 `<dependência@versão>` — dependência a migrar e versão alvo (ex: `react@19`, `tailwindcss@4`, `hono@4`)
 
-O usuário deve informar a dependência e versão alvo. Se não foi informado, peça antes de prosseguir.
+O argumento recebido é: **$PROMPT**
 
-## Etapas para Executar
+Se `$PROMPT` estiver vazio, peça ao usuário para informar a dependência e versão alvo (ex: `/kspec-migrate react@19`) e não prossiga até receber.
+
+## Fluxo de Trabalho
 
 ### 1. Análise da Dependência Atual (Obrigatório)
 
@@ -65,13 +67,13 @@ Apresentar o plano ao usuário para aprovação antes de executar.
 
 Após aprovação do usuário, executar o plano incrementalmente:
 
-- Cada passo deve ser validado antes de prosseguir (`bun run typecheck`, `bun run test`)
+- Cada passo deve ser validado antes de prosseguir (executar typecheck e test do projeto)
 - Se um passo falhar, parar e reportar o problema
 - NÃO fazer múltiplas mudanças sem validação intermediária
 
 ### 6. Verificação Final (Obrigatório)
 
-Executar: `bun run lint`, `bun run typecheck`, `bun run build`, `bun run test`
+Executar todos os checks conforme definido em "Comandos do projeto" no copilot-instructions.md (lint, typecheck, build, test).
 
 Confirmar que:
 - [ ] Todos os testes passam

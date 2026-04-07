@@ -20,7 +20,7 @@ Antes de qualquer detecção, verificar se já existe configuração no projeto:
 
 - Verificar se existe `.github/copilot-instructions.md`
 - Verificar se existe `.github/instructions/` com arquivos `.instructions.md`
-- Verificar se existe `CLAUDE.md` na raiz
+- Verificar se existe `AGENTS.md`, `CLAUDE.md` ou `GEMINI.md` na raiz
 
 Se encontrar configuração existente:
 - **Ler o conteúdo** e extrair: stack, comandos, estrutura, padrões já definidos
@@ -34,7 +34,7 @@ Se não encontrar nenhuma configuração, seguir o fluxo normal.
 
 Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 
-**Package manager** — verificar lockfiles:
+**Package manager** — verificar existência de lockfiles:
 - `bun.lock` → bun
 - `pnpm-lock.yaml` → pnpm
 - `yarn.lock` → yarn
@@ -46,16 +46,24 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 - UI: shadcn/ui, Radix, Material UI, Chakra, etc.
 - CSS: Tailwind, CSS Modules, styled-components, etc.
 - Testes: Vitest, Jest, TestSprite, Cypress, etc.
+- Validação: Zod, Yup, Joi, etc.
+- ORM: Prisma, Drizzle, TypeORM, etc.
+- State: TanStack Query, Redux, Zustand, etc.
+- Realtime: Socket.IO, ws, etc.
+- Auth: JWT, NextAuth, Lucia, etc.
 
 **Estrutura** — mapear diretórios e entry points:
 - Monorepo (workspaces) vs single-package
-- Diretórios de código-fonte e testes
+- Diretórios de código-fonte (src/, app/, lib/, packages/, etc.)
+- Diretórios de testes
+- Diretórios de config
 
-**Scripts** — ler scripts do `package.json` (raiz e workspaces)
+**Scripts** — ler scripts do `package.json` (raiz e workspaces):
+- dev, build, test, lint, typecheck, etc.
 
 ### 2. Apresentar Detecções (Obrigatório)
 
-Mostrar ao usuário:
+Mostrar ao usuário um resumo do que foi detectado:
 
 ```
 ## Detecções do Projeto
@@ -78,7 +86,7 @@ Perguntar:
 ### 3. Gerar ou Atualizar copilot-instructions.md (Obrigatório)
 
 - Se já existe `.github/copilot-instructions.md`: **atualizar** com as informações detectadas, preservando personalizações do usuário
-- Se não existe: **gerar** seguindo o template [copilot-instructions-template.md](../templates/copilot-instructions-template.md)
+- Se não existe: **gerar** seguindo o template copilot-instructions-template.md
 
 Adaptar todo o conteúdo ao projeto detectado.
 

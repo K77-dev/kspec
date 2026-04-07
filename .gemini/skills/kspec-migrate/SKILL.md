@@ -1,6 +1,7 @@
 ---
 name: kspec-migrate
 description: Planeja e executa upgrades de frameworks e dependências. Analisa breaking changes, gera plano de migração como tasks e executa incrementalmente.
+argument-hint: "<dependência@versão> (ex: react@19, tailwindcss@4, hono@4)"
 ---
 
 Planeja e guia upgrades de frameworks, bibliotecas e dependências do projeto de forma estruturada e incremental.
@@ -9,7 +10,9 @@ Planeja e guia upgrades de frameworks, bibliotecas e dependências do projeto de
 
 `<dependência@versão>` — dependência a migrar e versão alvo (ex: `react@19`, `tailwindcss@4`, `hono@4`)
 
-O usuário deve informar a dependência e versão alvo (ex: `react@19`). Se não foi informado, pergunte antes de prosseguir. Use o valor informado como `<DEPENDENCIA@VERSAO>` nas referências abaixo.
+O argumento recebido é: **<SLUG>**
+
+Se `<SLUG>` estiver vazio, peça ao usuário para informar a dependência e versão alvo (ex: `/kspec-migrate react@19`) e não prossiga até receber.
 
 ## Fluxo de Trabalho
 
@@ -27,12 +30,14 @@ bloquear a execução.
 
 ### 2. Consultar Guia de Migração (Obrigatório)
 
-- Consultar a documentação oficial da dependência para buscar o migration guide
+- Usar Context7 MCP (se disponível) para buscar o migration guide oficial da dependência
 - Identificar:
   - Breaking changes entre a versão atual e a versão alvo
   - APIs removidas ou renomeadas
   - Novos padrões recomendados
   - Codemods disponíveis (se houver)
+
+Se Context7 não estiver disponível, consultar a documentação oficial online.
 
 ### 3. Análise de Impacto (Obrigatório)
 
@@ -71,20 +76,13 @@ Apresentar o plano ao usuário para aprovação antes de executar.
 
 Após aprovação do usuário, executar o plano incrementalmente:
 
-- Cada passo deve ser validado antes de prosseguir (`bun run typecheck`, `bun run test`)
+- Cada passo deve ser validado antes de prosseguir (executar typecheck e test do projeto)
 - Se um passo falhar, parar e reportar o problema
 - NÃO fazer múltiplas mudanças sem validação intermediária
 
 ### 6. Verificação Final (Obrigatório)
 
-Executar todos os checks conforme definido em "Comandos do projeto" no GEMINI.md.
-
-```bash
-bun run lint
-bun run typecheck
-bun run build
-bun run test
-```
+Executar todos os checks conforme definido em "Comandos do projeto" no GEMINI.md (lint, typecheck, build, test).
 
 Confirmar que:
 - [ ] Todos os testes passam
