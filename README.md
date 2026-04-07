@@ -1,6 +1,6 @@
 # kspec
 
-Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compatível com **Claude Code**, **Gemini CLI** e **GitHub Copilot**.
+Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compatível com **Claude Code**, **Gemini CLI**, **GitHub Copilot** e **Agents (genérico)**.
 
 ## Por que este projeto existe
 
@@ -20,6 +20,7 @@ Este repositório resolve isso fornecendo:
 | Claude Code | `.claude/` | `CLAUDE.md` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` | `.claude/templates/` |
 | Gemini CLI | `.gemini/` | `GEMINI.md` | `.gemini/skills/` | `.gemini/agents/` | `.gemini/rules/` | `.gemini/templates/` |
 | GitHub Copilot | `.github/` | `.github/copilot-instructions.md` | `.github/prompts/` | `.github/prompts/` | `.github/instructions/` | `.github/templates/` |
+| Agents (genérico) | `.agents/` | `AGENTS.md` | `.agents/skills/` | `.agents/agents/` | `.agents/rules/` | `.agents/templates/` |
 
 ## Stack
 
@@ -49,10 +50,17 @@ Este repositório resolve isso fornecendo:
 ├── prompts/                    # Skills e agents como prompts reutilizáveis
 ├── instructions/               # Instruções de domínio (equivalente a rules)
 └── templates/                  # Templates de specs
+.agents/                        # Configuração genérica (ferramentas compatíveis com .agents)
+├── skills/                     # Skills invocáveis
+├── agents/                     # Agents (tarefas isoladas)
+├── rules/                      # Padrões de código por domínio
+├── templates/                  # Templates usados pelas skills
+└── validation/                 # Validações de skills empresariais
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
 GEMINI.md                       # Guia principal para Gemini CLI
+AGENTS.md                       # Guia principal para Agents (genérico)
 README.md                       # Este arquivo
 ```
 
@@ -252,10 +260,16 @@ bunx degit K77-dev/kspec/.gemini .gemini --force
 bunx degit K77-dev/kspec/.github .github --force
 ```
 
+**Agents (genérico):**
+
+```bash
+bunx degit K77-dev/kspec/.agents .agents --force
+```
+
 **Todos os agentes de uma vez:**
 
 ```bash
-git clone --depth 1 git@github.com:K77-dev/kspec.git /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.gemini /tmp/kspec/.github . && rm -rf /tmp/kspec
+git clone --depth 1 git@github.com:K77-dev/kspec.git /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.gemini /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
 ```
 
 > Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.

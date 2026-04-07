@@ -27,3 +27,4 @@ coverage/
 
 # Enterprise skills cache
 .claude/.enterprise-skills-cache/
+.agents/.enterprise-skills-cache/
