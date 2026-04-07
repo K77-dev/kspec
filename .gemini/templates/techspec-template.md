@@ -53,29 +53,26 @@ interface NomeServico {
 - Requisitos de autenticação
 - Abordagem de tratamento de erros]
 
-## Considerações de Segurança
+## Verificações Técnicas
 
-[Documente a estratégia de segurança para esta funcionalidade:]
+[Esta seção documenta verificações exigidas para esta funcionalidade.
+Consulte as verificações obrigatórias definidas pela organização — se houver
+templates corporativos instalados via enterprise skills, siga os checklists
+definidos por eles.
 
-### Autenticação e Autorização
+Na ausência de templates corporativos, considere no mínimo:]
 
-[Quais endpoints requerem autenticação? Qual estratégia de autorização (roles, permissions)?]
+### Segurança
 
-### Validação de Input
+[Autenticação, autorização, validação de input, dados sensíveis, vetores de ataque relevantes]
 
-[Quais schemas Zod são necessários? Onde validar (controller, middleware)?]
+### Arquitetura
 
-### Dados Sensíveis
+[Padrões utilizados, escalabilidade, resiliência, pontos de falha, limites de responsabilidade entre componentes]
 
-[A funcionalidade lida com PII, credenciais ou tokens? Como proteger (masking em logs, encryption at rest)?]
+### Infraestrutura
 
-### CORS e Rate Limiting
-
-[Novas origens precisam de CORS? Endpoints sensíveis precisam de rate limiting?]
-
-### Ameaças Conhecidas
-
-[Quais vetores de ataque são relevantes (XSS, CSRF, injection)? Como mitigar?]
+[Requisitos de deploy, ambientes, recursos necessários, dependências de serviços externos, estratégia de rollback]
 
 ## Abordagem de Testes
 

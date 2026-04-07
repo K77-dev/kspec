@@ -30,70 +30,67 @@ Follow these 7 steps in order. Each step depends on the previous one.
 ### Step 3: Read Remote Lock File
 
 1. Read `.claude/.enterprise-skills-cache/skills-lock.json`.
-2. Parse the JSON and extract the `skills` object as the remote skills registry.
-3. Each entry in `skills` is an **mandatory enterprise skill** with a `computedHash` field.
+2. Parse the JSON and extract three registries:
+   - `skills` — mandatory enterprise skills
+   - `rules` — mandatory enterprise rules
+   - `templates` — mandatory enterprise templates
+3. Each entry in any registry has a `computedHash` field.
 
 ### Step 4: Compare Hashes
 
-For each skill in the **remote** registry:
-1. Check if the skill exists in the **local** registry.
-2. If the skill does NOT exist locally, classify it as **missing**.
-3. If the skill exists locally but `computedHash` differs (remote != local), classify it as **outdated**.
-4. If the skill exists locally and `computedHash` matches, classify it as **valid**.
+Repeat the following comparison for each of the three registries (`skills`, `rules`, `templates`):
 
-For each skill in the **local** registry:
-1. Check if the skill still exists in the **remote** registry.
-2. If it does NOT exist remotely, classify it as **removed**.
+For each entry in the **remote** registry:
+1. Check if the entry exists in the **local** registry of the same type.
+2. If it does NOT exist locally, classify it as **missing**.
+3. If it exists locally but `computedHash` differs, classify it as **outdated**.
+4. If it exists locally and `computedHash` matches, classify it as **valid**.
+
+For each entry in the **local** registry:
+1. If it does NOT exist in the **remote** registry, classify it as **removed**.
 
 ### Step 5: Execute Actions
 
 **For each missing or outdated skill:**
+1. Copy: `cp -r .claude/.enterprise-skills-cache/.agents/skills/{name}/ .agents/skills/{name}/`
+2. Symlink: `ln -sfn ../../.agents/skills/{name} .claude/skills/{name}`
 
-1. Copy the skill directory from the cache:
-   ```
-   cp -r .claude/.enterprise-skills-cache/.agents/skills/{skill-name}/ .agents/skills/{skill-name}/
-   ```
-2. Create the symlink in `.claude/skills/`:
-   ```
-   ln -sfn ../../.agents/skills/{skill-name} .claude/skills/{skill-name}
-   ```
-3. Report progress:
-   - Missing skill: `→ Instalando {skill-name}... OK`
-   - Outdated skill: `→ Atualizando {skill-name}... OK`
+**For each missing or outdated rule:**
+1. Copy: `cp .claude/.enterprise-skills-cache/.agents/rules/{name}.md .agents/rules/{name}.md`
+2. Symlink: `ln -sfn ../../.agents/rules/{name}.md .claude/rules/{name}.md`
 
-**For each removed skill:**
+**For each missing or outdated template:**
+1. Copy: `cp .claude/.enterprise-skills-cache/.agents/templates/{name}.md .agents/templates/{name}.md`
+2. Symlink: `ln -sfn ../../.agents/templates/{name}.md .claude/templates/{name}.md`
 
-1. Delete the skill directory:
-   ```
-   rm -rf .agents/skills/{skill-name}
-   ```
-2. Delete the symlink:
-   ```
-   rm -f .claude/skills/{skill-name}
-   ```
-3. Report: `→ Removendo {skill-name}... OK`
+**For each removed entry (any type):**
+1. Delete from `.agents/` (source): `rm -rf .agents/{type}/{name}` or `rm -f .agents/{type}/{name}.md`
+2. Delete symlink: `rm -f .claude/{type}/{name}` or `rm -f .claude/{type}/{name}.md`
 
-**If all skills are valid (no actions needed):**
+**Progress messages:**
+- Skills: `→ Instalando skill {name}... OK` / `→ Atualizando skill {name}... OK`
+- Rules: `→ Instalando rule {name}... OK` / `→ Atualizando rule {name}... OK`
+- Templates: `→ Instalando template {name}... OK` / `→ Atualizando template {name}... OK`
+- Removed: `→ Removendo {type} {name}... OK`
 
-Report: `✓ Skills empresariais validadas`
+**If all entries are valid (no actions needed):**
+Report: `✓ Artefatos empresariais validados`
 
-**Summary messages after actions:**
-
-- If skills were installed: `✓ {count} skill(s) empresarial(is) instalada(s)`
-- If skills were updated: `✓ {count} skill(s) atualizada(s)`
-- If skills were removed: `✓ {count} skill(s) removida(s)`
+**Summary messages:**
+- `✓ {count} skill(s) empresarial(is) instalada(s)/atualizada(s)`
+- `✓ {count} rule(s) empresarial(is) instalada(s)/atualizada(s)`
+- `✓ {count} template(s) empresarial(is) instalado(s)/atualizado(s)`
 
 ### Step 6: Update Local Lock File
 
 1. Build the updated `enterprise-skills-lock.json` with:
-   - `version`: keep as `1`
-   - `remote`: keep existing values (`url`, `branch`, `provider`)
-   - `lastChecked`: set to current ISO 8601 timestamp (e.g., `2026-04-04T14:30:00Z`)
-   - `skills`: for each skill in the remote registry, create an entry with:
-     - `computedHash`: the `computedHash` value from the remote registry
-     - `installedAt`: if newly installed/updated, use current timestamp; if unchanged, keep existing value
-     - `files`: list all files installed for the skill (relative paths from project root)
-2. Write the updated JSON to `enterprise-skills-lock.json` in the project root.
+   - `version`: set to `2`
+   - `remote`: keep existing values
+   - `lastChecked`: current ISO 8601 timestamp
+   - `skills`: for each skill in remote registry, entry with computedHash, installedAt, files
+   - `rules`: for each rule in remote registry, entry with computedHash, installedAt, files
+   - `templates`: for each template in remote registry, entry with computedHash, installedAt, files
+2. Write to `enterprise-skills-lock.json` in project root.
 
 ### Step 7: Fallback Offline
 
@@ -111,6 +108,7 @@ This step is reached ONLY when Step 2 (git clone/pull) fails.
 
 - All git operations use standard `git` CLI commands. This is **provider-agnostic** — works with GitHub, Azure DevOps, GitLab, Bitbucket, or any git hosting accessible via URL.
 - Authentication relies on the developer's existing git credentials (SSH keys, credential helpers, tokens).
-- The cache directory `.claude/.enterprise-skills-cache/` is in `.gitignore` and should NOT be committed.
+- The enterprise artifacts cache `.claude/.enterprise-skills-cache/` is in `.gitignore` and should NOT be committed.
 - The lock file `enterprise-skills-lock.json` MUST be committed to the repository for team consistency.
 - The `remote.url` in the lock file can be changed to migrate between git providers without modifying validation logic.
+- The validation supports three types of artifacts: skills, rules, and templates. All three follow the same hash-based versioning and are managed independently.

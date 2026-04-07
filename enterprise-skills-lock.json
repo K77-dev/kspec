@@ -1,10 +1,12 @@
 {
-  "version": 1,
+  "version": 2,
   "remote": {
     "url": "https://github.com/K77-dev/enterprise-platform-skills.git",
     "branch": "main",
     "provider": "github"
   },
   "lastChecked": null,
-  "skills": {}
+  "skills": {},
+  "rules": {},
+  "templates": {}
 }
