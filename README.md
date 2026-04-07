@@ -160,33 +160,83 @@ enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 | **Agents** | Isolado — contexto separado, so o resultado volta | Tarefas autocontidas que produzem relatorios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padroes de codigo por dominio |
 
-### Skills disponiveis (13)
+### Skills — entradas e saidas (13)
 
-| Skill | Fase | Funcao |
+Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os caminhos sao relativos a `spec/tasks/[NNN]-prd-[nome]/`.
+
+#### Setup
+
+| Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-bootstrap` | Setup | Detecta stack e gera configuracao para o projeto |
-| `/kspec-prd` | Especificacao | Cria PRD a partir de solicitacao de funcionalidade |
-| `/kspec-techspec` | Especificacao | Traduz PRD em especificacao tecnica |
-| `/kspec-tasks` | Especificacao | Quebra Tech Spec em tarefas incrementais |
-| `/kspec-implement-task` | Implementacao | Implementa proxima tarefa disponivel (uma por vez) |
-| `/kspec-implement-all-tasks` | Implementacao | Executa todas as tasks pendentes |
-| `/kspec-qa` | Qualidade | Quality Assurance (E2E, acessibilidade) |
-| `/kspec-bugfix` | Qualidade | Corrige bugs documentados pelo QA |
-| `/kspec-apidoc` | Documentacao | Gera documentacao OpenAPI 3.1 |
-| `/kspec-adr` | Documentacao | Gera Architecture Decision Records |
-| `/kspec-release` | Documentacao | Gera changelog e notas de release |
-| `/kspec-migrate` | Manutencao | Planeja e executa upgrades de dependencias |
-| `/kspec-sync` | Manutencao | Sincroniza plataformas a partir do `.agents/` |
+| `/kspec-bootstrap` | `package.json`, lockfiles, configs do projeto, `CLAUDE.md` (se existir) | `CLAUDE.bootstrap.md`, rules adaptadas em `.claude/rules/`, `spec/tasks/` (diretorio), CI/CD opcional |
 
-### Agents (3)
+#### Especificacao
+
+| Skill | Le (entrada) | Produz (saida) |
+|---|---|---|
+| `/kspec-prd` | Solicitacao do dev + respostas de clarificacao, template `prd-template.md` | `prd.md` |
+| `/kspec-techspec` | `prd.md`, codigo-fonte do projeto, rules, template `techspec-template.md` | `techspec.md` |
+| `/kspec-tasks` | `prd.md`, `techspec.md`, templates `tasks-template.md` + `task-template.md` | `tasks.md` + `[num]_task.md` (um arquivo por task) |
+
+#### Implementacao
+
+| Skill | Le (entrada) | Produz (saida) |
+|---|---|---|
+| `/kspec-implement-task` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules | Codigo implementado + `review_[num].md` |
+| `/kspec-implement-all-tasks` | Mesmos do implement-task (para cada task pendente) | Codigo implementado + `review_[num].md` (um por task) |
+
+**Detalhamento do ciclo interno de cada task:**
+
+```
+implement-task le:                         implement-task produz:
+├── tasks.md (identifica proxima)          ├── codigo-fonte (via task-runner)
+├── [num]_task.md (definicao)              ├── testes unitarios (via task-runner)
+├── prd.md (contexto)                      ├── review_[num].md (via review-runner)
+├── techspec.md (arquitetura)              └── tasks.md atualizado (marca completa)
+└── rules (padroes)
+```
+
+O review-runner (agent) le adicionalmente:
+- `git diff` (mudancas de codigo)
+- Resultado dos checks (`lint`, `typecheck`, `build`, `test`)
+
+#### Qualidade
+
+| Skill | Le (entrada) | Produz (saida) |
+|---|---|---|
+| `/kspec-qa` | `prd.md`, `techspec.md`, `tasks.md`, aplicacao rodando em localhost, rules | `qa.md` + `bugs.md` |
+| `/kspec-bugfix` | `bugs.md`, `prd.md`, `techspec.md`, `tasks.md`, rules | Correcoes no codigo + testes de regressao + `bugfix.md` + `bugs.md` atualizado |
+
+O qa-runner (agent) le adicionalmente:
+- Resultado dos testes E2E (TestSprite MCP)
+- Verificacoes de acessibilidade (WCAG 2.2)
+- Auditoria de vulnerabilidades (`bun audit` / `npm audit`)
+- Metricas de performance (bundle size, Lighthouse)
+
+#### Documentacao
+
+| Skill | Le (entrada) | Produz (saida) |
+|---|---|---|
+| `/kspec-apidoc` | `techspec.md`, controllers/routes do projeto, schemas de validacao | `spec/api/openapi.yaml` |
+| `/kspec-adr` | Respostas do dev (contexto, opcoes, decisao), template `adr-template.md` | `spec/adrs/[NNN]-titulo.md` + `spec/adrs/index.md` |
+| `/kspec-release` | `git log` (commits desde ultima tag), `spec/tasks/*/tasks.md` + `prd.md` (PRDs completos) | `CHANGELOG.md` + tag git (opcional) |
+
+#### Manutencao
+
+| Skill | Le (entrada) | Produz (saida) |
+|---|---|---|
+| `/kspec-migrate` | `package.json`, lockfiles, codigo-fonte, migration guide (Context7/docs) | Codigo migrado + dependencias atualizadas |
+| `/kspec-sync` | `.agents/` (source of truth) | `.claude/`, `.gemini/`, `.github/` sincronizados |
+
+### Agents — entradas e saidas (3)
 
 Os agents rodam em contexto isolado e sao acionados pelas skills — nao precisam ser invocados diretamente.
 
-| Agent | Acionado por | Funcao |
-|---|---|---|
-| `kspec-task-runner` | `/kspec-implement-task`, `/kspec-implement-all-tasks` | Implementa uma task individual em contexto isolado |
-| `kspec-review-runner` | `/kspec-implement-task`, `/kspec-implement-all-tasks` | Code review contra TechSpec, Tasks e rules |
-| `kspec-qa-runner` | `/kspec-qa` | Testa E2E, acessibilidade, visual |
+| Agent | Acionado por | Le (entrada) | Produz (saida) |
+|---|---|---|---|
+| `kspec-task-runner` | implement-task, implement-all-tasks | `[num]_task.md`, `prd.md`, `techspec.md`, rules, codigo existente | Codigo-fonte + testes unitarios |
+| `kspec-review-runner` | implement-task, implement-all-tasks | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
+| `kspec-qa-runner` | kspec-qa | `prd.md`, `techspec.md`, `tasks.md`, rules, app rodando | `qa.md` + `bugs.md` |
 
 ### Rules (3)
 
@@ -204,14 +254,14 @@ Cada funcionalidade gera um diretorio em `spec/tasks/` com todos os artefatos do
 
 ```
 spec/tasks/[NNN]-prd-[nome]/
-├── prd.md          ← /kspec-prd           Requisitos de produto
-├── techspec.md     ← /kspec-techspec      Especificacao arquitetural
-├── tasks.md        ← /kspec-tasks         Lista de tarefas (indice)
-├── [num]_task.md   ← /kspec-tasks         Definicao individual de cada task
-├── review_[num].md ← agent review-runner  Code review (um por task)
-├── qa.md           ← agent qa-runner      Resultado do QA
-├── bugs.md         ← agent qa-runner      Bugs encontrados
-└── bugfix.md       ← /kspec-bugfix        Correcoes aplicadas
+├── prd.md            ← /kspec-prd             Le: solicitacao do dev
+├── techspec.md       ← /kspec-techspec        Le: prd.md + codigo do projeto
+├── tasks.md          ← /kspec-tasks           Le: prd.md + techspec.md
+├── [num]_task.md     ← /kspec-tasks           Le: prd.md + techspec.md
+├── review_[num].md   ← agent review-runner    Le: git diff + techspec.md + tasks.md + rules
+├── qa.md             ← agent qa-runner        Le: prd.md + techspec.md + tasks.md + app rodando
+├── bugs.md           ← agent qa-runner        Le: (gerado junto com qa.md)
+└── bugfix.md         ← /kspec-bugfix          Le: bugs.md + prd.md + techspec.md
 ```
 
 Rastreabilidade completa: cada artefato referencia o anterior, permitindo navegar do requisito ate o codigo implementado.
