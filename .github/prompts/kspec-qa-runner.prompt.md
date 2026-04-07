@@ -73,7 +73,26 @@ Analisar o código implementado e o build para identificar problemas de performa
 
 Incluir resultados na seção de performance do relatório de QA.
 
-### 5. Verificações de Acessibilidade — WCAG 2.2 (Obrigatório)
+### 5. Verificação de Vulnerabilidades (Obrigatório)
+
+Executar auditoria de dependências para identificar vulnerabilidades conhecidas:
+
+```bash
+bun audit
+```
+
+Se o comando não estiver disponível ou o projeto usar outro package manager, usar o equivalente (`npm audit`, `pnpm audit`).
+
+Para cada vulnerabilidade encontrada:
+- [ ] Classificar por severidade (critical, high, medium, low)
+- [ ] Verificar se há fix disponível
+- [ ] Documentar no relatório de QA
+
+**Critérios:**
+- Vulnerabilidades **critical** ou **high** sem fix disponível são motivo de **alerta** no relatório
+- Vulnerabilidades com fix disponível devem ser listadas como recomendação de atualização
+
+### 6. Verificações de Acessibilidade — WCAG 2.2 (Obrigatório)
 
 Verificar para cada tela/componente:
 
@@ -84,13 +103,13 @@ Verificar para cada tela/componente:
 - [ ] Formulários têm labels associados aos inputs
 - [ ] Mensagens de erro são claras e acessíveis
 
-### 6. Verificações Visuais (Obrigatório)
+### 7. Verificações Visuais (Obrigatório)
 
 - Capturar screenshots das telas principais
 - Verificar layouts em diferentes estados (vazio, com dados, erro)
 - Documentar inconsistências visuais encontradas
 
-### 7. Documentação de Bugs (se houver)
+### 8. Documentação de Bugs (se houver)
 
 Salvar em: `spec/tasks/[slug]/bugs.md`
 
@@ -100,7 +119,7 @@ Para cada bug encontrado, documentar:
 - Resultado esperado vs resultado obtido
 - Screenshot de evidência
 
-### 8. Relatório de QA (Obrigatório)
+### 9. Relatório de QA (Obrigatório)
 
 Salvar em: `spec/tasks/[slug]/qa.md`
 
@@ -126,6 +145,11 @@ Salvar em: `spec/tasks/[slug]/qa.md`
   - LCP: [valor]
   - FID: [valor]
   - CLS: [valor]
+
+## Vulnerabilidades
+- Auditoria executada: Sim/Não
+- Vulnerabilidades encontradas: [quantidade por severidade]
+- Recomendações: [lista de atualizações sugeridas]
 
 ## Acessibilidade
 - [checklist de a11y]

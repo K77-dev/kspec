@@ -99,7 +99,26 @@ Analisar o código implementado e o build para identificar problemas de performa
 
 Incluir resultados na seção de performance do relatório de QA.
 
-### 5. Verificações de Acessibilidade — WCAG 2.2 (Obrigatório)
+### 5. Verificação de Vulnerabilidades (Obrigatório)
+
+Executar auditoria de dependências para identificar vulnerabilidades conhecidas:
+
+```bash
+bun audit
+```
+
+Se o comando não estiver disponível ou o projeto usar outro package manager, usar o equivalente (`npm audit`, `pnpm audit`).
+
+Para cada vulnerabilidade encontrada:
+- [ ] Classificar por severidade (critical, high, medium, low)
+- [ ] Verificar se há fix disponível
+- [ ] Documentar no relatório de QA
+
+**Critérios:**
+- Vulnerabilidades **critical** ou **high** sem fix disponível são motivo de **alerta** no relatório
+- Vulnerabilidades com fix disponível devem ser listadas como recomendação de atualização
+
+### 6. Verificações de Acessibilidade — WCAG 2.2 (Obrigatório)
 
 Verificar para cada tela/componente:
 
@@ -112,13 +131,13 @@ Verificar para cada tela/componente:
 
 Inclua verificações de acessibilidade nos planos de teste gerados pelo TestSprite.
 
-### 6. Verificações Visuais (Obrigatório)
+### 7. Verificações Visuais (Obrigatório)
 
 - Verificar layouts em diferentes estados (vazio, com dados, erro)
 - Documentar inconsistências visuais encontradas
 - Verificar responsividade se aplicável
 
-### 7. Relatório de QA (Obrigatório)
+### 8. Relatório de QA (Obrigatório)
 
 Salvar em: `@spec/tasks/<SLUG>/qa.md`
 
@@ -152,6 +171,11 @@ Gerar relatório final no formato:
   - FID: [valor]
   - CLS: [valor]
 
+## Vulnerabilidades
+- Auditoria executada: Sim/Não
+- Vulnerabilidades encontradas: [quantidade por severidade]
+- Recomendações: [lista de atualizações sugeridas]
+
 ## Acessibilidade
 - [checklist de a11y]
 
@@ -174,6 +198,7 @@ Ver detalhes em `bugs.md`.
 - [ ] Testes E2E executados via TestSprite MCP
 - [ ] Todos os fluxos principais testados
 - [ ] Performance verificada (bundle size, anti-patterns, Lighthouse)
+- [ ] Vulnerabilidades verificadas (auditoria de dependências)
 - [ ] Acessibilidade verificada (WCAG 2.2)
 - [ ] Evidências capturadas
 - [ ] Bugs documentados (se houver)
