@@ -53,6 +53,30 @@ interface NomeServico {
 - Requisitos de autenticação
 - Abordagem de tratamento de erros]
 
+## Considerações de Segurança
+
+[Documente a estratégia de segurança para esta funcionalidade:]
+
+### Autenticação e Autorização
+
+[Quais endpoints requerem autenticação? Qual estratégia de autorização (roles, permissions)?]
+
+### Validação de Input
+
+[Quais schemas Zod são necessários? Onde validar (controller, middleware)?]
+
+### Dados Sensíveis
+
+[A funcionalidade lida com PII, credenciais ou tokens? Como proteger (masking em logs, encryption at rest)?]
+
+### CORS e Rate Limiting
+
+[Novas origens precisam de CORS? Endpoints sensíveis precisam de rate limiting?]
+
+### Ameaças Conhecidas
+
+[Quais vetores de ataque são relevantes (XSS, CSRF, injection)? Como mitigar?]
+
 ## Abordagem de Testes
 
 ### Testes Unidade

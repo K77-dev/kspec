@@ -49,21 +49,36 @@ Para cada arquivo modificado: analisar mudanças, verificar padrões, identifica
 - [ ] Segue padrões de tratamento de erro
 - [ ] Segue padrões de logging (se aplicável)
 
-### 4. Verificação de Aderência à TechSpec (Obrigatório)
+### 4. Verificação de Segurança (Obrigatório)
+
+- [ ] Inputs validados com Zod schemas (nunca confiar em dados do cliente)
+- [ ] Endpoints protegidos exigem autenticação/autorização
+- [ ] CORS configurado corretamente (origens permitidas explícitas, não wildcard em produção)
+- [ ] Sem secrets ou API keys hardcoded no código (usar variáveis de ambiente)
+- [ ] Erros não vazam stack traces ou detalhes internos para o cliente
+- [ ] Sem uso de `dangerouslySetInnerHTML` ou renderização de HTML não sanitizado
+- [ ] Queries parametrizadas (sem concatenação de strings em queries SQL/NoSQL)
+- [ ] Rate limiting em endpoints sensíveis (login, signup, reset password)
+- [ ] Headers de segurança configurados (HSTS, CSP, X-Content-Type-Options via middleware Hono)
+- [ ] Dados sensíveis (PII, tokens, senhas) não aparecem em logs
+
+Se a funcionalidade não envolve backend/API, marcar como N/A e justificar.
+
+### 5. Verificação de Aderência à TechSpec (Obrigatório)
 
 - [ ] Arquitetura implementada conforme especificado
 - [ ] Interfaces e contratos seguem o especificado
 - [ ] Modelos de dados conforme documentado
 - [ ] Endpoints/APIs conforme especificado
 
-### 5. Verificação de Completude das Tasks (Obrigatório)
+### 6. Verificação de Completude das Tasks (Obrigatório)
 
 - [ ] Código correspondente implementado
 - [ ] Critérios de aceite atendidos
 - [ ] Subtarefas completadas
 - [ ] Testes da task implementados
 
-### 6. Execução dos Testes (Obrigatório)
+### 7. Execução dos Testes (Obrigatório)
 
 Executar: `bun run lint`, `bun run typecheck`, `bun run build`, `bun run test`
 
@@ -76,7 +91,7 @@ Verificar:
 
 Se os testes forem insuficientes (apenas caminho feliz, sem edge cases), isso é motivo de **REPROVAÇÃO**.
 
-### 7. Análise de Qualidade de Código (Obrigatório)
+### 8. Análise de Qualidade de Código (Obrigatório)
 
 | Aspecto | Verificação |
 |---------|-------------|
@@ -85,10 +100,10 @@ Se os testes forem insuficientes (apenas caminho feliz, sem edge cases), isso é
 | SOLID | Princípios SOLID seguidos |
 | Naming | Nomes claros e descritivos |
 | Error Handling | Tratamento de erros adequado |
-| Security | Sem vulnerabilidades óbvias (SQL injection, XSS, etc.) |
+| Security | Verificado no Step 4 (checklist de segurança) |
 | Performance | Sem problemas óbvios de performance |
 
-### 8. Relatório de Code Review (Obrigatório)
+### 9. Relatório de Code Review (Obrigatório)
 
 Salvar em: `spec/tasks/[slug]/review_[num].md`
 

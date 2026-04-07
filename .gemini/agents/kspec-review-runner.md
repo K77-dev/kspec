@@ -62,7 +62,24 @@ Para cada mudança de código, verificar:
 - [ ] Segue os padrões de tratamento de erro
 - [ ] Segue os padrões de logging (se aplicável)
 
-### 4. Verificação de Aderência à TechSpec (Obrigatório)
+### 4. Verificação de Segurança (Obrigatório)
+
+Para cada mudança de código, verificar:
+
+- [ ] Inputs validados com Zod schemas (nunca confiar em dados do cliente)
+- [ ] Endpoints protegidos exigem autenticação/autorização
+- [ ] CORS configurado corretamente (origens permitidas explícitas, não wildcard em produção)
+- [ ] Sem secrets ou API keys hardcoded no código (usar variáveis de ambiente)
+- [ ] Erros não vazam stack traces ou detalhes internos para o cliente
+- [ ] Sem uso de `dangerouslySetInnerHTML` ou renderização de HTML não sanitizado
+- [ ] Queries parametrizadas (sem concatenação de strings em queries SQL/NoSQL)
+- [ ] Rate limiting em endpoints sensíveis (login, signup, reset password)
+- [ ] Headers de segurança configurados (HSTS, CSP, X-Content-Type-Options via middleware Hono)
+- [ ] Dados sensíveis (PII, tokens, senhas) não aparecem em logs
+
+Se a funcionalidade não envolve backend/API, marcar como N/A e justificar.
+
+### 5. Verificação de Aderência à TechSpec (Obrigatório)
 
 Comparar implementação com a TechSpec:
 
@@ -73,7 +90,7 @@ Comparar implementação com a TechSpec:
 - [ ] Endpoints/APIs conforme especificado
 - [ ] Integrações implementadas corretamente
 
-### 5. Verificação de Completude das Tasks (Obrigatório)
+### 6. Verificação de Completude das Tasks (Obrigatório)
 
 Para cada task marcada como completa:
 
@@ -82,7 +99,7 @@ Para cada task marcada como completa:
 - [ ] Subtarefas foram todas completadas
 - [ ] Testes da task foram implementados
 
-### 6. Execução dos Testes (Obrigatório)
+### 7. Execução dos Testes (Obrigatório)
 
 Executar os checks obrigatórios conforme definido em "Comandos do projeto" no GEMINI.md.
 
@@ -97,7 +114,7 @@ Verificar:
 
 Se os testes forem insuficientes (cobrem apenas o caminho feliz), isso é motivo de **REPROVAÇÃO**.
 
-### 7. Análise de Qualidade de Código (Obrigatório)
+### 8. Análise de Qualidade de Código (Obrigatório)
 
 | Aspecto | Verificação |
 |---------|-------------|
@@ -107,10 +124,10 @@ Se os testes forem insuficientes (cobrem apenas o caminho feliz), isso é motivo
 | Naming | Nomes claros e descritivos |
 | Comments | Comentários apenas onde necessário |
 | Error Handling | Tratamento de erros adequado |
-| Security | Sem vulnerabilidades óbvias (SQL injection, XSS, etc.) |
+| Security | Verificado no Step 4 (checklist de segurança) |
 | Performance | Sem problemas óbvios de performance |
 
-### 8. Relatório de Code Review (Obrigatório)
+### 9. Relatório de Code Review (Obrigatório)
 
 Salvar em: `@spec/tasks/<SLUG>/review_[num].md` (onde `[num]` é o número da task, ex: `review_1.0.md`, `review_2.0.md`)
 
