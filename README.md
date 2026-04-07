@@ -1,6 +1,6 @@
 # kspec
 
-Kit de especificações e padrões para projetos desenvolvidos com Claude Code.
+Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compatível com **Claude Code**, **Gemini CLI** e **GitHub Copilot**.
 
 ## Por que este projeto existe
 
@@ -11,6 +11,15 @@ Este repositório resolve isso fornecendo:
 - **Padrões de código** — regras consistentes para TypeScript, React, Hono, testes e logging
 - **Fluxo de desenvolvimento estruturado** — do requisito ao bugfix, cada etapa tem uma skill ou agent dedicado
 - **Templates padronizados** — PRD, Tech Spec e Tasks seguem formatos previsíveis que se referenciam entre si
+- **Multi-agente** — mesmas skills, agents, rules e templates adaptados para Claude Code, Gemini CLI e GitHub Copilot
+
+## Agentes suportados
+
+| Agente | Diretório de config | Guia principal | Skills | Agents | Rules | Templates |
+|---|---|---|---|---|---|---|
+| Claude Code | `.claude/` | `CLAUDE.md` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` | `.claude/templates/` |
+| Gemini CLI | `.gemini/` | `GEMINI.md` | `.gemini/skills/` | `.gemini/agents/` | `.gemini/rules/` | `.gemini/templates/` |
+| GitHub Copilot | `.github/` | `.github/copilot-instructions.md` | `.github/prompts/` | `.github/prompts/` | `.github/instructions/` | `.github/templates/` |
 
 ## Stack
 
@@ -24,22 +33,27 @@ Este repositório resolve isso fornecendo:
 ## Estrutura
 
 ```
-.claude/
-├── skills/         # Skills invocáveis (cada uma em sua pasta)
-├── agents/         # Agents (executam tarefas isoladas)
-├── rules/          # Padrões de código por domínio
-├── templates/      # Templates usados pelas skills
-.gemini/
-├── skills/         # Skills Gemini
-├── rules/          # Regras Gemini
-.github/
-├── workflows/      # GitHub Actions
-├── templates/      # Templates de PR, issues, specs
-├── instructions/   # Instruções de domínio para agentes
+.claude/                        # Configuração Claude Code
+├── skills/                     # Skills invocáveis (cada uma em sua pasta)
+├── agents/                     # Agents (executam tarefas isoladas)
+├── rules/                      # Padrões de código por domínio
+├── templates/                  # Templates usados pelas skills
+└── validation/                 # Validações de skills empresariais
+.gemini/                        # Configuração Gemini CLI
+├── skills/                     # Skills Gemini (mesmo fluxo do Claude)
+├── agents/                     # Agents Gemini
+├── rules/                      # Regras Gemini
+└── templates/                  # Templates Gemini
+.github/                        # Configuração GitHub Copilot
+├── copilot-instructions.md     # Guia principal do Copilot
+├── prompts/                    # Skills e agents como prompts reutilizáveis
+├── instructions/               # Instruções de domínio (equivalente a rules)
+└── templates/                  # Templates de specs
 spec/
-└── tasks/          # Artefatos gerados (PRDs, techspecs, tasks, reviews)
-CLAUDE.md           # Guia principal do projeto
-README.md           # Este arquivo
+└── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
+CLAUDE.md                       # Guia principal para Claude Code
+GEMINI.md                       # Guia principal para Gemini CLI
+README.md                       # Este arquivo
 ```
 
 ## Skills, Agents e Rules
@@ -218,26 +232,38 @@ As rules são carregadas automaticamente pelo Claude Code e definem padrões de 
 
 ### Instalação
 
-Na raiz do seu projeto, execute um dos comandos abaixo:
+Na raiz do seu projeto, copie o diretório do agente que você utiliza:
 
-**Repo público:**
-
-```bash
-bunx degit K77-dev/kspec/.claude .claude --force   # bun
-npx degit K77-dev/kspec/.claude .claude --force    # npm
-pnpm dlx degit K77-dev/kspec/.claude .claude --force  # pnpm
-```
-
-**Repo privado** (usa suas credenciais SSH):
+**Claude Code:**
 
 ```bash
-git clone --depth 1 git@github.com:K77-dev/kspec.git /tmp/kspec && cp -r /tmp/kspec/.claude . && rm -rf /tmp/kspec
+bunx degit K77-dev/kspec/.claude .claude --force
 ```
+
+**Gemini CLI:**
+
+```bash
+bunx degit K77-dev/kspec/.gemini .gemini --force
+```
+
+**GitHub Copilot:**
+
+```bash
+bunx degit K77-dev/kspec/.github .github --force
+```
+
+**Todos os agentes de uma vez:**
+
+```bash
+git clone --depth 1 git@github.com:K77-dev/kspec.git /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.gemini /tmp/kspec/.github . && rm -rf /tmp/kspec
+```
+
+> Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.
 
 ### Configuração
 
-1. Execute `/kspec-bootstrap` no Claude Code
-2. Revise o `CLAUDE.bootstrap.md` gerado e renomeie para `CLAUDE.md`
+1. Execute `/kspec-bootstrap` no seu agente de IA
+2. Revise o arquivo de guia gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
 3. Use o fluxo de desenvolvimento descrito acima
 
 ## Princípios de design
