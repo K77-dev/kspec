@@ -118,11 +118,53 @@ Cada rule deve:
 - Usar `paths:` no frontmatter quando aplicável
 - Conter exemplos com a stack real do projeto (não genéricos)
 
-### 6. Criar Diretório de Artefatos (Obrigatório)
+### 6. Gerar CI/CD (Opcional)
+
+Perguntar ao usuário: **"Deseja gerar um workflow de CI/CD para GitHub Actions?"**
+
+Se sim, gerar `.github/workflows/ci.yml` com pipeline baseada na stack detectada:
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup [package-manager]
+        # setup step based on detected package manager
+
+      - name: Install dependencies
+        run: [install-command]
+
+      - name: Lint
+        run: [lint-command]
+
+      - name: Typecheck
+        run: [typecheck-command]
+
+      - name: Test
+        run: [test-command]
+
+      - name: Build
+        run: [build-command]
+```
+
+Adaptar os comandos ao package manager e scripts detectados no passo de análise. Se o projeto usa `bun`, usar `oven-sh/setup-bun@v2`. Se usa `node`/`npm`, usar `actions/setup-node@v4`.
+
+### 7. Criar Diretório de Artefatos (Obrigatório)
 
 - Criar `spec/tasks/` para os artefatos gerados (se não existir)
 
-### 7. Relatório Final
+### 8. Relatório Final
 
 Apresentar ao usuário:
 
@@ -138,5 +180,6 @@ Apresentar ao usuário:
 - [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
 - [ ] Rules irrelevantes removidas
 - [ ] Path-specific rules configuradas onde aplicável
+- [ ] CI/CD oferecido ao usuário (e gerado se aceito)
 - [ ] Diretório spec/tasks/ criado
 - [ ] Relatório final apresentado
