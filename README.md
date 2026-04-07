@@ -22,7 +22,9 @@ Este repositório resolve isso fornecendo:
 | GitHub Copilot | `.github/` | `.github/copilot-instructions.md` | `.github/prompts/` | `.github/prompts/` | `.github/instructions/` | `.github/templates/` |
 | Agents (genérico) | `.agents/` | `AGENTS.md` | `.agents/skills/` | `.agents/agents/` | `.agents/rules/` | `.agents/templates/` |
 
-## Stack
+## Stack padrão (para projetos que usam kspec)
+
+As rules e templates do kspec são otimizados para esta stack, mas podem ser adaptados via `/kspec-bootstrap`:
 
 | Área | Tecnologia |
 |---|---|
@@ -225,16 +227,15 @@ Os agents rodam em contexto isolado e são acionados pelas skills — não preci
 
 ## Rules
 
-As rules são carregadas automaticamente pelo Claude Code e definem padrões de código por domínio:
+As rules são carregadas automaticamente pelos agentes e definem padrões de código por domínio:
 
-| Rule | Escopo | Carrega quando |
-|---|---|---|
-| `code-standards.md` | Global | Sempre |
-| `typescript.md` | Global | Sempre |
-| `http.md` | Backend | `backend/src/**/*.ts` |
-| `logging.md` | Backend | `backend/src/**/*.ts` |
-| `react.md` | Frontend | `frontend/src/**/*.tsx`, `frontend/src/**/*.ts` |
-| `tests.md` | Testes | `**/__tests__/**`, `**/*.test.ts`, `**/*.test.tsx`, `**/*.spec.ts` |
+| Rule | Escopo |
+|---|---|
+| `code-standards.md` | Padrões gerais de código (nomenclatura, formatação, boas práticas) |
+| `database.md` | Padrões de banco de dados |
+| `logging.md` | Padrões de logging |
+
+> Rules adicionais específicas de stack (React, TypeScript, HTTP, testes) podem ser adicionadas via repositório enterprise ou localmente.
 
 ## Como usar
 
