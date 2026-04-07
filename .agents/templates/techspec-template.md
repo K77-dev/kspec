@@ -120,11 +120,42 @@ interface NomeServico {
 
 ## Monitoramento e Observabilidade
 
-[Defina abordagem de monitoramento usando infraestrutura existente:
+### Error Tracking
 
-- Métricas a expor (formato Prometheus)
-- Logs principais e níveis de log
-- Integração com dashboards Grafana existentes]
+[Estratégia de rastreamento de erros:
+
+- Ferramenta (ex: Sentry, Bugsnag) e configuração
+- Quais erros capturar (unhandled exceptions, erros de API, erros de UI)
+- Informações de contexto a incluir (user ID, request ID, stack trace)]
+
+### Logging Estruturado
+
+[Padrão de logging para esta funcionalidade:
+
+- Campos obrigatórios por log (timestamp, level, service, requestId)
+- Eventos a logar (request/response, operações críticas, falhas)
+- Dados sensíveis a NÃO incluir em logs (PII, tokens, senhas)]
+
+### Health Checks
+
+[Endpoints de saúde para monitoramento:
+
+- Liveness: a aplicação está rodando?
+- Readiness: a aplicação está pronta para receber tráfego? (conexões com DB, serviços externos)]
+
+### Métricas de Negócio
+
+[Métricas específicas desta funcionalidade:
+
+- KPIs a medir (ex: taxa de conversão, latência p95, erros por minuto)
+- Formato de exposição (Prometheus counters/gauges/histograms)]
+
+### Alertas
+
+[Condições que devem gerar alertas:
+
+- Thresholds críticos (ex: error rate > 5%, latência p99 > 2s)
+- Canais de notificação (Slack, PagerDuty, email)]
 
 ## Considerações Técnicas
 
