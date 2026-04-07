@@ -13,6 +13,34 @@ Este repositorio resolve isso fornecendo:
 - **Templates padronizados** — PRD, Tech Spec e Tasks seguem formatos previsiveis que se referenciam entre si
 - **Multi-agente** — mesmas skills, agents, rules e templates adaptados para Claude Code, Gemini CLI e GitHub Copilot
 
+## Exemplo de uso rapido
+
+```
+Dev: /kspec-prd
+     "Quero um sistema de autenticacao com login social"
+     → responde perguntas do agente
+     → PRD gerado em spec/tasks/001-prd-auth/prd.md
+
+Dev: /kspec-techspec 001-prd-auth
+     → agente le o PRD, faz perguntas tecnicas
+     → Tech Spec gerada em spec/tasks/001-prd-auth/techspec.md
+
+Dev: /kspec-tasks 001-prd-auth
+     → agente quebra em 8 tasks, dev aprova
+     → Tasks geradas em spec/tasks/001-prd-auth/
+
+Dev: /kspec-implement-all-tasks 001-prd-auth
+     → agente implementa cada task + review automatica
+     → codigo implementado + reviews geradas
+
+Dev: /kspec-qa 001-prd-auth
+     → agente testa E2E + acessibilidade
+     → aprovado ou bugs documentados
+
+Dev: /kspec-bugfix 001-prd-auth  (se necessario)
+     → agente corrige bugs + testes de regressao
+```
+
 ## Visao geral do fluxo
 
 ```
@@ -309,34 +337,6 @@ git clone --depth 1 git@github.com:K77-dev/kspec.git /tmp/kspec && cp -r /tmp/ks
 1. Execute `/kspec-bootstrap` no seu agente de IA
 2. Revise o arquivo de guia gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
 3. Use o fluxo de desenvolvimento descrito acima
-
-### Exemplo de uso rapido
-
-```
-Dev: /kspec-prd
-     "Quero um sistema de autenticacao com login social"
-     → responde perguntas do agente
-     → PRD gerado em spec/tasks/001-prd-auth/prd.md
-
-Dev: /kspec-techspec
-     → agente le o PRD, faz perguntas tecnicas
-     → Tech Spec gerada em spec/tasks/001-prd-auth/techspec.md
-
-Dev: /kspec-tasks
-     → agente quebra em 8 tasks, dev aprova
-     → Tasks geradas em spec/tasks/001-prd-auth/
-
-Dev: /kspec-implement-all-tasks
-     → agente implementa cada task + review automatica
-     → codigo implementado + reviews geradas
-
-Dev: /kspec-qa
-     → agente testa E2E + acessibilidade
-     → aprovado ou bugs documentados
-
-Dev: /kspec-bugfix  (se necessario)
-     → agente corrige bugs + testes de regressao
-```
 
 ## Principios de design
 
