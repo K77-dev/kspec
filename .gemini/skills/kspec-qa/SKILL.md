@@ -7,6 +7,14 @@ description: Executa Quality Assurance da funcionalidade completa. Testa fluxos 
 
 O usuário deve informar o slug da funcionalidade (ex: `001-prd-auth`). Se não foi informado, pergunte antes de prosseguir. Use o slug informado como `<SLUG>` nas referências abaixo.
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @./.gemini/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
+### 1. Delegar ao Agent
+
 Delegue a execução ao agent subagent `kspec-qa-runner` para rodar em contexto isolado — o QA produz output verboso que não deve consumir o contexto principal.
 
 Passe ao agent:

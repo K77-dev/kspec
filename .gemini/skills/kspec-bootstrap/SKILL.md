@@ -31,7 +31,13 @@ Se encontrar configuração existente:
 
 Se não encontrar nenhuma configuração, seguir o fluxo normal.
 
-### 1. Análise do Projeto (Obrigatório)
+### 1. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @./.gemini/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
+### 2. Análise do Projeto (Obrigatório)
 
 Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 
@@ -62,7 +68,7 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 **Scripts** — ler scripts do `package.json` (raiz e workspaces):
 - dev, build, test, lint, typecheck, etc.
 
-### 2. Apresentar Detecções (Obrigatório)
+### 3. Apresentar Detecções (Obrigatório)
 
 Mostrar ao usuário um resumo do que foi detectado:
 
@@ -84,13 +90,13 @@ Perguntar:
 - Há algo que não foi detectado?
 - Qual idioma para specs? (padrão: português Brasil)
 
-### 3. Gerar GEMINI.bootstrap.md (Obrigatório)
+### 4. Gerar GEMINI.bootstrap.md (Obrigatório)
 
 Sempre gerar `GEMINI.bootstrap.md` na raiz — nunca sobrescrever um `GEMINI.md` existente. O usuário decide o que aproveitar.
 
 Seguir a estrutura de seções do template @./.gemini/templates/gemini-md-template.md, adaptando **todo o conteúdo** ao projeto detectado e ao formato GEMINI.md (com imports `@./` para rules).
 
-### 4. Gerar Rules (Obrigatório)
+### 5. Gerar Rules (Obrigatório)
 
 Gerar rules em `.gemini/rules/` com conteúdo adaptado à stack real do projeto:
 
@@ -109,11 +115,11 @@ Cada rule deve:
 - Usar `paths:` no frontmatter quando aplicável
 - Conter exemplos com a stack real do projeto (não genéricos)
 
-### 5. Criar Diretório de Artefatos (Obrigatório)
+### 6. Criar Diretório de Artefatos (Obrigatório)
 
 - Criar `spec/tasks/` para os artefatos gerados (se não existir)
 
-### 6. Relatório Final
+### 7. Relatório Final
 
 Apresentar ao usuário:
 

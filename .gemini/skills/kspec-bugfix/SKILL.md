@@ -29,6 +29,12 @@ O usuário deve informar o slug da funcionalidade (ex: `001-prd-auth`). Se não 
 
 ## Etapas para Executar
 
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+Siga as instruções em @./.gemini/validation/enterprise-skills-check.md para validar e instalar
+as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação
+bloquear a execução.
+
 ### 1. Análise de Contexto (Obrigatório)
 
 - Ler o arquivo `bugs.md` e extrair todos os bugs documentados
