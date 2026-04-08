@@ -303,31 +303,31 @@ Na raiz do seu projeto, copie o diretorio do agente que voce utiliza:
 **Claude Code:**
 
 ```bash
-bunx degit K77-dev/kspec/.claude .claude --force
+bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.claude .claude --force
 ```
 
 **Gemini CLI:**
 
 ```bash
-bunx degit K77-dev/kspec/.gemini .gemini --force
+bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.gemini .gemini --force
 ```
 
 **GitHub Copilot:**
 
 ```bash
-bunx degit K77-dev/kspec/.github .github --force
+bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.github .github --force
 ```
 
 **Agents (generico):**
 
 ```bash
-bunx degit K77-dev/kspec/.agents .agents --force
+bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.agents .agents --force
 ```
 
 **Todos os agentes de uma vez:**
 
 ```bash
-git clone --depth 1 git@github.com:K77-dev/kspec.git /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.gemini /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
+git clone --depth 1 https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.gemini /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
 ```
 
 > Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.
