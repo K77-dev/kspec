@@ -51,21 +51,28 @@ For each entry in the **local** registry:
 
 ### Step 5: Execute Actions
 
+**Deriving `{basename}` from `{name}`:**
+Rule and template names in the lock file may contain a category prefix (e.g., `frontend/react`).
+Derive `{basename}` as the last segment of `{name}` (e.g., `react` from `frontend/react`).
+If `{name}` has no `/`, then `{basename}` = `{name}`.
+This allows the enterprise repo to organize by category while the project keeps rules flat.
+
 **For each missing or outdated skill:**
 1. Copy: `cp -r .agents/.enterprise-skills-cache/.agents/skills/{name}/ .agents/skills/{name}/`
 2. Symlink: `ln -sfn ../../.agents/skills/{name} .claude/skills/{name}`
 
 **For each missing or outdated rule:**
-1. Copy: `cp .agents/.enterprise-skills-cache/.agents/rules/{name}.md .agents/rules/{name}.md`
-2. Symlink: `ln -sfn ../../.agents/rules/{name}.md .claude/rules/{name}.md`
+1. Copy: `cp .agents/.enterprise-skills-cache/.agents/rules/{name}.md .agents/rules/{basename}.md`
+2. Symlink: `ln -sfn ../../.agents/rules/{basename}.md .claude/rules/{basename}.md`
 
 **For each missing or outdated template:**
-1. Copy: `cp .agents/.enterprise-skills-cache/.agents/templates/{name}.md .agents/templates/{name}.md`
-2. Symlink: `ln -sfn ../../.agents/templates/{name}.md .claude/templates/{name}.md`
+1. Copy: `cp .agents/.enterprise-skills-cache/.agents/templates/{name}.md .agents/templates/{basename}.md`
+2. Symlink: `ln -sfn ../../.agents/templates/{basename}.md .claude/templates/{basename}.md`
 
-**For each removed entry (any type):**
-1. Delete from `.agents/` (source): `rm -rf .agents/{type}/{name}` or `rm -f .agents/{type}/{name}.md`
-2. Delete symlink: `rm -f .claude/{type}/{name}` or `rm -f .claude/{type}/{name}.md`
+**For each removed entry:**
+- Skills: `rm -rf .agents/skills/{name}` and `rm -f .claude/skills/{name}`
+- Rules: `rm -f .agents/rules/{basename}.md` and `rm -f .claude/rules/{basename}.md`
+- Templates: `rm -f .agents/templates/{basename}.md` and `rm -f .claude/templates/{basename}.md`
 
 **Progress messages:**
 - Skills: `→ Instalando skill {name}... OK` / `→ Atualizando skill {name}... OK`

@@ -51,17 +51,25 @@ For each entry in the **local** registry:
 
 ### Step 5: Execute Actions
 
+**Deriving `{basename}` from `{name}`:**
+Rule and template names in the lock file may contain a category prefix (e.g., `frontend/react`).
+Derive `{basename}` as the last segment of `{name}` (e.g., `react` from `frontend/react`).
+If `{name}` has no `/`, then `{basename}` = `{name}`.
+This allows the enterprise repo to organize by category while the project keeps rules flat.
+
 **For each missing or outdated skill:**
-1. Copy: `cp -r .gemini/.enterprise-skills-cache/.gemini/skills/{name}/ .gemini/skills/{name}/`
+1. Copy: `cp -r .gemini/.enterprise-skills-cache/.agents/skills/{name}/ .gemini/skills/{name}/`
 
 **For each missing or outdated rule:**
-1. Copy: `cp .gemini/.enterprise-skills-cache/.gemini/rules/{name}.md .gemini/rules/{name}.md`
+1. Copy: `cp .gemini/.enterprise-skills-cache/.agents/rules/{name}.md .gemini/rules/{basename}.md`
 
 **For each missing or outdated template:**
-1. Copy: `cp .gemini/.enterprise-skills-cache/.gemini/templates/{name}.md .gemini/templates/{name}.md`
+1. Copy: `cp .gemini/.enterprise-skills-cache/.agents/templates/{name}.md .gemini/templates/{basename}.md`
 
-**For each removed entry (any type):**
-1. Delete: `rm -rf .gemini/{type}/{name}` or `rm -f .gemini/{type}/{name}.md`
+**For each removed entry:**
+- Skills: `rm -rf .gemini/skills/{name}`
+- Rules: `rm -f .gemini/rules/{basename}.md`
+- Templates: `rm -f .gemini/templates/{basename}.md`
 
 **Progress messages:**
 - Skills: `→ Instalando skill {name}... OK` / `→ Atualizando skill {name}... OK`
