@@ -1,9 +1,9 @@
 {
   "version": 2,
   "remote": {
-    "url": "https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec-enterprise-platform-skills",
+    "url": "https://github.com/K77-dev/enterprise-platform-skills.git",
     "branch": "main",
-    "provider": "azure-devops"
+    "provider": "github"
   },
   "lastChecked": null,
   "skills": {},
