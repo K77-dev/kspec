@@ -30,6 +30,35 @@ O slug da funcionalidade será informado pelo usuário. Se não foi informado, p
 - Identificar a primeira task não marcada como completa
 - Verificar se suas dependências estão completas
   - Se não estiverem → reportar ao usuário e parar
+- Verificar se existe `review_[num].md` para esta task em `spec/tasks/[slug]/`
+  - Se existir e o status for **REPROVADO** → ativar modo de retry com diagnóstico (passo 1.5)
+  - Se não existir → prosseguir normalmente para o passo 2
+
+### 1.5. Diagnóstico de Causa Raiz (Condicional — só se review anterior REPROVADO)
+
+Ler o review report reprovado e o código atual da task. Gerar o seguinte diagnóstico estruturado:
+
+```
+## Diagnóstico de Causa Raiz
+
+### Problemas do Review Anterior
+Para cada problema do review, classificar:
+- **Tipo**: código errado | código faltando | teste faltando | teste errado | violação de rule | divergência da spec
+- **Arquivo**: caminho do arquivo afetado
+- **O que foi feito**: o que foi implementado na tentativa anterior
+- **Por que falhou**: análise de por que a abordagem não funcionou
+- **Correção necessária**: instrução específica e assertiva do que fazer diferente
+
+### Abordagem Anterior (o que NÃO repetir)
+- Resumo da abordagem que falhou e por que não deve ser repetida
+
+### Nova Abordagem Recomendada
+- Estratégia diferente para resolver os problemas
+- Se o problema for de entendimento da spec, citar o trecho relevante da spec
+- Se for de padrão de código, citar a rule específica e o exemplo correto
+```
+
+Usar o diagnóstico como guia na implementação do passo 2.
 
 ### 2. Implementar (Obrigatório)
 
@@ -54,7 +83,7 @@ Seguir o fluxo de review descrito em [kspec-review-runner.prompt.md](kspec-revie
 Avaliar resultado:
 - **APROVADO** → prosseguir para o passo 4
 - **APROVADO COM RESSALVAS** → corrigir e revisar novamente (1 chance)
-- **REPROVADO** → corrigir e revisar novamente (até 2x), depois parar e reportar ao usuário
+- **REPROVADO** → gerar diagnóstico de causa raiz (mesmo formato do passo 1.5) com base no review e no código atual, corrigir seguindo o diagnóstico, e revisar novamente. Se reprovar 2x → parar e reportar ao usuário
 
 ### 4. Finalizar (Obrigatório)
 

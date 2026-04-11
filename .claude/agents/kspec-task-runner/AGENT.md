@@ -34,6 +34,7 @@ bloquear a execução.
 - Revisar o contexto do PRD
 - Verificar requisitos da tech spec
 - Entender dependências de tarefas anteriores
+- Se um diagnóstico de causa raiz foi fornecido, lê-lo ANTES de qualquer implementação. O diagnóstico é prioritário sobre sua própria análise — ele contém a razão pela qual a abordagem anterior falhou e instruções específicas do que fazer diferente.
 
 ### 2. Análise da Tarefa
 
@@ -59,6 +60,8 @@ Riscos/Desafios: [Riscos ou desafios identificados]
 ```
 
 ### 4. Plano de Abordagem
+
+Se retry com diagnóstico: o plano DEVE endereçar cada problema listado no diagnóstico com a correção específica indicada. NÃO adote a abordagem marcada como falha no diagnóstico.
 
 ```
 1. [Primeiro passo]
