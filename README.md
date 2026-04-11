@@ -1,6 +1,6 @@
 # kspec
 
-Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compativel com **Claude Code**, **Gemini CLI**, **GitHub Copilot** e **Agents (generico)**.
+Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compativel com **Claude Code**, **GitHub Copilot** e **Agents (generico)**.
 
 ## Por que este projeto existe
 
@@ -11,7 +11,7 @@ Este repositorio resolve isso fornecendo:
 - **Padroes de codigo** — regras consistentes para nomenclatura, formatacao e boas praticas
 - **Fluxo de desenvolvimento estruturado** — do requisito ao bugfix, cada etapa tem uma skill ou agent dedicado
 - **Templates padronizados** — PRD, Tech Spec e Tasks seguem formatos previsiveis que se referenciam entre si
-- **Multi-agente** — mesmas skills, agents, rules e templates adaptados para Claude Code, Gemini CLI e GitHub Copilot
+- **Multi-agente** — mesmas skills, agents, rules e templates adaptados para Claude Code e GitHub Copilot
 
 ## Exemplo de uso rapido
 
@@ -141,7 +141,6 @@ Agents rodam em **contexto isolado** (nao veem a conversa, recebem apenas os inp
 | Agente | Diretorio de config | Guia principal | Skills | Agents | Rules | Templates |
 |---|---|---|---|---|---|---|
 | Claude Code | `.claude/` | `CLAUDE.md` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` | `.claude/templates/` |
-| Gemini CLI | `.gemini/` | `GEMINI.md` | `.gemini/skills/` | `.gemini/agents/` | `.gemini/rules/` | `.gemini/templates/` |
 | GitHub Copilot | `.github/` | `.github/copilot-instructions.md` | `.github/prompts/` | `.github/prompts/` | `.github/instructions/` | `.github/templates/` |
 | Agents (generico) | `.agents/` | `AGENTS.md` | `.agents/skills/` | `.agents/agents/` | `.agents/rules/` | `.agents/templates/` |
 
@@ -162,18 +161,16 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 
 ```
 .agents/                        # Configuracao generica (SOURCE OF TRUTH)
-├── skills/                     # 13 skills invocaveis
+├── skills/                     # 14 skills invocaveis
 ├── agents/                     # 3 agents (tarefas isoladas)
 ├── rules/                      # 3 rules (padroes de codigo)
 ├── templates/                  # 6 templates (PRD, techspec, tasks, etc.)
 └── validation/                 # Validacoes de skills empresariais
 .claude/                        # Configuracao Claude Code (sync de .agents/)
-.gemini/                        # Configuracao Gemini CLI (sync de .agents/)
 .github/                        # Configuracao GitHub Copilot (sync de .agents/)
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
-GEMINI.md                       # Guia principal para Gemini CLI
 AGENTS.md                       # Guia principal para Agents (generico)
 enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 ```
@@ -188,7 +185,7 @@ enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 | **Agents** | Isolado — contexto separado, so o resultado volta | Tarefas autocontidas que produzem relatorios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padroes de codigo por dominio |
 
-### Skills — entradas e saidas (13)
+### Skills — entradas e saidas (14)
 
 Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os caminhos sao relativos a `spec/tasks/[NNN]-prd-[nome]/`.
 
@@ -202,6 +199,7 @@ Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os ca
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
+| `/kspec-ideia` | Respostas do dev (visao, modulos, requisitos por modulo) | `spec/prompts/[NNN]-[nome].md` (um por modulo) + `spec/prompts/README.md` |
 | `/kspec-prd` | Solicitacao do dev + respostas de clarificacao, template `prd-template.md` | `prd.md` |
 | `/kspec-techspec` | `prd.md`, codigo-fonte do projeto, rules, template `techspec-template.md` | `techspec.md` |
 | `/kspec-tasks` | `prd.md`, `techspec.md`, templates `tasks-template.md` + `task-template.md` | `tasks.md` + `[num]_task.md` (um arquivo por task) |
@@ -254,7 +252,7 @@ O qa-runner (agent) le adicionalmente:
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
 | `/kspec-migrate` | `package.json`, lockfiles, codigo-fonte, migration guide (Context7/docs) | Codigo migrado + dependencias atualizadas |
-| `/kspec-sync` | `.agents/` (source of truth) | `.claude/`, `.gemini/`, `.github/` sincronizados |
+| `/kspec-sync` | `.agents/` (source of truth) | `.claude/`, `.github/` sincronizados |
 
 ### Agents — entradas e saidas (3)
 
@@ -306,12 +304,6 @@ Na raiz do seu projeto, copie o diretorio do agente que voce utiliza:
 bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.claude .claude --force
 ```
 
-**Gemini CLI:**
-
-```bash
-bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.gemini .gemini --force
-```
-
 **GitHub Copilot:**
 
 ```bash
@@ -327,7 +319,7 @@ bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Developmen
 **Todos os agentes de uma vez:**
 
 ```bash
-git clone --depth 1 https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.gemini /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
+git clone --depth 1 https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
 ```
 
 > Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.

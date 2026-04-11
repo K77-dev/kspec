@@ -2,7 +2,7 @@
 
 Guia para agentes de IA ao trabalhar com o código deste repositório.
 
-Este projeto é o **kspec** — um kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code, Gemini CLI, GitHub Copilot e Agents (genérico). **Não contém código de aplicação executável.**
+Este projeto é o **kspec** — um kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code, GitHub Copilot e Agents (genérico). **Não contém código de aplicação executável.**
 
 ### Idioma
 
@@ -14,7 +14,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 - **`.agents/` é o source of truth** — todas as mudanças em skills, agents, rules e templates devem ser feitas em `.agents/` primeiro, depois sincronizadas via `/kspec-sync`
 - **Sempre verifique as skills** antes de implementar — tarefas sem skills relevantes podem ser invalidadas
 - **Não use workarounds** — prefira correções de causa raiz
-- **Mantenha paridade** entre os 4 diretórios de plataforma (`.agents/`, `.claude/`, `.gemini/`, `.github/`)
+- **Mantenha paridade** entre os 3 diretórios de plataforma (`.agents/`, `.claude/`, `.github/`)
 
 ### Estrutura do projeto
 
@@ -32,11 +32,6 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 │   ├── rules/                   # Rules adaptadas para Claude Code
 │   ├── templates/               # Templates adaptados para Claude Code
 │   └── validation/              # Validações adaptadas para Claude Code
-├── .gemini/                     # Configuração Gemini CLI (sincronizado de .agents/)
-│   ├── skills/                  # Skills adaptadas para Gemini CLI
-│   ├── agents/                  # Agents como arquivos flat
-│   ├── rules/                   # Rules adaptadas para Gemini CLI
-│   └── templates/               # Templates adaptados para Gemini CLI
 ├── .github/                     # Configuração GitHub Copilot (sincronizado de .agents/)
 │   ├── copilot-instructions.md  # Guia principal do Copilot
 │   ├── prompts/                 # Skills e agents como .prompt.md
@@ -46,7 +41,6 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 │   └── tasks/                   # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 ├── CLAUDE.md                    # Este arquivo — guia para Claude Code
 ├── AGENTS.md                    # Guia para Agents (genérico)
-├── GEMINI.md                    # Guia para Gemini CLI
 ├── README.md                    # Documentação pública do projeto
 └── enterprise-skills-lock.json  # Lock de skills empresariais (versionamento)
 ```
@@ -55,6 +49,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 
 | Skill | Função |
 | --- | --- |
+| `kspec-ideia` | Brainstorm/discovery para decompor ideia em módulos |
 | `kspec-prd` | Cria PRD a partir de solicitação de funcionalidade |
 | `kspec-techspec` | Traduz PRD em especificação técnica |
 | `kspec-tasks` | Quebra Tech Spec em tarefas incrementais |
@@ -91,7 +86,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 
 ### Anti-padrões
 
-1. Editar diretamente em `.claude/`, `.gemini/` ou `.github/` sem atualizar `.agents/` primeiro
+1. Editar diretamente em `.claude/` ou `.github/` sem atualizar `.agents/` primeiro
 2. Pular ativação de skill
 3. Esquecer verificação de paridade após mudanças
 4. Executar comandos git destrutivos sem permissão do usuário

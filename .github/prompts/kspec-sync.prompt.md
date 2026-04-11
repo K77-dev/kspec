@@ -1,14 +1,14 @@
 ---
-description: Sincroniza os diretórios .claude/, .gemini/ e .github/ a partir do .agents/ (source of truth). Adapta referências, placeholders e formatos por plataforma.
+description: Sincroniza os diretórios .claude/ e .github/ a partir do .agents/ (source of truth). Adapta referências, placeholders e formatos por plataforma.
 agent: agent
 ---
 
-Sincroniza as configurações de todas as plataformas a partir do `.agents/` como fonte de verdade. Garante paridade entre os 4 diretórios de configuração.
+Sincroniza as configurações de todas as plataformas a partir do `.agents/` como fonte de verdade. Garante paridade entre os 3 diretórios de configuração.
 
 ## Importante
 
 - **Source of truth**: `.agents/` — todas as mudanças devem ser feitas aqui primeiro
-- **Destinos**: `.claude/`, `.gemini/`, `.github/`
+- **Destinos**: `.claude/`, `.github/`
 - Esta skill é para **manutenção do próprio kspec**, não para projetos que usam kspec
 
 ## Fluxo de Trabalho
@@ -21,7 +21,7 @@ Ler a estrutura completa de `.agents/`:
 
 ### 2. Comparar com Destinos
 
-Para cada destino (`.claude/`, `.gemini/`, `.github/`), verificar:
+Para cada destino (`.claude/`, `.github/`), verificar:
 - Arquivos presentes no source que faltam no destino
 - Arquivos no destino que não existem no source (podem ser específicos da plataforma)
 - Arquivos com conteúdo divergente
@@ -41,20 +41,7 @@ Copiar de `.agents/` para `.claude/`, adaptando:
 | `Agents` (nome genérico) | `Claude Code` |
 | `.agents/` (paths) | `.claude/` |
 
-### 4. Sincronizar .gemini/
-
-Copiar de `.agents/` para `.gemini/`, adaptando:
-
-| De (.agents/) | Para (.gemini/) |
-|---|---|
-| `@.agents/` | `@./.gemini/` |
-| `$ARGUMENTS` | `<SLUG>` |
-| `AGENTS.md` | `GEMINI.md` |
-| `agents-md-template.md` | `gemini-md-template.md` |
-| `.agents/` (paths) | `.gemini/` |
-| Agents em subdiretórios | Agents como arquivos flat |
-
-### 5. Sincronizar .github/
+### 4. Sincronizar .github/
 
 Copiar de `.agents/` para `.github/`, adaptando:
 
@@ -67,16 +54,16 @@ Copiar de `.agents/` para `.github/`, adaptando:
 | `agents-md-template.md` | `copilot-instructions-template.md` |
 | `AGENTS.md` | `copilot-instructions.md` |
 
-### 6. Validar Paridade
+### 5. Validar Paridade
 
 Após sincronizar, verificar:
-- Mesmo número de skills em todos os 4 diretórios
-- Mesmo número de agents em todos os 4 diretórios
-- Mesmo número de rules em todos os 4 diretórios
-- Mesmo número de templates em todos os 4 diretórios
+- Mesmo número de skills em todos os 3 diretórios
+- Mesmo número de agents em todos os 3 diretórios
+- Mesmo número de rules em todos os 3 diretórios
+- Mesmo número de templates em todos os 3 diretórios
 - Nenhuma referência cruzada entre plataformas
 
-### 7. Reportar Resultados
+### 6. Reportar Resultados
 
 - Arquivos criados/atualizados por destino
 - Arquivos ignorados (específicos de plataforma)

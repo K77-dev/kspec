@@ -1,6 +1,6 @@
 # Instruções do Projeto
 
-**kspec** — kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code, Gemini CLI, GitHub Copilot e Agents (genérico). **Não contém código de aplicação executável.**
+**kspec** — kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code, GitHub Copilot e Agents (genérico). **Não contém código de aplicação executável.**
 
 ## Idioma
 
@@ -12,7 +12,7 @@
 - **`.agents/` é o source of truth** — todas as mudanças devem ser feitas aqui primeiro
 - Não use workarounds — prefira correções de causa raiz
 - Não execute `git restore`, `git reset`, `git clean` ou comandos destrutivos sem permissão explícita
-- Mantenha paridade entre os 4 diretórios de plataforma (`.agents/`, `.claude/`, `.gemini/`, `.github/`)
+- Mantenha paridade entre os 3 diretórios de plataforma (`.agents/`, `.claude/`, `.github/`)
 
 ## Estrutura
 
@@ -25,12 +25,10 @@
 │   ├── templates/               # Templates usados pelas skills
 │   └── validation/              # Validações de skills empresariais
 ├── .claude/                     # Configuração Claude Code
-├── .gemini/                     # Configuração Gemini CLI
 ├── .github/                     # Configuração GitHub Copilot
 ├── spec/tasks/                  # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 ├── CLAUDE.md                    # Guia para Claude Code
 ├── AGENTS.md                    # Guia para Agents (genérico)
-├── GEMINI.md                    # Guia para Gemini CLI
 └── enterprise-skills-lock.json  # Lock de skills empresariais
 ```
 
@@ -55,4 +53,4 @@ Templates para cada artefato estão em `.github/templates/`.
 
 - `.agents/` é o source of truth — sincronize com `/kspec-sync` após mudanças
 - Rastreabilidade completa: PRD → Tech Spec → Tasks → Review → QA → Bugfix
-- Paridade entre as 4 plataformas de agentes
+- Paridade entre as 3 plataformas de agentes

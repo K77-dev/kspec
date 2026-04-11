@@ -20,7 +20,7 @@ Antes de qualquer detecção, verificar se já existe configuração no projeto:
 
 - Verificar se existe `.github/copilot-instructions.md`
 - Verificar se existe `.github/instructions/` com arquivos `.instructions.md`
-- Verificar se existe `AGENTS.md`, `CLAUDE.md` ou `GEMINI.md` na raiz
+- Verificar se existe `AGENTS.md` ou `CLAUDE.md` na raiz
 
 Se encontrar configuração existente:
 - **Ler o conteúdo** e extrair: stack, comandos, estrutura, padrões já definidos

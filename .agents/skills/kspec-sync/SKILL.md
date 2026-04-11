@@ -1,14 +1,14 @@
 ---
 name: kspec-sync
-description: Sincroniza os diretórios .claude/, .gemini/ e .github/ a partir do .agents/ (source of truth). Adapta referências, placeholders e formatos por plataforma.
+description: Sincroniza os diretórios .claude/ e .github/ a partir do .agents/ (source of truth). Adapta referências, placeholders e formatos por plataforma.
 ---
 
-Sincroniza as configurações de todas as plataformas a partir do `.agents/` como fonte de verdade. Garante paridade entre os 4 diretórios de configuração.
+Sincroniza as configurações de todas as plataformas a partir do `.agents/` como fonte de verdade. Garante paridade entre os 3 diretórios de configuração.
 
 ## Importante
 
 - **Source of truth**: `.agents/` — todas as mudanças devem ser feitas aqui primeiro
-- **Destinos**: `.claude/`, `.gemini/`, `.github/`
+- **Destinos**: `.claude/`, `.github/`
 - Esta skill é para **manutenção do próprio kspec**, não para projetos que usam kspec
 
 ## Fluxo de Trabalho
@@ -21,7 +21,7 @@ Ler a estrutura completa de `.agents/`:
 
 ### 2. Comparar com Destinos (Obrigatório)
 
-Para cada destino (`.claude/`, `.gemini/`, `.github/`), verificar:
+Para cada destino (`.claude/`, `.github/`), verificar:
 - Arquivos presentes no source que faltam no destino
 - Arquivos no destino que não existem no source (podem ser específicos da plataforma)
 - Arquivos com conteúdo divergente
@@ -43,27 +43,7 @@ Copiar de `.agents/` para `.claude/`, adaptando:
 
 Manter a estrutura de subdiretórios para agents: `.claude/agents/nome/AGENT.md`
 
-### 4. Sincronizar .gemini/ (Obrigatório)
-
-Copiar de `.agents/` para `.gemini/`, adaptando:
-
-| De (.agents/) | Para (.gemini/) |
-|---|---|
-| `@.agents/` | `@./.gemini/` |
-| `$ARGUMENTS` | `<SLUG>` (em agents e skills que recebem slug) |
-| `AGENTS.md` | `GEMINI.md` |
-| `AGENTS.bootstrap.md` | `GEMINI.bootstrap.md` |
-| `agents-md-template.md` | `gemini-md-template.md` |
-| `Agents` (nome genérico) | `Gemini CLI` |
-| `.agents/` (paths) | `.gemini/` |
-| Agents em subdiretórios | Agents como arquivos flat (`.gemini/agents/nome.md`) |
-
-Diferenças estruturais do Gemini:
-- Agents são arquivos flat (não subdiretórios)
-- Referências usam `@./` antes do path
-- Placeholders usam `<SLUG>` em vez de `$ARGUMENTS`
-
-### 5. Sincronizar .github/ (Obrigatório)
+### 4. Sincronizar .github/ (Obrigatório)
 
 Copiar de `.agents/` para `.github/`, adaptando:
 
@@ -84,17 +64,17 @@ Diferenças estruturais do GitHub Copilot:
 - Sem step 0 de validação de enterprise skills
 - Sem subdiretórios para skills/agents
 
-### 6. Validar Paridade (Obrigatório)
+### 5. Validar Paridade (Obrigatório)
 
 Após sincronizar, verificar:
-- [ ] Mesmo número de skills em todos os 4 diretórios
-- [ ] Mesmo número de agents em todos os 4 diretórios
-- [ ] Mesmo número de rules em todos os 4 diretórios
-- [ ] Mesmo número de templates em todos os 4 diretórios
-- [ ] Nenhuma referência a `.claude` dentro de `.gemini/` ou `.github/` (e vice-versa)
+- [ ] Mesmo número de skills em todos os 3 diretórios
+- [ ] Mesmo número de agents em todos os 3 diretórios
+- [ ] Mesmo número de rules em todos os 3 diretórios
+- [ ] Mesmo número de templates em todos os 3 diretórios
+- [ ] Nenhuma referência a `.claude` dentro de `.github/` (e vice-versa)
 - [ ] Nenhuma referência a `CLAUDE` dentro de `.agents/`
 
-### 7. Reportar Resultados
+### 6. Reportar Resultados
 
 - Arquivos criados/atualizados por destino
 - Arquivos ignorados (específicos de plataforma)
@@ -105,7 +85,6 @@ Após sincronizar, verificar:
 - [ ] .agents/ analisado como source of truth
 - [ ] Diferenças identificadas e apresentadas ao usuário
 - [ ] .claude/ sincronizado com referências adaptadas
-- [ ] .gemini/ sincronizado com placeholders e estrutura adaptados
 - [ ] .github/ sincronizado com formato .prompt.md/.instructions.md
-- [ ] Paridade validada entre os 4 diretórios
+- [ ] Paridade validada entre os 3 diretórios
 - [ ] Nenhuma referência cruzada entre plataformas
