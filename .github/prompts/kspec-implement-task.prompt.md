@@ -82,7 +82,7 @@ Seguir o fluxo de review descrito em [kspec-review-runner.prompt.md](kspec-revie
 
 Avaliar resultado:
 - **APROVADO** → prosseguir para o passo 4
-- **APROVADO COM RESSALVAS** → corrigir e revisar novamente (1 chance)
+- **APROVADO COM RESSALVAS** → gerar diagnóstico de causa raiz (mesmo formato do passo 1.5) listando cada ressalva como problema a corrigir, corrigir seguindo o diagnóstico, e revisar novamente (1 chance)
 - **REPROVADO** → gerar diagnóstico de causa raiz (mesmo formato do passo 1.5) com base no review e no código atual, corrigir seguindo o diagnóstico, e revisar novamente. Se reprovar 2x → parar e reportar ao usuário
 
 ### 4. Finalizar (Obrigatório)

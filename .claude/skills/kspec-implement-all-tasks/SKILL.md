@@ -12,7 +12,7 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 - Antes de executar uma task, verifique se suas dependências estão marcadas como completas — executar fora de ordem pode quebrar o código.
 - Delegue cada task ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
 - Após cada implementação, delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
-- Se a review retornar **APROVADO COM RESSALVAS**, delegue novamente ao `kspec-task-runner` com as ressalvas para correção. Se após correção ainda tiver ressalvas ou reprovar, pare e reporte ao usuário.
+- Se a review retornar **APROVADO COM RESSALVAS**, gere um diagnóstico estruturado (mesmo formato do Diagnóstico de Causa Raiz) listando cada ressalva como problema a corrigir, e delegue novamente ao `kspec-task-runner` com o diagnóstico. Se após correção ainda tiver ressalvas ou reprovar, pare e reporte ao usuário.
 - Se a review **REPROVAR**, gere um diagnóstico de causa raiz estruturado e delegue novamente ao `kspec-task-runner` com o diagnóstico. Se reprovar 2x na mesma task, pare e reporte ao usuário com a lista de problemas não resolvidos.
 - Mantenha apenas o resumo de cada task no contexto principal — os detalhes ficam nos agents.
 
@@ -63,10 +63,10 @@ Para cada task na ordem do arquivo:
      - Caminho do PRD e Tech Spec
      - Se retry: diagnóstico de causa raiz + instrução "Este é um retry. NÃO repita a abordagem anterior."
   3. Aguardar resultado do implement
-  4. Delegar ao agent `kspec-review-runner`
+  4. Delegar ao agent `kspec-review-runner` com slug da funcionalidade ($ARGUMENTS) + contexto da task
   5. Avaliar resultado da review:
      - APROVADO → marcar task como completa em tasks.md
-     - APROVADO COM RESSALVAS → delegar novamente ao implement com as ressalvas
+     - APROVADO COM RESSALVAS → gerar diagnóstico de causa raiz (ver formato abaixo) listando cada ressalva como problema a corrigir, e delegar novamente ao implement com o diagnóstico estruturado
        - Se após correção ainda tiver ressalvas ou reprovar → parar e reportar ao usuário
      - REPROVADO → gerar diagnóstico de causa raiz (ver formato abaixo) e delegar novamente ao implement com o diagnóstico estruturado
        - Se reprovar 2x → parar e reportar ao usuário com lista de problemas não resolvidos
@@ -87,10 +87,10 @@ Para cada lote:
   1. Delegar TODAS as tasks do lote ao agent `kspec-task-runner` em paralelo
      - Se retry: incluir diagnóstico de causa raiz + instrução "Este é um retry. NÃO repita a abordagem anterior."
   2. Aguardar todos os resultados
-  3. Para cada task concluída, delegar ao agent `kspec-review-runner`
+  3. Para cada task concluída, delegar ao agent `kspec-review-runner` com slug da funcionalidade ($ARGUMENTS) + contexto da task
   4. Avaliar resultados:
      - APROVADO → marcar task como completa em tasks.md
-     - APROVADO COM RESSALVAS → delegar novamente (sequencial) com as ressalvas
+     - APROVADO COM RESSALVAS → gerar diagnóstico de causa raiz (ver formato abaixo) listando cada ressalva como problema a corrigir, e delegar novamente (sequencial) com o diagnóstico estruturado
        - Se após correção ainda tiver ressalvas ou reprovar → parar e reportar ao usuário
      - REPROVADO → gerar diagnóstico de causa raiz (ver formato abaixo) e delegar novamente (sequencial) com o diagnóstico estruturado
        - Se reprovar 2x → parar e reportar ao usuário com lista de problemas não resolvidos
