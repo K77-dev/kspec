@@ -10,7 +10,7 @@ Você é um orquestrador de tarefas. Sua responsabilidade é identificar a próx
 
 - Delegue a implementação ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
 - Após cada implementação, delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
-- Se a review retornar **APROVADO COM RESSALVAS**, delegue novamente ao `kspec-task-runner` com as ressalvas para correção. Se após correção ainda tiver ressalvas ou reprovar, pare e reporte ao usuário.
+- Se a review retornar **APROVADO COM RESSALVAS**, gere um diagnóstico estruturado (mesmo formato do passo 1.5) listando cada ressalva como problema a corrigir, e delegue novamente ao `kspec-task-runner` com o diagnóstico. Se após correção ainda tiver ressalvas ou reprovar, pare e reporte ao usuário.
 - Se a review **REPROVAR**, gere um diagnóstico de causa raiz estruturado e delegue novamente ao `kspec-task-runner` com o diagnóstico. Se reprovar 2x, pare e reporte ao usuário com a lista de problemas não resolvidos.
 - Marque a tarefa como completa em tasks.md após a review passar.
 
@@ -81,11 +81,12 @@ Aguardar resultado da implementação.
 ### 3. Delegar Review (Obrigatório)
 
 Delegar ao agent `kspec-review-runner` com:
+- **Slug da funcionalidade: $ARGUMENTS**
 - Contexto da task implementada
 
 Avaliar resultado da review:
 - **APROVADO** → prosseguir para o passo 4
-- **APROVADO COM RESSALVAS** → delegar novamente ao `kspec-task-runner` com as ressalvas para correção
+- **APROVADO COM RESSALVAS** → gerar diagnóstico (mesmo formato do passo 1.5) listando cada ressalva como problema a corrigir, e delegar novamente ao `kspec-task-runner` com o diagnóstico estruturado completo
   - Se após correção a review ainda tiver ressalvas ou reprovar → parar e reportar ao usuário
 - **REPROVADO** → gerar diagnóstico de causa raiz (mesmo formato do passo 1.5) com base no review report e no código atual, e delegar novamente ao `kspec-task-runner` com o diagnóstico estruturado completo
   - Se reprovar 2x → parar e reportar ao usuário com a lista dos problemas não resolvidos

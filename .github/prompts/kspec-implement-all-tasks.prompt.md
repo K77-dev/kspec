@@ -45,7 +45,7 @@ Para cada task na ordem do arquivo:
 3. Auto-review seguindo o fluxo de [kspec-review-runner.prompt.md](kspec-review-runner.prompt.md)
 4. Avaliar resultado da review:
    - **APROVADO** → marcar task como completa em tasks.md
-   - **APROVADO COM RESSALVAS** → corrigir e revisar novamente
+   - **APROVADO COM RESSALVAS** → gerar diagnóstico de causa raiz (mesmo formato do passo 1.5 de [kspec-implement-task.prompt.md](kspec-implement-task.prompt.md)) listando cada ressalva como problema a corrigir, corrigir seguindo o diagnóstico, e revisar novamente
    - **REPROVADO** → gerar diagnóstico de causa raiz (mesmo formato do passo 1.5 de [kspec-implement-task.prompt.md](kspec-implement-task.prompt.md)), corrigir seguindo o diagnóstico, e revisar novamente. Se reprovar 2x → parar e reportar
 5. Registrar resumo da task (ID, status)
 
