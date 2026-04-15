@@ -199,17 +199,62 @@ jobs:
 
 Adaptar os comandos ao package manager e scripts detectados no passo de análise. Se o projeto usa `bun`, usar `oven-sh/setup-bun@v2`. Se usa `node`/`npm`, usar `actions/setup-node@v4`.
 
-### 7. Criar Diretório de Artefatos (Obrigatório)
+### 7. Symlink dos Skills kspec Core (Obrigatório)
+
+Após a instalação dos skills empresariais, garantir que os skills kspec core estejam acessíveis no projeto local. Claude Code para de buscar skills no diretório pai quando `.claude/` existe localmente.
+
+**7.1. Detectar diretório pai com skills kspec:**
+
+Buscar o diretório `.claude/skills/` mais próximo na hierarquia de diretórios acima do projeto atual que contenha skills `kspec-*`:
+
+```bash
+# Subir diretórios até encontrar .claude/skills/kspec-*
+PARENT_DIR=$(pwd)
+KSPEC_SKILLS_SOURCE=""
+while [ "$PARENT_DIR" != "/" ]; do
+  PARENT_DIR=$(dirname "$PARENT_DIR")
+  if ls "$PARENT_DIR/.claude/skills/kspec-prd" 1>/dev/null 2>&1; then
+    KSPEC_SKILLS_SOURCE="$PARENT_DIR/.claude/skills"
+    break
+  fi
+done
+```
+
+**7.2. Criar symlinks para cada skill kspec encontrado:**
+
+Se `KSPEC_SKILLS_SOURCE` foi encontrado:
+
+```bash
+mkdir -p .claude/skills
+for skill_dir in "$KSPEC_SKILLS_SOURCE"/kspec-*; do
+  skill_name=$(basename "$skill_dir")
+  if [ ! -e ".claude/skills/$skill_name" ]; then
+    ln -s "$skill_dir" ".claude/skills/$skill_name"
+  fi
+done
+```
+
+**7.3. Se nenhum diretório pai com skills foi encontrado:**
+
+- Reportar: `⚠ Skills kspec core não encontrados em diretórios pai. Os comandos /kspec-* podem não estar disponíveis.`
+- **NÃO bloquear** a execução — o bootstrap pode continuar sem os skills core.
+
+**7.4. Reportar skills linkados:**
+
+- `✓ {count} skill(s) kspec core linkado(s) de {KSPEC_SKILLS_SOURCE}`
+
+### 8. Criar Diretório de Artefatos (Obrigatório)
 
 - Criar `spec/tasks/` para os artefatos gerados (se não existir)
 
-### 8. Relatório Final
+### 9. Relatório Final
 
 Apresentar ao usuário:
 
 - Lista de arquivos gerados/atualizados
 - Rules criadas e quais foram removidas (com justificativa)
-- Próximo passo: "Revise o `AGENTS.bootstrap.md`, renomeie para `AGENTS.md` quando estiver satisfeito, depois use `/prd` para criar seu primeiro PRD"
+- Skills kspec core linkados (quantidade e origem)
+- Próximo passo: "Revise o `AGENTS.bootstrap.md`, renomeie para `AGENTS.md` quando estiver satisfeito, depois use `/kspec-prd` para criar seu primeiro PRD"
 
 ## Checklist de Qualidade
 
@@ -220,5 +265,6 @@ Apresentar ao usuário:
 - [ ] Rules irrelevantes removidas
 - [ ] Path-specific rules configuradas onde aplicável
 - [ ] CI/CD oferecido ao usuário (e gerado se aceito)
+- [ ] Skills kspec core linkados do diretório pai
 - [ ] Diretório spec/tasks/ criado
 - [ ] Relatório final apresentado
