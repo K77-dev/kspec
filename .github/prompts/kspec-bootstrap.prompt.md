@@ -32,6 +32,42 @@ Se não encontrar nenhuma configuração, seguir o fluxo normal.
 
 ### 1. Análise do Projeto (Obrigatório)
 
+Antes de iniciar a detecção, verificar se o projeto está vazio.
+
+**Critérios de projeto vazio** — o projeto é considerado vazio se **nenhum** dos seguintes existir:
+- `package.json`
+- `pom.xml` ou `build.gradle`
+- Lockfiles (`bun.lock`, `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`)
+- Diretórios `src/`, `app/` ou `lib/`
+
+Arquivos de scaffolding kspec (`.github/`, `.agents/`, `.claude/`, `spec/`, `AGENTS.md`, `README.md`, `enterprise-skills-lock.json`) **não contam** como código-fonte.
+
+- **Se vazio** → seguir passo **1A. Seleção Guiada**
+- **Se não vazio** → seguir passo **1B. Detecção Automática**
+
+#### 1A. Seleção Guiada de Stack (Projeto Vazio)
+
+Informar ao usuário que o projeto está vazio e guiá-lo na seleção da stack.
+
+**Pergunta 1 — Composição do projeto:**
+1. Somente backend
+2. Somente frontend
+3. Full-stack (backend + frontend)
+
+**Pergunta 2 — Stack de backend** (se composição inclui backend):
+1. Node.js → bun + Hono + Vitest + TypeScript
+2. Spring Boot → Maven + JUnit 5 + Java
+
+**Pergunta 3 — Stack de frontend** (se composição inclui frontend):
+1. React → Vite + Vitest + TypeScript
+2. Angular → Angular CLI + Jest + TypeScript
+
+**Pergunta 4 — Idioma para specs** (padrão: português Brasil)
+
+Após as respostas, seguir para o passo **2A**.
+
+#### 1B. Detecção Automática (Projeto Existente)
+
 Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 
 **Package manager** — verificar existência de lockfiles:
@@ -61,7 +97,25 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 **Scripts** — ler scripts do `package.json` (raiz e workspaces):
 - dev, build, test, lint, typecheck, etc.
 
-### 2. Apresentar Detecções (Obrigatório)
+Após a detecção, seguir para o passo **2B**.
+
+### 2. Confirmar Stack (Obrigatório)
+
+#### 2A. Confirmação da Seleção (Projeto Vazio)
+
+Apresentar resumo da stack selecionada:
+
+```
+## Stack Selecionada
+
+- Backend: [Node.js (bun + Hono + Vitest + TypeScript) / Spring Boot (Maven + JUnit 5 + Java) / N/A]
+- Frontend: [React (Vite + Vitest + TypeScript) / Angular (Angular CLI + Jest + TypeScript) / N/A]
+- Idioma specs: [idioma]
+```
+
+Perguntar: Confirma a seleção?
+
+#### 2B. Apresentar Detecções (Projeto Existente)
 
 Mostrar ao usuário um resumo do que foi detectado:
 
@@ -88,11 +142,22 @@ Perguntar:
 - Se já existe `.github/copilot-instructions.md`: **atualizar** com as informações detectadas, preservando personalizações do usuário
 - Se não existe: **gerar** seguindo o template copilot-instructions-template.md
 
-Adaptar todo o conteúdo ao projeto detectado.
+Adaptar todo o conteúdo ao projeto detectado ou selecionado.
+
+**Para projetos vazios (vindos do passo 1A):**
+
+- **Comandos do projeto**: gerar comandos esperados da stack selecionada:
+  - Node.js: `bun install`, `bun dev`, `bun test`, `bun run build`, `bun run lint`
+  - Spring Boot: `./mvnw spring-boot:run`, `./mvnw test`, `./mvnw package`, `./mvnw verify`
+  - React (Vite): `bun install`, `bun dev`, `bun test`, `bun run build`
+  - Angular: `ng serve`, `ng test`, `ng build`, `ng lint`
+- **Estrutura do projeto**: gerar estrutura recomendada para a stack (não existe árvore real para mapear)
 
 ### 4. Gerar Instructions (Obrigatório)
 
-Gerar arquivos `.github/instructions/*.instructions.md` com conteúdo adaptado à stack real:
+Gerar arquivos `.github/instructions/*.instructions.md` com conteúdo adaptado à stack real ou selecionada.
+
+**Para projetos existentes (passo 1B)** — selecionar por detecção:
 
 | Condição | Instruction gerada |
 |---|---|
@@ -103,13 +168,24 @@ Gerar arquivos `.github/instructions/*.instructions.md` com conteúdo adaptado �
 | Vitest/Jest detectado | `tests.instructions.md` |
 | Logging configurado | `logging.instructions.md` |
 
+**Para projetos vazios (passo 1A)** — selecionar por mapeamento fixo:
+
+| Stack selecionada | Instructions geradas |
+|---|---|
+| Node.js backend | `code-standards.instructions.md`, `typescript.instructions.md`, `hono.instructions.md`, `vitest.instructions.md`, `logging.instructions.md` |
+| Spring Boot backend | `code-standards.instructions.md`, `java.instructions.md`, `spring-boot.instructions.md`, `junit.instructions.md`, `logging.instructions.md` |
+| React frontend | `code-standards.instructions.md`, `typescript.instructions.md`, `react.instructions.md`, `vitest.instructions.md` |
+| Angular frontend | `code-standards.instructions.md`, `typescript.instructions.md`, `angular.instructions.md`, `jest.instructions.md` |
+
+Em full-stack: usar a união dos dois conjuntos (sem duplicatas).
+
 Remover instructions que não se aplicam. Cada instruction deve usar `applyTo:` no frontmatter.
 
 ### 5. Gerar CI/CD (Opcional)
 
 Perguntar ao usuário: **"Deseja gerar um workflow de CI/CD para GitHub Actions?"**
 
-Se sim, gerar `.github/workflows/ci.yml` com pipeline baseada na stack detectada:
+Se sim, gerar `.github/workflows/ci.yml` com pipeline baseada na stack detectada ou selecionada:
 
 ```yaml
 name: CI

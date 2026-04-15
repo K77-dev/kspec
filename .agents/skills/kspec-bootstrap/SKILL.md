@@ -42,6 +42,42 @@ as skills empresariais obrigatórias.
 
 ### 2. Análise do Projeto (Obrigatório)
 
+Antes de iniciar a detecção, verificar se o projeto está vazio.
+
+**Critérios de projeto vazio** — o projeto é considerado vazio se **nenhum** dos seguintes existir:
+- `package.json`
+- `pom.xml` ou `build.gradle`
+- Lockfiles (`bun.lock`, `pnpm-lock.yaml`, `yarn.lock`, `package-lock.json`)
+- Diretórios `src/`, `app/` ou `lib/`
+
+Arquivos de scaffolding kspec (`.agents/`, `.claude/`, `.github/`, `spec/`, `AGENTS.md`, `README.md`, `enterprise-skills-lock.json`) **não contam** como código-fonte.
+
+- **Se vazio** → seguir passo **2A. Seleção Guiada**
+- **Se não vazio** → seguir passo **2B. Detecção Automática**
+
+#### 2A. Seleção Guiada de Stack (Projeto Vazio)
+
+Informar ao usuário que o projeto está vazio e guiá-lo na seleção da stack.
+
+**Pergunta 1 — Composição do projeto:**
+1. Somente backend
+2. Somente frontend
+3. Full-stack (backend + frontend)
+
+**Pergunta 2 — Stack de backend** (se composição inclui backend):
+1. Node.js → bun + Hono + Vitest + TypeScript
+2. Spring Boot → Maven + JUnit 5 + Java
+
+**Pergunta 3 — Stack de frontend** (se composição inclui frontend):
+1. React → Vite + Vitest + TypeScript
+2. Angular → Angular CLI + Jest + TypeScript
+
+**Pergunta 4 — Idioma para specs** (padrão: português Brasil)
+
+Após as respostas, seguir para o passo **3A**.
+
+#### 2B. Detecção Automática (Projeto Existente)
+
 Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 
 **Package manager** — verificar existência de lockfiles:
@@ -71,7 +107,25 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 **Scripts** — ler scripts do `package.json` (raiz e workspaces):
 - dev, build, test, lint, typecheck, etc.
 
-### 3. Apresentar Detecções (Obrigatório)
+Após a detecção, seguir para o passo **3B**.
+
+### 3. Confirmar Stack (Obrigatório)
+
+#### 3A. Confirmação da Seleção (Projeto Vazio)
+
+Apresentar resumo da stack selecionada:
+
+```
+## Stack Selecionada
+
+- Backend: [Node.js (bun + Hono + Vitest + TypeScript) / Spring Boot (Maven + JUnit 5 + Java) / N/A]
+- Frontend: [React (Vite + Vitest + TypeScript) / Angular (Angular CLI + Jest + TypeScript) / N/A]
+- Idioma specs: [idioma]
+```
+
+Perguntar: Confirma a seleção?
+
+#### 3B. Apresentar Detecções (Projeto Existente)
 
 Mostrar ao usuário um resumo do que foi detectado:
 
@@ -97,11 +151,20 @@ Perguntar:
 
 Sempre gerar `AGENTS.bootstrap.md` na raiz — nunca sobrescrever um `AGENTS.md` existente. O usuário decide o que aproveitar.
 
-Seguir a estrutura de seções do template @.agents/templates/agents-md-template.md, adaptando **todo o conteúdo** ao projeto detectado.
+Seguir a estrutura de seções do template @.agents/templates/agents-md-template.md, adaptando **todo o conteúdo** ao projeto detectado ou selecionado.
+
+**Para projetos vazios (vindos do passo 2A):**
+
+- **Comandos do projeto**: gerar comandos esperados da stack selecionada:
+  - Node.js: `bun install`, `bun dev`, `bun test`, `bun run build`, `bun run lint`
+  - Spring Boot: `./mvnw spring-boot:run`, `./mvnw test`, `./mvnw package`, `./mvnw verify`
+  - React (Vite): `bun install`, `bun dev`, `bun test`, `bun run build`
+  - Angular: `ng serve`, `ng test`, `ng build`, `ng lint`
+- **Estrutura do projeto**: gerar estrutura recomendada para a stack (não existe árvore real para mapear)
 
 ### 5. Selecionar Rules do Enterprise (Obrigatório)
 
-As rules de stack estão no repositório enterprise (não no core kspec). O bootstrap seleciona as rules relevantes baseado na stack detectada no passo 2.
+As rules de stack estão no repositório enterprise (não no core kspec). O bootstrap seleciona as rules relevantes baseado na stack detectada ou selecionada no passo 2.
 
 **5.1. Listar rules disponíveis no enterprise cache:**
 
@@ -121,7 +184,9 @@ rules/
 └── validation/       # zod.md, joi.md
 ```
 
-**5.2. Selecionar rules baseado na stack detectada:**
+**5.2. Selecionar rules baseado na stack detectada ou selecionada:**
+
+**Para projetos existentes (passo 2B)** — selecionar por detecção:
 
 | Condição | Rule selecionada do enterprise |
 |---|---|
@@ -132,6 +197,17 @@ rules/
 | Vitest/Jest detectado | `testing/{test-runner}.md` |
 | bun/npm/pnpm detectado | `package-managers/{pm}.md` |
 | Zod/Joi/Yup detectado | `validation/{lib}.md` |
+
+**Para projetos vazios (passo 2A)** — selecionar por mapeamento fixo:
+
+| Stack selecionada | Rules do enterprise |
+|---|---|
+| Node.js backend | `languages/typescript.md`, `backend/hono.md`, `testing/vitest.md`, `package-managers/bun.md` |
+| Spring Boot backend | `languages/java.md`, `backend/spring-boot.md`, `testing/junit.md`, `package-managers/maven.md` |
+| React frontend | `languages/typescript.md`, `frontend/react.md`, `testing/vitest.md` |
+| Angular frontend | `languages/typescript.md`, `frontend/angular.md`, `testing/jest.md` |
+
+Em full-stack: usar a união dos dois conjuntos (sem duplicatas).
 
 **5.3. Copiar rules selecionadas para o projeto:**
 
@@ -155,13 +231,13 @@ Se existirem rules de stack em `.agents/rules/` que não correspondem a nenhuma 
 
 **5.6. Ajustar `paths:` no frontmatter:**
 
-Após copiar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`).
+Após copiar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`). Para projetos vazios, manter os paths genéricos padrão da rule (`**/*.ts`, `**/*.java`, etc.).
 
 ### 6. Gerar CI/CD (Opcional)
 
 Perguntar ao usuário: **"Deseja gerar um workflow de CI/CD para GitHub Actions?"**
 
-Se sim, gerar `.github/workflows/ci.yml` com pipeline baseada na stack detectada:
+Se sim, gerar `.github/workflows/ci.yml` com pipeline baseada na stack detectada ou selecionada:
 
 ```yaml
 name: CI
@@ -213,8 +289,9 @@ Apresentar ao usuário:
 
 ## Checklist de Qualidade
 
-- [ ] Projeto analisado (package.json, lockfiles, configs — não os arquivos em .agents/)
-- [ ] Detecções confirmadas com o usuário
+- [ ] Projeto vazio: seleção guiada oferecida (se aplicável)
+- [ ] Projeto existente: analisado (package.json, lockfiles, configs — não os arquivos em .agents/)
+- [ ] Stack confirmada com o usuário (seleção guiada ou detecções)
 - [ ] AGENTS.bootstrap.md gerado com conteúdo adaptado à stack real
 - [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
 - [ ] Rules irrelevantes removidas
