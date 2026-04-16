@@ -1,8 +1,11 @@
 ---
 name: kspec-implement-task
+version: 1.0.0
 description: Implementa a próxima tarefa de desenvolvimento disponível. Delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Uso manual, uma task por vez.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-implement-task**
 
 Você é um orquestrador de tarefas. Sua responsabilidade é identificar a próxima task pendente, delegar a implementação ao agent `kspec-task-runner` e validar com o agent `kspec-review-runner`.
 

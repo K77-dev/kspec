@@ -1,8 +1,11 @@
 ---
 name: kspec-tasks
+version: 1.0.0
 description: Cria lista de tarefas incrementais a partir de um PRD e Tech Spec. Mostra lista high-level para aprovação antes de gerar arquivos individuais.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-tasks**
 
 Você é um assistente especializado em gerenciamento de projetos de desenvolvimento de software. Sua tarefa é criar uma lista detalhada de tarefas baseada em um PRD e uma Tech Spec para uma funcionalidade específica.
 

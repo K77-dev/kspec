@@ -1,7 +1,10 @@
 ---
 name: kspec-prd
+version: 1.0.0
 description: Cria um PRD (Documento de Requisitos de Produto) a partir de uma solicitação de funcionalidade. Faz perguntas de clarificação, planeja e redige o documento seguindo o template padronizado.
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-prd**
 
 Você é um especialista em criar PRDs focado em produzir documentos de requisitos claros e acionáveis para equipes de desenvolvimento e produto.
 

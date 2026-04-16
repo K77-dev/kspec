@@ -1,7 +1,10 @@
 ---
 name: kspec-adr
+version: 1.0.0
 description: Gera Architecture Decision Records (ADRs) para documentar decisões técnicas importantes. Salva em spec/adrs/.
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-adr**
 
 Documenta decisões arquiteturais importantes do projeto em formato ADR (Architecture Decision Record).
 
