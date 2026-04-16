@@ -54,6 +54,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 | `kspec-release` | Gera changelog e notas de release |
 | `kspec-migrate` | Planeja e executa upgrades de dependências |
 | `kspec-sync` | Sincroniza plataformas a partir do `.agents/` |
+| `kspec-version` | Exibe versão atual e lista skills/agents |
 
 ### Agents do kspec
 
