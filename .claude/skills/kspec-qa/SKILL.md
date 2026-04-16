@@ -1,8 +1,11 @@
 ---
 name: kspec-qa
+version: 1.0.0
 description: Executa Quality Assurance da funcionalidade completa. Testa fluxos E2E com TestSprite MCP, verifica acessibilidade (WCAG 2.2), documenta bugs em bugs.md e gera relatório qa.md. Execute após todas as tasks estarem implementadas e revisadas.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-qa**
 
 ## Funcionalidade
 

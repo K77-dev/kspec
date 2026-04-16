@@ -1,7 +1,10 @@
 ---
 name: kspec-bootstrap
+version: 1.0.0
 description: Analisa um projeto existente e gera a configuração completa do Agents (AGENTS.bootstrap.md, rules adaptadas) baseada na stack, estrutura e convenções detectadas.
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-bootstrap**
 
 Você é um assistente especializado em configurar projetos para uso com Agents. Sua tarefa é analisar um projeto existente, detectar a stack e gerar os arquivos de configuração adaptados.
 

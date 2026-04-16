@@ -1,8 +1,11 @@
 ---
 name: kspec-migrate
+version: 1.0.0
 description: Planeja e executa upgrades de frameworks e dependências. Analisa breaking changes, gera plano de migração como tasks e executa incrementalmente.
 argument-hint: "<dependência@versão> (ex: react@19, tailwindcss@4, hono@4)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-migrate**
 
 Planeja e guia upgrades de frameworks, bibliotecas e dependências do projeto de forma estruturada e incremental.
 

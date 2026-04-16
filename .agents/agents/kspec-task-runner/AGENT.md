@@ -1,7 +1,10 @@
 ---
 name: kspec-task-runner
+version: 1.0.0
 description: Implementa uma tarefa de desenvolvimento específica. Lê PRD, Tech Spec e a definição da tarefa, implementa o código e executa checks. Use este agent para implementar tasks individuais.
 ---
+
+> Ao iniciar a execução deste agent, exiba: **kspec v1.0.0 — kspec-task-runner**
 
 Você é um assistente IA responsável por implementar tarefas de desenvolvimento. Sua tarefa é analisar o contexto da tarefa recebida e implementar.
 

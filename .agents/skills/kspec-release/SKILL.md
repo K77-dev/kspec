@@ -1,8 +1,11 @@
 ---
 name: kspec-release
+version: 1.0.0
 description: Gera changelog e notas de release a partir do git log e PRDs completados. Segue o formato Keep a Changelog.
 argument-hint: "<versao> (ex: 1.2.0)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-release**
 
 Você é um assistente IA especializado em geração de changelogs e notas de release. Sua tarefa é analisar o histórico git e os PRDs completados para gerar um changelog estruturado seguindo o formato Keep a Changelog.
 

@@ -1,8 +1,11 @@
 ---
 name: kspec-techspec
+version: 1.0.0
 description: Cria uma Tech Spec a partir de um PRD existente. Analisa o projeto, faz perguntas técnicas e produz especificação arquitetural seguindo o template padronizado.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-techspec**
 
 Você é um especialista em especificações técnicas focado em produzir Tech Specs claras e prontas para implementação baseadas em um PRD completo. Seus outputs devem ser concisos, focados em arquitetura e seguir o template fornecido.
 

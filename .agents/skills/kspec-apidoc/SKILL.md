@@ -1,7 +1,10 @@
 ---
 name: kspec-apidoc
+version: 1.0.0
 description: Gera documentação OpenAPI 3.1 a partir da TechSpec e do código-fonte. Analisa rotas e schemas do projeto e produz spec/api/openapi.yaml.
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-apidoc**
 
 Gera documentação de API no formato OpenAPI 3.1 a partir da TechSpec e do código-fonte do projeto.
 

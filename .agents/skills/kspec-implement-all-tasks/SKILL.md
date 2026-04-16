@@ -1,8 +1,11 @@
 ---
 name: kspec-implement-all-tasks
+version: 1.0.0
 description: Executa todas as tasks pendentes (sequencial ou paralelo). Para cada task, delega ao agent kspec-task-runner (contexto isolado), depois ao agent kspec-review-runner. Respeita dependências e oferece paralelismo quando possível.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-implement-all-tasks**
 
 Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as tasks pendentes de uma funcionalidade, delegando cada uma ao agent `kspec-task-runner` e validando com o agent `kspec-review-runner`.
 
