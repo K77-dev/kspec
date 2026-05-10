@@ -29,7 +29,7 @@ Dev: /kspec-tasks 001-prd-auth
      → agente quebra em 8 tasks, dev aprova
      → Tasks geradas em spec/tasks/001-prd-auth/
 
-Dev: /kspec-implement-all-tasks 001-prd-auth
+Dev: /kspec-implement 001-prd-auth
      → agente implementa cada task + review automatica
      → codigo implementado + reviews geradas
 
@@ -70,7 +70,7 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
               ┌────────────────────────────────▼───────────────────────────────┐
               │                       IMPLEMENTACAO                            │
               │                                                                │
-              │   /kspec-implement-all-tasks     (todas as tasks)              │
+              │   /kspec-implement     (todas as tasks)              │
               │                                                                │
               │   Para cada task:                                               │
               │   ┌──────────────────────────────────────────────────────┐      │
@@ -201,7 +201,7 @@ Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os ca
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-implement-all-tasks` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules (para cada task pendente) | Codigo implementado + `review_[num].md` (um por task) |
+| `/kspec-implement` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules (para cada task pendente) | Codigo implementado + `review_[num].md` (um por task) |
 
 **Detalhamento do ciclo interno de cada task:**
 

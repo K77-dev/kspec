@@ -41,7 +41,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 | `kspec-prd` | Cria PRD a partir de solicitação de funcionalidade |
 | `kspec-techspec` | Traduz PRD em especificação técnica |
 | `kspec-tasks` | Quebra Tech Spec em tarefas incrementais |
-| `kspec-implement-all-tasks` | Executa todas as tasks pendentes |
+| `kspec-implement` | Executa todas as tasks pendentes |
 | `kspec-qa` | Quality Assurance (E2E, acessibilidade) |
 | `kspec-bugfix` | Corrige bugs documentados pelo QA |
 | `kspec-bootstrap` | Gera configuração para projeto existente |
@@ -51,8 +51,8 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 
 | Agent | Acionado por | Função |
 | --- | --- | --- |
-| `kspec-task-runner` | `/kspec-implement-all-tasks` | Implementa uma task em contexto isolado |
-| `kspec-review-runner` | `/kspec-implement-all-tasks` | Code review contra spec e rules |
+| `kspec-task-runner` | `/kspec-implement` | Implementa uma task em contexto isolado |
+| `kspec-review-runner` | `/kspec-implement` | Code review contra spec e rules |
 | `kspec-qa-runner` | `/kspec-qa` | Testa E2E, acessibilidade, visual |
 
 ### Rules
