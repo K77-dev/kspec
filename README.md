@@ -70,8 +70,7 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
               ┌────────────────────────────────▼───────────────────────────────┐
               │                       IMPLEMENTACAO                            │
               │                                                                │
-              │   /kspec-implement-task          (uma task por vez)             │
-              │   /kspec-implement-all-tasks     (todas de uma vez)            │
+              │   /kspec-implement-all-tasks     (todas as tasks)              │
               │                                                                │
               │   Para cada task:                                               │
               │   ┌──────────────────────────────────────────────────────┐      │
@@ -114,7 +113,8 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
 ```
   Dev                    Skill                     Agent
    │                       │                         │
-   │  /kspec-implement-task│                         │
+   │ /kspec-implement-all  │                         │
+   │    -tasks             │                         │
    │──────────────────────▶│                         │
    │                       │                         │
    │                       │  delega implementacao   │
@@ -141,10 +141,6 @@ Agents rodam em **contexto isolado** (nao veem a conversa, recebem apenas os inp
 | Agente | Diretorio de config | Guia principal | Skills | Agents | Rules | Templates |
 |---|---|---|---|---|---|---|
 | Claude Code | `.claude/` | `CLAUDE.md` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` | `.claude/templates/` |
-| GitHub Copilot | `.github/` | `.github/copilot-instructions.md` | `.github/prompts/` | `.github/prompts/` | `.github/instructions/` | `.github/templates/` |
-| Agents (generico) | `.agents/` | `AGENTS.md` | `.agents/skills/` | `.agents/agents/` | `.agents/rules/` | `.agents/templates/` |
-
-> `.agents/` e o **source of truth**. Os outros diretorios sao sincronizados via `/kspec-sync`.
 
 ## Stack padrao (para projetos que usam kspec)
 
@@ -160,18 +156,15 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 ## Estrutura do repositorio
 
 ```
-.agents/                        # Configuracao generica (SOURCE OF TRUTH)
-├── skills/                     # 14 skills invocaveis
+.claude/                        # Configuracao Claude Code
+├── skills/                     # 8 skills invocaveis
 ├── agents/                     # 3 agents (tarefas isoladas)
 ├── rules/                      # 3 rules (padroes de codigo)
 ├── templates/                  # 6 templates (PRD, techspec, tasks, etc.)
 └── validation/                 # Validacoes de skills empresariais
-.claude/                        # Configuracao Claude Code (sync de .agents/)
-.github/                        # Configuracao GitHub Copilot (sync de .agents/)
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
-AGENTS.md                       # Guia principal para Agents (generico)
 enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 ```
 
@@ -185,7 +178,7 @@ enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 | **Agents** | Isolado — contexto separado, so o resultado volta | Tarefas autocontidas que produzem relatorios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padroes de codigo por dominio |
 
-### Skills — entradas e saidas (14)
+### Skills — entradas e saidas (8)
 
 Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os caminhos sao relativos a `spec/tasks/[NNN]-prd-[nome]/`.
 
@@ -208,8 +201,7 @@ Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os ca
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-implement-task` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules | Codigo implementado + `review_[num].md` |
-| `/kspec-implement-all-tasks` | Mesmos do implement-task (para cada task pendente) | Codigo implementado + `review_[num].md` (um por task) |
+| `/kspec-implement-all-tasks` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules (para cada task pendente) | Codigo implementado + `review_[num].md` (um por task) |
 
 **Detalhamento do ciclo interno de cada task:**
 
@@ -239,20 +231,6 @@ O qa-runner (agent) le adicionalmente:
 - Auditoria de vulnerabilidades (`bun audit` / `npm audit`)
 - Metricas de performance (bundle size, Lighthouse)
 
-#### Documentacao
-
-| Skill | Le (entrada) | Produz (saida) |
-|---|---|---|
-| `/kspec-apidoc` | `techspec.md`, controllers/routes do projeto, schemas de validacao | `spec/api/openapi.yaml` |
-| `/kspec-adr` | Respostas do dev (contexto, opcoes, decisao), template `adr-template.md` | `spec/adrs/[NNN]-titulo.md` + `spec/adrs/index.md` |
-| `/kspec-release` | `git log` (commits desde ultima tag), `spec/tasks/*/tasks.md` + `prd.md` (PRDs completos) | `CHANGELOG.md` + tag git (opcional) |
-
-#### Manutencao
-
-| Skill | Le (entrada) | Produz (saida) |
-|---|---|---|
-| `/kspec-migrate` | `package.json`, lockfiles, codigo-fonte, migration guide (Context7/docs) | Codigo migrado + dependencias atualizadas |
-| `/kspec-sync` | `.agents/` (source of truth) | `.claude/`, `.github/` sincronizados |
 
 ### Agents — entradas e saidas (3)
 
@@ -260,8 +238,8 @@ Os agents rodam em contexto isolado e sao acionados pelas skills — nao precisa
 
 | Agent | Acionado por | Le (entrada) | Produz (saida) |
 |---|---|---|---|
-| `kspec-task-runner` | implement-task, implement-all-tasks | `[num]_task.md`, `prd.md`, `techspec.md`, rules, codigo existente | Codigo-fonte + testes unitarios |
-| `kspec-review-runner` | implement-task, implement-all-tasks | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
+| `kspec-task-runner` | implement-all-tasks | `[num]_task.md`, `prd.md`, `techspec.md`, rules, codigo existente | Codigo-fonte + testes unitarios |
+| `kspec-review-runner` | implement-all-tasks | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
 | `kspec-qa-runner` | kspec-qa | `prd.md`, `techspec.md`, `tasks.md`, rules, app rodando | `qa.md` + `bugs.md` |
 
 ### Rules (3)
@@ -296,30 +274,10 @@ Rastreabilidade completa: cada artefato referencia o anterior, permitindo navega
 
 ### Instalacao
 
-Na raiz do seu projeto, copie o diretorio do agente que voce utiliza:
-
-**Claude Code:**
+Na raiz do seu projeto, copie a configuracao do Claude Code:
 
 ```bash
 bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.claude .claude --force
-```
-
-**GitHub Copilot:**
-
-```bash
-bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.github .github --force
-```
-
-**Agents (generico):**
-
-```bash
-bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.agents .agents --force
-```
-
-**Todos os agentes de uma vez:**
-
-```bash
-git clone --depth 1 https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
 ```
 
 > Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.
@@ -337,4 +295,3 @@ git clone --depth 1 https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Developm
 - **Rastreabilidade** — PRD → Tech Spec → Tasks → Review → QA → Bugfix
 - **Codigo em ingles, specs em portugues** — publicos e propositos diferentes
 - **Contexto otimizado** — skills para interacao, agents para trabalho isolado
-- **Source of truth unico** — `.agents/` como fonte, demais plataformas sincronizadas
