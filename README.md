@@ -325,6 +325,7 @@ Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.
 |---|---|
 | `kspec init` | Instala skills, agents, rules e templates em `.claude/` |
 | `kspec init --force` | Sobrescreve sem perguntar caso `.claude/` ja exista |
+| `kspec update` | Atualiza os arquivos kspec no projeto para a versao do CLI instalado |
 | `kspec --version` | Exibe a versao instalada do kspec |
 | `kspec --help` | Lista comandos e opcoes disponiveis |
 
@@ -364,16 +365,30 @@ git clone --depth 1 https://github.com/K77-dev/kspec /tmp/kspec && cp -r /tmp/ks
 
 ### Atualizacao
 
-Para atualizar o kspec instalado globalmente:
+#### Atualizar o kspec em um projeto existente
+
+Se você ja tem o kspec instalado no projeto e quer atualizar para a versao mais recente:
+
+**Passo 1 — Atualizar o CLI globalmente:**
 
 ```bash
 npm update -g @k77-dev/kspec
 ```
 
-Para atualizar os arquivos copiados em um projeto existente:
+**Passo 2 — Atualizar os arquivos no projeto:**
 
 ```bash
-kspec init --force
+kspec update
+```
+
+O comando `kspec update` re-copia skills, agents, rules e templates para `.claude/` sem pedir confirmacao, preservando qualquer outro conteudo do projeto.
+
+> Arquivos customizados **dentro** das pastas `skills/`, `agents/`, `rules/` ou `templates/` serao sobrescritos — mova customizacoes para fora dessas pastas antes de atualizar.
+
+#### Alternativa sem instalacao global
+
+```bash
+npx @k77-dev/kspec@latest update
 ```
 
 ## Principios de design

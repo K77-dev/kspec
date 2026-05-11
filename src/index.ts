@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { runInit } from "./commands/init.js";
+import { runUpdate } from "./commands/update.js";
 import { runVersion } from "./commands/version.js";
 import { getPackageVersion } from "./utils/paths.js";
 
@@ -18,6 +19,17 @@ program
   .action(async (options) => {
     try {
       await runInit({ force: Boolean(options.force) });
+    } catch (error) {
+      handleError(error);
+    }
+  });
+
+program
+  .command("update")
+  .description("Atualiza skills, agents, rules e templates do kspec no projeto atual")
+  .action(async () => {
+    try {
+      await runUpdate();
     } catch (error) {
       handleError(error);
     }
