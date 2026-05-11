@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /tmp/kspec-test)",
+      "Bash(cp -r /Users/kelsen/Documents/develpment/git/k77-dev/kspec/.claude /tmp/kspec-test/)"
+    ]
+  }
+}
