@@ -1,0 +1,50 @@
+{
+  "name": "@k77-dev/kspec",
+  "version": "1.0.2",
+  "description": "Kit de specs e padrões para projetos com agentes de IA (Claude Code)",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "kspec": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    ".claude/",
+    "VERSION",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "claude-code",
+    "ai-agents",
+    "spec-kit",
+    "skills",
+    "prd"
+  ],
+  "author": "K77-dev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/K77-dev/kspec.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.14.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0"
+  }
+}
