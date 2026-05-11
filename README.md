@@ -38,7 +38,7 @@ Dev: /kspec-tasks 001-prd-auth
      → agente quebra em 8 tasks, dev aprova
      → Tasks geradas em spec/tasks/001-prd-auth/
 
-Dev: /kspec-implement-all-tasks 001-prd-auth
+Dev: /kspec-implement 001-prd-auth
      → agente implementa cada task + review automatica
      → codigo implementado + reviews geradas
 
@@ -79,8 +79,7 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
               ┌────────────────────────────────▼───────────────────────────────┐
               │                       IMPLEMENTACAO                            │
               │                                                                │
-              │   /kspec-implement-task          (uma task por vez)             │
-              │   /kspec-implement-all-tasks     (todas de uma vez)            │
+              │   /kspec-implement               (uma ou todas as tasks)        │
               │                                                                │
               │   Para cada task:                                               │
               │   ┌──────────────────────────────────────────────────────┐      │
@@ -123,7 +122,7 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
 ```
   Dev                    Skill                     Agent
    │                       │                         │
-   │  /kspec-implement-task│                         │
+   │  /kspec-implement     │                         │
    │──────────────────────▶│                         │
    │                       │                         │
    │                       │  delega implementacao   │
@@ -217,13 +216,12 @@ Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os ca
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-implement-task` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules | Codigo implementado + `review_[num].md` |
-| `/kspec-implement-all-tasks` | Mesmos do implement-task (para cada task pendente) | Codigo implementado + `review_[num].md` (um por task) |
+| `/kspec-implement` | `tasks.md`, `[num]_task.md`, `prd.md`, `techspec.md`, rules | Codigo implementado + `review_[num].md` (uma ou todas as tasks) |
 
 **Detalhamento do ciclo interno de cada task:**
 
 ```
-implement-task le:                         implement-task produz:
+/kspec-implement le:                       /kspec-implement produz:
 ├── tasks.md (identifica proxima)          ├── codigo-fonte (via task-runner)
 ├── [num]_task.md (definicao)              ├── testes unitarios (via task-runner)
 ├── prd.md (contexto)                      ├── review_[num].md (via review-runner)
@@ -269,8 +267,8 @@ Os agents rodam em contexto isolado e sao acionados pelas skills — nao precisa
 
 | Agent | Acionado por | Le (entrada) | Produz (saida) |
 |---|---|---|---|
-| `kspec-task-runner` | implement-task, implement-all-tasks | `[num]_task.md`, `prd.md`, `techspec.md`, rules, codigo existente | Codigo-fonte + testes unitarios |
-| `kspec-review-runner` | implement-task, implement-all-tasks | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
+| `kspec-task-runner` | /kspec-implement | `[num]_task.md`, `prd.md`, `techspec.md`, rules, codigo existente | Codigo-fonte + testes unitarios |
+| `kspec-review-runner` | /kspec-implement | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
 | `kspec-qa-runner` | kspec-qa | `prd.md`, `techspec.md`, `tasks.md`, rules, app rodando | `qa.md` + `bugs.md` |
 
 ### Rules (3)
@@ -362,7 +360,7 @@ git clone --depth 1 https://github.com/K77-dev/kspec /tmp/kspec && cp -r /tmp/ks
 1. Abra o projeto no seu agente de IA (Claude Code, etc.)
 2. Execute `/kspec-bootstrap` para gerar o guia principal adaptado a sua stack
 3. Revise o arquivo gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
-4. Comece pelo fluxo de desenvolvimento: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement-all-tasks` → `/kspec-qa`
+4. Comece pelo fluxo de desenvolvimento: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement` → `/kspec-qa`
 
 ### Atualizacao
 
