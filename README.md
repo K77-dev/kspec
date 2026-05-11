@@ -372,8 +372,11 @@ Se você ja tem o kspec instalado no projeto e quer atualizar para a versao mais
 **Passo 1 — Atualizar o CLI globalmente:**
 
 ```bash
-npm update -g @k77-dev/kspec
+npm cache clean --force
+npm install -g @k77-dev/kspec@latest
 ```
+
+> Se o npm nao reconhecer a versao nova apos `npm update -g`, use o comando acima para limpar o cache e forcar a instalacao da versao mais recente.
 
 **Passo 2 — Atualizar os arquivos no projeto:**
 
