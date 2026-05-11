@@ -1,6 +1,15 @@
 # kspec
 
+[![npm version](https://img.shields.io/npm/v/@k77-dev/kspec.svg)](https://www.npmjs.com/package/@k77-dev/kspec)
+[![npm downloads](https://img.shields.io/npm/dm/@k77-dev/kspec.svg)](https://www.npmjs.com/package/@k77-dev/kspec)
+[![license](https://img.shields.io/npm/l/@k77-dev/kspec.svg)](LICENSE)
+
 Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compativel com **Claude Code**, **GitHub Copilot** e **Agents (generico)**.
+
+```bash
+npm install -g @k77-dev/kspec
+kspec init
+```
 
 ## Por que este projeto existe
 
@@ -296,39 +305,78 @@ Rastreabilidade completa: cada artefato referencia o anterior, permitindo navega
 
 ### Instalacao
 
-Na raiz do seu projeto, copie o diretorio do agente que voce utiliza:
+#### Opcao 1 — CLI via npm (recomendado para Claude Code)
 
-**Claude Code:**
+Instale o CLI globalmente:
 
 ```bash
-bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.claude .claude --force
+npm install -g @k77-dev/kspec
 ```
+
+Na raiz do seu projeto, rode:
+
+```bash
+kspec init
+```
+
+Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.claude/` no seu projeto.
+
+**Comandos disponiveis:**
+
+| Comando | Descricao |
+|---|---|
+| `kspec init` | Instala skills, agents, rules e templates em `.claude/` |
+| `kspec init --force` | Sobrescreve sem perguntar caso `.claude/` ja exista |
+| `kspec --version` | Exibe a versao instalada do kspec |
+| `kspec --help` | Lista comandos e opcoes disponiveis |
+
+> Funciona com qualquer gerenciador de pacotes Node: `npm`, `pnpm`, `yarn` ou `bun`.
+> Tambem e possivel rodar sem instalacao global via `npx @k77-dev/kspec init`.
+
+#### Opcao 2 — Copia direta (para GitHub Copilot ou Agents generico)
+
+O CLI copia somente `.claude/`. Para usar com outros agentes, copie o diretorio correspondente diretamente do repositorio:
 
 **GitHub Copilot:**
 
 ```bash
-bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.github .github --force
+bunx degit github:K77-dev/kspec/.github .github --force
 ```
 
 **Agents (generico):**
 
 ```bash
-bunx degit direct:https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec/.agents .agents --force
+bunx degit github:K77-dev/kspec/.agents .agents --force
 ```
 
 **Todos os agentes de uma vez:**
 
 ```bash
-git clone --depth 1 https://dev.azure.com/bbts-lab/AI%20Spec%20Driven%20Development/_git/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
+git clone --depth 1 https://github.com/K77-dev/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
 ```
 
 > Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.
 
 ### Configuracao
 
-1. Execute `/kspec-bootstrap` no seu agente de IA
-2. Revise o arquivo de guia gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
-3. Use o fluxo de desenvolvimento descrito acima
+1. Abra o projeto no seu agente de IA (Claude Code, etc.)
+2. Execute `/kspec-bootstrap` para gerar o guia principal adaptado a sua stack
+3. Revise o arquivo gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
+4. Comece pelo fluxo de desenvolvimento: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement-all-tasks` → `/kspec-qa`
+
+### Atualizacao
+
+Para atualizar o kspec instalado globalmente:
+
+```bash
+npm update -g @k77-dev/kspec
+```
+
+Para atualizar os arquivos copiados em um projeto existente:
+
+```bash
+kspec init --force
+```
 
 ## Principios de design
 
