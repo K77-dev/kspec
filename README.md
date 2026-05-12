@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@k77-dev/kspec.svg)](https://www.npmjs.com/package/@k77-dev/kspec)
 [![license](https://img.shields.io/npm/l/@k77-dev/kspec.svg)](LICENSE)
 
-Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — compativel com **Claude Code**, **GitHub Copilot** e **Agents (generico)**.
+Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — para **Claude Code**.
 
 ```bash
 npm install -g @k77-dev/kspec
@@ -20,7 +20,7 @@ Este repositorio resolve isso fornecendo:
 - **Padroes de codigo** — regras consistentes para nomenclatura, formatacao e boas praticas
 - **Fluxo de desenvolvimento estruturado** — do requisito ao bugfix, cada etapa tem uma skill ou agent dedicado
 - **Templates padronizados** — PRD, Tech Spec e Tasks seguem formatos previsiveis que se referenciam entre si
-- **Multi-agente** — mesmas skills, agents, rules e templates adaptados para Claude Code e GitHub Copilot
+- **Skills empresariais opcionais** — repositorio de skills/rules/templates corporativos sincronizado via lock file
 
 ## Exemplo de uso rapido
 
@@ -144,15 +144,11 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
 Skills rodam **no contexto principal** (veem o historico da conversa, podem fazer perguntas).
 Agents rodam em **contexto isolado** (nao veem a conversa, recebem apenas os inputs necessarios).
 
-## Agentes suportados
+## Agente suportado
 
 | Agente | Diretorio de config | Guia principal | Skills | Agents | Rules | Templates |
 |---|---|---|---|---|---|---|
 | Claude Code | `.claude/` | `CLAUDE.md` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` | `.claude/templates/` |
-| GitHub Copilot | `.github/` | `.github/copilot-instructions.md` | `.github/prompts/` | `.github/prompts/` | `.github/instructions/` | `.github/templates/` |
-| Agents (generico) | `.agents/` | `AGENTS.md` | `.agents/skills/` | `.agents/agents/` | `.agents/rules/` | `.agents/templates/` |
-
-> `.agents/` e o **source of truth**. Os outros diretorios sao sincronizados via `/kspec-sync`.
 
 ## Stack padrao (para projetos que usam kspec)
 
@@ -168,18 +164,15 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 ## Estrutura do repositorio
 
 ```
-.agents/                        # Configuracao generica (SOURCE OF TRUTH)
-├── skills/                     # 14 skills invocaveis
+.claude/                        # Configuracao Claude Code
+├── skills/                     # 9 skills invocaveis
 ├── agents/                     # 3 agents (tarefas isoladas)
-├── rules/                      # 3 rules (padroes de codigo)
+├── rules/                      # 4 rules (padroes de codigo)
 ├── templates/                  # 6 templates (PRD, techspec, tasks, etc.)
 └── validation/                 # Validacoes de skills empresariais
-.claude/                        # Configuracao Claude Code (sync de .agents/)
-.github/                        # Configuracao GitHub Copilot (sync de .agents/)
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
-AGENTS.md                       # Guia principal para Agents (generico)
 enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 ```
 
@@ -193,7 +186,7 @@ enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 | **Agents** | Isolado — contexto separado, so o resultado volta | Tarefas autocontidas que produzem relatorios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padroes de codigo por dominio |
 
-### Skills — entradas e saidas (14)
+### Skills — entradas e saidas (9)
 
 Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os caminhos sao relativos a `spec/tasks/[NNN]-prd-[nome]/`.
 
@@ -246,20 +239,11 @@ O qa-runner (agent) le adicionalmente:
 - Auditoria de vulnerabilidades (`bun audit` / `npm audit`)
 - Metricas de performance (bundle size, Lighthouse)
 
-#### Documentacao
+#### Utilitario
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-apidoc` | `techspec.md`, controllers/routes do projeto, schemas de validacao | `spec/api/openapi.yaml` |
-| `/kspec-adr` | Respostas do dev (contexto, opcoes, decisao), template `adr-template.md` | `spec/adrs/[NNN]-titulo.md` + `spec/adrs/index.md` |
-| `/kspec-release` | `git log` (commits desde ultima tag), `spec/tasks/*/tasks.md` + `prd.md` (PRDs completos) | `CHANGELOG.md` + tag git (opcional) |
-
-#### Manutencao
-
-| Skill | Le (entrada) | Produz (saida) |
-|---|---|---|
-| `/kspec-migrate` | `package.json`, lockfiles, codigo-fonte, migration guide (Context7/docs) | Codigo migrado + dependencias atualizadas |
-| `/kspec-sync` | `.agents/` (source of truth) | `.claude/`, `.github/` sincronizados |
+| `/kspec-version` | `VERSION`, `.claude/skills/`, `.claude/agents/` | Exibe versao do kspec e lista skills/agents instalados |
 
 ### Agents — entradas e saidas (3)
 
@@ -271,13 +255,14 @@ Os agents rodam em contexto isolado e sao acionados pelas skills — nao precisa
 | `kspec-review-runner` | /kspec-implement | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
 | `kspec-qa-runner` | kspec-qa | `prd.md`, `techspec.md`, `tasks.md`, rules, app rodando | `qa.md` + `bugs.md` |
 
-### Rules (3)
+### Rules (4)
 
 | Rule | Escopo |
 |---|---|
 | `code-standards.md` | Padroes gerais de codigo (nomenclatura, formatacao, boas praticas) |
 | `database.md` | Padroes de banco de dados |
 | `logging.md` | Padroes de logging |
+| `graphify.md` | Uso do knowledge graph (Graphify) nas skills de analise de codigo |
 
 > Rules adicionais especificas de stack (React, TypeScript, HTTP, testes) podem ser adicionadas via repositorio enterprise ou localmente.
 
@@ -303,7 +288,7 @@ Rastreabilidade completa: cada artefato referencia o anterior, permitindo navega
 
 ### Instalacao
 
-#### Opcao 1 — CLI via npm (recomendado para Claude Code)
+#### CLI via npm
 
 Instale o CLI globalmente:
 
@@ -331,30 +316,6 @@ Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.
 
 > Funciona com qualquer gerenciador de pacotes Node: `npm`, `pnpm`, `yarn` ou `bun`.
 > Tambem e possivel rodar sem instalacao global via `npx @k77-dev/kspec init`.
-
-#### Opcao 2 — Copia direta (para GitHub Copilot ou Agents generico)
-
-O CLI copia somente `.claude/`. Para usar com outros agentes, copie o diretorio correspondente diretamente do repositorio:
-
-**GitHub Copilot:**
-
-```bash
-bunx degit github:K77-dev/kspec/.github .github --force
-```
-
-**Agents (generico):**
-
-```bash
-bunx degit github:K77-dev/kspec/.agents .agents --force
-```
-
-**Todos os agentes de uma vez:**
-
-```bash
-git clone --depth 1 https://github.com/K77-dev/kspec /tmp/kspec && cp -r /tmp/kspec/.claude /tmp/kspec/.github /tmp/kspec/.agents . && rm -rf /tmp/kspec
-```
-
-> Substitua `bunx` por `npx` ou `pnpm dlx` se preferir.
 
 ### Configuracao
 
@@ -401,4 +362,3 @@ npx @k77-dev/kspec@latest update
 - **Rastreabilidade** — PRD → Tech Spec → Tasks → Review → QA → Bugfix
 - **Codigo em ingles, specs em portugues** — publicos e propositos diferentes
 - **Contexto otimizado** — skills para interacao, agents para trabalho isolado
-- **Source of truth unico** — `.agents/` como fonte, demais plataformas sincronizadas
