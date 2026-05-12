@@ -36,8 +36,36 @@ Se não encontrar nenhuma configuração, seguir o fluxo normal.
 
 ### 1. Validação de Skills Empresariais (Obrigatório)
 
-Siga as instruções em @.claude/validation/enterprise-skills-check.md para validar e instalar
-as skills empresariais obrigatórias.
+**Pré-requisito — garantir presença do arquivo de validação:**
+
+Verifique se `.claude/validation/enterprise-skills-check.md` existe no projeto-alvo. Se NÃO existir, baixe-o do repositório oficial do kspec antes de prosseguir. Use o primeiro método disponível, na ordem:
+
+```bash
+mkdir -p .claude/validation
+
+gh api repos/K77-dev/kspec/contents/.claude/validation/enterprise-skills-check.md \
+  -H "Accept: application/vnd.github.raw" \
+  > .claude/validation/enterprise-skills-check.md 2>/dev/null \
+  && test -s .claude/validation/enterprise-skills-check.md \
+  || {
+    TMP=$(mktemp -d)
+    git clone --depth 1 --filter=blob:none --sparse \
+      git@github.com:K77-dev/kspec.git "$TMP" 2>/dev/null \
+      || git clone --depth 1 --filter=blob:none --sparse \
+           https://github.com/K77-dev/kspec.git "$TMP"
+    git -C "$TMP" sparse-checkout set .claude/validation
+    cp "$TMP/.claude/validation/enterprise-skills-check.md" .claude/validation/
+    rm -rf "$TMP"
+  }
+```
+
+Se nenhum método baixar o arquivo (sem `gh`, sem credenciais git, sem rede), reporte:
+`✗ Não foi possível obter .claude/validation/enterprise-skills-check.md do kspec. Verifique acesso ao repositório K77-dev/kspec.`
+e BLOQUEIE o bootstrap.
+
+**Validação propriamente dita:**
+
+Siga as instruções em `@.claude/validation/enterprise-skills-check.md` para validar e instalar as skills empresariais obrigatórias.
 
 **Comportamento específico do bootstrap:**
 - Exibir mensagem detalhada para cada skill instalada/atualizada
