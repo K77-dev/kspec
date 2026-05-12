@@ -62,6 +62,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 | `code-standards.md` | Padrões gerais de código |
 | `database.md` | Padrões de banco de dados |
 | `logging.md` | Padrões de logging |
+| `graphify.md` | Uso do knowledge graph (Graphify) nas skills de análise de código (opcional, ativo quando `graphify-out/graph.json` existe no projeto-alvo) |
 
 ### Git
 

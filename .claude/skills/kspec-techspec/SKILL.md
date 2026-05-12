@@ -50,10 +50,23 @@ bloquear a execução.
 
 ### 2. Análise Profunda do Projeto (Obrigatório)
 
+**Antes de explorar arquivo por arquivo**, verificar se existe knowledge graph do projeto:
+
+```bash
+test -f graphify-out/graph.json && echo "GRAPH_AVAILABLE" || echo "NO_GRAPH"
+```
+
+- **Se `GRAPH_AVAILABLE`**: seguir `.claude/rules/graphify.md`. Atualizar grafo se desatualizado (`graphify . --update`) e usar `graphify query` / `graphify path` / `graphify explain` como ferramenta primária de mapeamento. Tratar edges `EXTRACTED` como fato; `INFERRED`/`AMBIGUOUS` como hipótese a confirmar via Read antes de citar na techspec.
+- **Se `NO_GRAPH`**: seguir fluxo padrão com Read/Grep/Glob.
+
+Em ambos os casos, cobrir:
+
 - Descobrir arquivos, módulos, interfaces e pontos de integração implicados
 - Mapear símbolos, dependências e pontos críticos
 - Explorar estratégias de solução, padrões, riscos e alternativas
 - Realizar análise ampla: chamadores/chamados, configs, middleware, persistência, concorrência, tratamento de erros, testes, infra
+
+Quando o grafo estiver disponível, a seção final "Arquivos relevantes e dependentes" do template deve ser preenchida a partir das queries no grafo, não por amostragem manual.
 
 ### 3. Esclarecimentos Técnicos (Obrigatório)
 

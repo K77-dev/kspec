@@ -236,6 +236,42 @@ Se existirem rules de stack em `.agents/rules/` que não correspondem a nenhuma 
 
 Após copiar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`). Para projetos vazios, manter os paths genéricos padrão da rule (`**/*.ts`, `**/*.java`, etc.).
 
+### 5.7. Oferecer Knowledge Graph (Opcional, brownfield apenas)
+
+Apenas para projetos existentes (passo 2B) com tamanho mínimo. Pular se o projeto é vazio (2A).
+
+**Critério de elegibilidade** — contar arquivos de código-fonte:
+
+```bash
+find src/ app/ lib/ packages/ 2>/dev/null -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.java" -o -name "*.py" -o -name "*.go" -o -name "*.rb" \) 2>/dev/null | wc -l
+```
+
+Se o resultado for **≥ 100 arquivos**, perguntar ao usuário:
+
+> "Detectei [N] arquivos de código-fonte. O kspec pode construir um **knowledge graph** do projeto via [Graphify](https://github.com/safishamsi/graphify). As skills `kspec-techspec`, `kspec-tasks`, `kspec-implement` e `kspec-bugfix` usarão o grafo para análise de dependências mais precisa. O build inicial leva entre 5 e 20 minutos e tem custo de LLM (chave Graphify, fora do plano Claude). Deseja construir agora? (s/N)"
+
+Se a resposta for `s`:
+
+1. Verificar instalação do Graphify:
+   ```bash
+   command -v graphify || pip install graphifyy
+   ```
+2. Executar build na raiz do projeto:
+   ```bash
+   graphify . --mode deep --html
+   ```
+3. Adicionar `graphify-out/` ao `.gitignore` (criar arquivo se não existir):
+   ```bash
+   grep -qxF 'graphify-out/' .gitignore 2>/dev/null || echo 'graphify-out/' >> .gitignore
+   ```
+4. Adicionar ao `CLAUDE.bootstrap.md`, na seção "Recursos do projeto", o bloco:
+   ```markdown
+   ### Knowledge Graph
+
+   O projeto possui um knowledge graph em `graphify-out/graph.json` gerado pelo Graphify. Skills do kspec que fazem análise de código devem consultá-lo seguindo `.claude/rules/graphify.md`. Para atualizar incrementalmente: `graphify . --update`.
+   ```
+Se a resposta for `N` ou o projeto não atingir 100 arquivos, pular este passo sem comentário.
+
 ### 6. Gerar CI/CD (Opcional)
 
 Perguntar ao usuário: **"Deseja gerar um workflow de CI/CD para GitHub Actions?"**
@@ -299,6 +335,7 @@ Apresentar ao usuário:
 - [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
 - [ ] Rules irrelevantes removidas
 - [ ] Path-specific rules configuradas onde aplicável
+- [ ] Knowledge graph oferecido (se brownfield + ≥100 arquivos)
 - [ ] CI/CD oferecido ao usuário (e gerado se aceito)
 - [ ] Diretório spec/tasks/ criado
 - [ ] Relatório final apresentado

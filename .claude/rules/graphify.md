@@ -1,0 +1,56 @@
+---
+name: graphify
+description: Diretrizes para usar o grafo de conhecimento gerado pelo Graphify durante a execução de skills do kspec.
+applies_to: kspec-techspec, kspec-tasks, kspec-implement, kspec-task-runner, kspec-bugfix, kspec-bootstrap
+---
+
+# Uso do Graphify nas skills do kspec
+
+O Graphify constrói um grafo de conhecimento do projeto (`graphify-out/graph.json`) que pode ser consultado para análise de dependências, impacto e estrutura. Esta rule define **quando** e **como** as skills devem consultar o grafo.
+
+## Quando usar o grafo
+
+Use o grafo apenas se **todas** as condições forem verdadeiras:
+
+1. O arquivo `graphify-out/graph.json` existe na raiz do projeto-alvo
+2. O grafo está fresco — `mtime` do `graph.json` é posterior ao último commit que tocou o código-fonte. Em caso de dúvida, rodar `graphify <path> --update` antes da consulta
+3. A skill está em uma fase de **análise de código existente** (não geração pura, não PRD, não QA E2E)
+
+Se qualquer condição falhar, voltar ao fluxo padrão (Read/Grep/Glob).
+
+## Como consultar
+
+Use o CLI do Graphify via Bash:
+
+```bash
+graphify query "<pergunta>"                  # BFS - contexto amplo
+graphify query "<pergunta>" --dfs            # DFS - caminho específico
+graphify query "<pergunta>" --budget 1500    # limita tokens da resposta
+graphify path "<NodeA>" "<NodeB>"            # caminho mais curto entre dois conceitos
+graphify explain "<Node>"                    # explicação plain-language de um nó
+```
+
+## Interpretação dos edge types
+
+Cada aresta no grafo tem um tipo de evidência:
+
+| Tipo | Significado | Como tratar |
+|---|---|---|
+| `EXTRACTED` | Encontrado diretamente no código (import, chamada explícita, herança) | **Pode afirmar como fato** em techspecs, planos e análises |
+| `INFERRED` | Inferido por LLM a partir de contexto/heurística | **Tratar como hipótese** — confirmar via Read/Grep antes de afirmar |
+| `AMBIGUOUS` | Múltiplas interpretações possíveis | **Não usar** sem investigação manual |
+
+Nunca cite uma relação `INFERRED` ou `AMBIGUOUS` em documento gerado (techspec, tasks, bugfix) sem qualificar a incerteza ou confirmar antes.
+
+## Quando reconstruir/atualizar o grafo
+
+- **Antes de `kspec-techspec`**, `kspec-bugfix`: se `graph.json` tem mais de 24h, rodar `graphify <path> --update`
+- **Após merge de feature significativa**: rodar `graphify <path> --update`
+- **Reconstrução completa** (`graphify <path>` sem `--update`): apenas se a estrutura mudou drasticamente (refactor grande, mudança de framework)
+
+## O que NÃO usar o grafo para
+
+- Geração de PRD (`kspec-prd`) — pré-código
+- Brainstorm de ideia (`kspec-ideia`) em greenfield — não há grafo
+- QA E2E (`kspec-qa`) — comportamento dinâmico, não estático
+- Consultar APIs/libs externas — use Context7 MCP para isso

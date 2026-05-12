@@ -49,6 +49,19 @@ bloquear a execução.
 - Ler a TechSpec para entender as decisões técnicas relevantes
 - Revisar as regras do projeto para garantir conformidade nas correções
 
+### 1.1. Análise de Impacto via Knowledge Graph (Opcional)
+
+Se `graphify-out/graph.json` existir no projeto, antes do planejamento (passo 2), executar análise de impacto para cada bug seguindo `.claude/rules/graphify.md`:
+
+```bash
+graphify query "componentes afetados ao alterar [componente do bug]"
+graphify path "[ComponenteDoBug]" "[Consumidor]"
+```
+
+Isso identifica chamadores indiretos que o Grep não capturaria, evitando correções que quebram outras partes do sistema. Tratar edges `EXTRACTED` como certas; `INFERRED` como pistas a investigar.
+
+Se o grafo não existir, seguir adiante com o fluxo padrão.
+
 ### 2. Planejamento das Correções (Obrigatório)
 
 Para cada bug, gerar um resumo de planejamento:
@@ -59,6 +72,7 @@ Severidade: [Alta/Média/Baixa]
 Componente Afetado: [componente]
 Causa Raiz: [análise da causa raiz]
 Arquivos a Modificar: [lista de arquivos]
+Componentes Impactados (do grafo, se disponível): [lista de consumidores afetados]
 Estratégia de Correção: [descrição da abordagem]
 Testes de Regressão Planejados:
   - [Teste unitário]: [descrição]

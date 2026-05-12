@@ -41,6 +41,14 @@ bloquear a execução.
 
 ### 2. Análise da Tarefa
 
+Se `graphify-out/graph.json` existir no projeto, **antes de ler arquivos com Read/Grep**, consultar o grafo seguindo `.claude/rules/graphify.md`:
+
+- `graphify query "onde está implementada a camada de [domínio relevante à task]?"` — localizar pontos de extensão sem amostragem manual
+- `graphify query "quais abstrações existentes fazem [responsabilidade similar à task]?"` — identificar código reutilizável antes de criar novo
+- `graphify path "[ComponenteAlvo]" "[ComponenteDependência]"` — entender impacto em chamadores existentes
+
+Confirmar com Read os arquivos que o grafo indicou como mais relevantes; **não** ler tudo especulativamente.
+
 Analise considerando:
 
 - Objetivos principais da tarefa

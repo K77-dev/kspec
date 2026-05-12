@@ -41,6 +41,7 @@ bloquear a execução.
 
 - Extrair requisitos e decisões técnicas
 - Identificar componentes principais
+- Se `graphify-out/graph.json` existir, consultar o grafo para mapear dependências reais entre os componentes citados na techspec — use `graphify path "ComponenteA" "ComponenteB"` para descobrir ordem de dependência. Seguir `.claude/rules/graphify.md`. O sequenciamento das tasks (passo 2) deve refletir essas dependências.
 
 2. **Gerar Estrutura de Tarefas e Aprovar**
 
