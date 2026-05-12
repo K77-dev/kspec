@@ -51,14 +51,26 @@ bloquear a execução.
 
 ### 2. Análise Profunda do Projeto (Obrigatório)
 
-**Antes de explorar arquivo por arquivo**, verificar se existe knowledge graph do projeto:
+**Antes de explorar arquivo por arquivo**, garantir que o knowledge graph está fresco:
 
 ```bash
-test -f graphify-out/graph.json && echo "GRAPH_AVAILABLE" || echo "NO_GRAPH"
+if command -v graphify >/dev/null 2>&1; then
+  if [ -f graphify-out/graph.json ]; then
+    graphify . --update
+    echo "GRAPH_READY"
+  elif find src/ app/ lib/ packages/ 2>/dev/null -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.java" -o -name "*.py" -o -name "*.go" -o -name "*.rb" \) -print -quit | grep -q .; then
+    graphify .
+    echo "GRAPH_READY"
+  else
+    echo "NO_GRAPH"
+  fi
+else
+  echo "NO_GRAPHIFY"
+fi
 ```
 
-- **Se `GRAPH_AVAILABLE`**: seguir `.claude/rules/graphify.md`. Atualizar grafo se desatualizado (`graphify . --update`) e usar `graphify query` / `graphify path` / `graphify explain` como ferramenta primária de mapeamento. Tratar edges `EXTRACTED` como fato; `INFERRED`/`AMBIGUOUS` como hipótese a confirmar via Read antes de citar na techspec.
-- **Se `NO_GRAPH`**: seguir fluxo padrão com Read/Grep/Glob.
+- **Se `GRAPH_READY`**: seguir `.claude/rules/graphify.md`. Usar `graphify query` / `graphify path` / `graphify explain` como ferramenta primária de mapeamento. Tratar edges `EXTRACTED` como fato; `INFERRED`/`AMBIGUOUS` como hipótese a confirmar via Read antes de citar na techspec.
+- **Se `NO_GRAPH` ou `NO_GRAPHIFY`**: seguir fluxo padrão com Read/Grep/Glob.
 
 Em ambos os casos, cobrir:
 

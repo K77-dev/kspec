@@ -50,9 +50,21 @@ bloquear a execução.
 - Ler a TechSpec para entender as decisões técnicas relevantes
 - Revisar as regras do projeto para garantir conformidade nas correções
 
-### 1.1. Análise de Impacto via Knowledge Graph (Opcional)
+### 1.1. Análise de Impacto via Knowledge Graph (Obrigatório)
 
-Se `graphify-out/graph.json` existir no projeto, antes do planejamento (passo 2), executar análise de impacto para cada bug seguindo `.claude/rules/graphify.md`:
+Antes do planejamento (passo 2), garantir que o grafo está fresco e executar análise de impacto para cada bug:
+
+```bash
+if command -v graphify >/dev/null 2>&1; then
+  if [ -f graphify-out/graph.json ]; then
+    graphify . --update
+  elif find src/ app/ lib/ packages/ 2>/dev/null -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.java" -o -name "*.py" -o -name "*.go" -o -name "*.rb" \) -print -quit | grep -q .; then
+    graphify .
+  fi
+fi
+```
+
+Se o grafo ficou disponível, para cada bug executar:
 
 ```bash
 graphify query "componentes afetados ao alterar [componente do bug]"
@@ -61,7 +73,7 @@ graphify path "[ComponenteDoBug]" "[Consumidor]"
 
 Isso identifica chamadores indiretos que o Grep não capturaria, evitando correções que quebram outras partes do sistema. Tratar edges `EXTRACTED` como certas; `INFERRED` como pistas a investigar.
 
-Se o grafo não existir, seguir adiante com o fluxo padrão.
+Se o Graphify não estiver instalado ou o projeto não tiver código indexável, seguir adiante com o fluxo padrão sem bloquear.
 
 ### 2. Planejamento das Correções (Obrigatório)
 

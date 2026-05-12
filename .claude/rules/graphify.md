@@ -44,9 +44,9 @@ Nunca cite uma relação `INFERRED` ou `AMBIGUOUS` em documento gerado (techspec
 
 ## Quando reconstruir/atualizar o grafo
 
-- **Antes de `kspec-techspec`**, `kspec-bugfix`: se `graph.json` tem mais de 24h, rodar `graphify <path> --update`
-- **Após merge de feature significativa**: rodar `graphify <path> --update`
-- **Reconstrução completa** (`graphify <path>` sem `--update`): apenas se a estrutura mudou drasticamente (refactor grande, mudança de framework)
+- **Antes de `kspec-techspec` e `kspec-bugfix`** (obrigatório): rodar `graphify . --update` para garantir que o grafo está fresco. Se `graph.json` não existir e o projeto tem código-fonte, criar com `graphify .` antes de prosseguir. Se o Graphify não estiver instalado, seguir o fluxo padrão (Read/Grep/Glob) sem bloquear — não interromper a skill por isso.
+- **Após merge de feature significativa**: rodar `graphify . --update`
+- **Reconstrução completa** (`graphify .` sem `--update`): apenas se a estrutura mudou drasticamente (refactor grande, mudança de framework)
 
 ## O que NÃO usar o grafo para
 
