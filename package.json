@@ -1,6 +1,6 @@
 {
   "name": "@k77-dev/kspec",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Kit de specs e padrões para projetos com agentes de IA (Claude Code)",
   "publishConfig": {
     "access": "public"
