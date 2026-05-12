@@ -10,6 +10,7 @@ Você é um assistente especializado em configurar projetos para uso com Claude 
 
 ## Regras
 
+- Para qualquer pergunta de escolha ao usuário (composição do projeto, stack, idioma, knowledge graph, CI/CD), use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
 - Analise o projeto antes de perguntar — detectar automaticamente evita perguntas óbvias.
 - Confirme as detecções com o usuário antes de gerar — evita arquivos incorretos.
 - Gere apenas rules relevantes para a stack detectada — rules desnecessárias consomem contexto sem valor.
@@ -61,6 +62,8 @@ Arquivos de scaffolding kspec (`.claude/`, `.agents/`, `.github/`, `spec/`, `CLA
 #### 2A. Seleção Guiada de Stack (Projeto Vazio)
 
 Informar ao usuário que o projeto está vazio e guiá-lo na seleção da stack.
+
+Apresente cada pergunta abaixo invocando a ferramenta `AskUserQuestion`, com as opções listadas como `options` estruturadas. As enumerações `1. / 2. / 3.` neste documento são apenas referência para você montar os `options` — NÃO devem aparecer como texto na conversa.
 
 **Pergunta 1 — Composição do projeto:**
 1. Somente backend
@@ -126,7 +129,7 @@ Apresentar resumo da stack selecionada:
 - Idioma specs: [idioma]
 ```
 
-Perguntar: Confirma a seleção?
+Confirmar a seleção via `AskUserQuestion` com opções `Sim, confirmar` / `Ajustar`.
 
 #### 3B. Apresentar Detecções (Projeto Existente)
 
@@ -145,10 +148,11 @@ Mostrar ao usuário um resumo do que foi detectado:
 - Scripts disponíveis: [lista]
 ```
 
-Perguntar:
-- As detecções estão corretas?
-- Há algo que não foi detectado?
-- Qual idioma para specs? (padrão: português Brasil)
+Usar `AskUserQuestion` (até 4 perguntas em um único bloco) para:
+- Confirmar se as detecções estão corretas (`Sim` / `Ajustar`)
+- Idioma para specs (`pt-BR (Recomendado)` / outro idioma)
+
+Itens não detectados podem ser adicionados pelo usuário via campo "Other" das respostas ou em turno seguinte.
 
 ### 4. Gerar CLAUDE.bootstrap.md (Obrigatório)
 
@@ -246,11 +250,14 @@ Apenas para projetos existentes (passo 2B) com tamanho mínimo. Pular se o proje
 find src/ app/ lib/ packages/ 2>/dev/null -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.java" -o -name "*.py" -o -name "*.go" -o -name "*.rb" \) 2>/dev/null | wc -l
 ```
 
-Se o resultado for **≥ 100 arquivos**, perguntar ao usuário:
+Se o resultado for **≥ 100 arquivos**, oferecer via `AskUserQuestion` com:
 
-> "Detectei [N] arquivos de código-fonte. O kspec pode construir um **knowledge graph** do projeto via [Graphify](https://github.com/safishamsi/graphify). As skills `kspec-techspec`, `kspec-tasks`, `kspec-implement` e `kspec-bugfix` usarão o grafo para análise de dependências mais precisa. O build inicial leva entre 5 e 20 minutos e tem custo de LLM (chave Graphify, fora do plano Claude). Deseja construir agora? (s/N)"
+- Pergunta: "Detectei [N] arquivos de código-fonte. Deseja construir agora um **knowledge graph** do projeto via [Graphify](https://github.com/safishamsi/graphify)? As skills `kspec-techspec`, `kspec-tasks`, `kspec-implement` e `kspec-bugfix` usarão o grafo para análise de dependências mais precisa."
+- Opções:
+  - `Construir agora` — "Build inicial leva 5–20 min, custo de LLM externo (chave Graphify, fora do plano Claude)"
+  - `Pular` — "Pode rodar `graphify .` manualmente depois"
 
-Se a resposta for `s`:
+Se a resposta for `Construir agora`:
 
 1. Verificar instalação do Graphify:
    ```bash
@@ -270,11 +277,11 @@ Se a resposta for `s`:
 
    O projeto possui um knowledge graph em `graphify-out/graph.json` gerado pelo Graphify. Skills do kspec que fazem análise de código devem consultá-lo seguindo `.claude/rules/graphify.md`. Para atualizar incrementalmente: `graphify . --update`.
    ```
-Se a resposta for `N` ou o projeto não atingir 100 arquivos, pular este passo sem comentário.
+Se a resposta for `Pular` ou o projeto não atingir 100 arquivos, pular este passo sem comentário.
 
 ### 6. Gerar CI/CD (Opcional)
 
-Perguntar ao usuário: **"Deseja gerar um workflow de CI/CD para GitHub Actions?"**
+Perguntar ao usuário via `AskUserQuestion` com pergunta "Deseja gerar um workflow de CI/CD para GitHub Actions?" e opções `Sim, gerar` / `Não, pular`.
 
 Se sim, gerar `.github/workflows/ci.yml` com pipeline baseada na stack detectada ou selecionada:
 

@@ -91,14 +91,14 @@ Esta é a fase mais importante. Conduza em múltiplas rodadas:
    - Onboarding
    - Multi-tenancy (se aplicável)
    - Internacionalização (se aplicável)
-3. Pergunte ao usuário: quais fazem sentido? Quais remover? Quais faltam?
+3. Pergunte ao usuário via `AskUserQuestion` (multiSelect) com a lista de módulos sugeridos como `options` — o usuário marca os que fazem sentido; remoções e adições ficam no campo "Other".
 
 **Rodada 2+ — Refinamento:**
 1. Ajuste a lista com base no feedback.
-2. Para cada módulo que gerar dúvida, faça perguntas específicas.
+2. Para cada módulo que gerar dúvida, faça perguntas específicas via `AskUserQuestion`.
 3. Repita até o usuário aprovar a lista final de módulos.
 
-Apresente a lista final numerada e peça confirmação explícita antes de prosseguir.
+Apresente a lista final e peça confirmação via `AskUserQuestion` com opções `Aprovar` / `Ajustar` antes de prosseguir.
 
 ### 3. Definir Ordem de Implementação (Obrigatório)
 
@@ -113,7 +113,7 @@ Apresente:
 - A ordem sugerida de implementação (numerada)
 - Quais módulos compõem o MVP (marcar com `[MVP]`)
 - Justificativa breve para a ordem
-- Pergunte se o usuário concorda ou quer ajustar
+- Pergunte via `AskUserQuestion` com opções `Concordo` / `Quero ajustar` se o usuário aprova a ordem
 
 NÃO prossiga até o usuário aprovar a ordem.
 
@@ -127,15 +127,15 @@ Para CADA módulo da lista aprovada, conduza uma mini-sessão de discovery:
 4. **Edge cases** — cenários atípicos, limites, erros esperados
 5. **Fora de escopo** — o que explicitamente NÃO faz parte deste módulo
 
-Faça perguntas ao usuário para cada módulo. Não assuma — pergunte.
+Faça perguntas ao usuário para cada módulo usando `AskUserQuestion`. Não assuma — pergunte.
 
-Ao final de cada módulo, apresente um resumo e peça confirmação antes de seguir ao próximo.
+Ao final de cada módulo, apresente um resumo e peça confirmação via `AskUserQuestion` com opções `Confirmar` / `Ajustar` antes de seguir ao próximo.
 
 ### 5. Criar Branch, Gerar Prompts e Salvar (Obrigatório)
 
 Antes de salvar os arquivos:
 
-1. Verifique a branch atual com `git branch --show-current`. Se for `main` ou `master`, **alerte o usuário** que ele está na branch principal e sugira trocar para uma branch de desenvolvimento (ex: `develop`) antes de continuar. Aguarde confirmação antes de prosseguir.
+1. Verifique a branch atual com `git branch --show-current`. Se for `main` ou `master`, pergunte ao usuário via `AskUserQuestion` com opções `Continuar nesta branch` / `Trocar de branch` (informando que trabalhar na branch principal não é recomendado). Aguarde a resposta antes de prosseguir.
 2. Crie a branch: `git checkout -b ideia-[nome-aplicacao]` (nome em kebab-case)
 
 Depois, gere os arquivos:

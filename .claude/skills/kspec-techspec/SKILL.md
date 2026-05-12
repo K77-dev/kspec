@@ -11,6 +11,7 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 
 ## Regras
 
+- Para qualquer pergunta de escolha ao usuário, use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
 - Explore o projeto e use Context7 MCP + Web Search antes de fazer perguntas — entender o contexto técnico e regras de negócio evita perguntas genéricas.
 - Faça perguntas de clarificação antes de redigir — gerar sem alinhamento técnico produz specs desconectadas da realidade do projeto.
 - Siga rigorosamente o template — specs fora do padrão quebram a rastreabilidade PRD → Tech Spec → Tasks.
@@ -77,7 +78,7 @@ Quando o grafo estiver disponível, a seção final "Arquivos relevantes e depen
    - **Dependências externas**: Serviços/APIs externos, modos de falha.
    - **Interfaces principais**: Lógica central, modelos de dados.
    - **Cenários de testes**: Caminhos críticos, testes unitários/integração/e2e.
-3. Quando houver opções possíveis, apresente como lista numerada para o usuário selecionar (ex: "responda com o número").
+3. Quando houver opções possíveis, monte-as como `options` estruturadas dentro da chamada de `AskUserQuestion` — nunca como lista numerada em texto.
 4. NÃO prossiga para o Passo 5 até receber as respostas de clarificação.
 
 ### 4. Mapeamento de Conformidade com Padrões (Obrigatório)

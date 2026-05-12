@@ -11,6 +11,7 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 
 ## Regras
 
+- Para qualquer pergunta de escolha ao usuário, use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
 - Execute as tasks na ordem definida em `tasks.md` — a ordem já respeita dependências (definida pelo /tasks).
 - Antes de executar uma task, verifique se suas dependências estão marcadas como completas — executar fora de ordem pode quebrar o código.
 - Delegue cada task ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
@@ -48,7 +49,7 @@ bloquear a execução.
   - **Lote 2**: tasks que dependem do Lote 1
   - **Lote N**: tasks que dependem dos lotes anteriores
 - Se todas as tasks tiverem dependências entre si (nenhum lote com múltiplas tasks), executar sequencial
-- Apresentar ao usuário a lista de tasks (com lotes se houver paralelismo) e aguardar confirmação
+- Apresentar ao usuário a lista de tasks (com lotes se houver paralelismo) e pedir confirmação via `AskUserQuestion` com opções `Iniciar execução` / `Ajustar antes`
 
 ### 2. Executar Tasks
 
