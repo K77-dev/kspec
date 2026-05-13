@@ -5,8 +5,55 @@
     "branch": "main",
     "provider": "github"
   },
-  "lastChecked": null,
-  "skills": {},
-  "rules": {},
+  "lastChecked": "2026-05-12T21:00:00Z",
+  "skills": {
+    "cybersecurity-analyst": {
+      "computedHash": "4f804565a002629ad80e311b460d710783af11bfddda5ddecee18c4b8f54cc0e",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/skills/cybersecurity-analyst"]
+    }
+  },
+  "rules": {
+    "frontend/react": {
+      "computedHash": "4a4d060ac82c3796ad4cf22e3577fe101b016eaadc1c9fc21816442675cb9698",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/react.md"]
+    },
+    "frontend/angular": {
+      "computedHash": "044bf5fc5d26cc9f522bc652e6d30df99a0768cc583a42069ddc83d606b1eac2",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/angular.md"]
+    },
+    "backend/hono": {
+      "computedHash": "5d6d40b2abd3b05c5d3a2ccfa61295027657d30309ace903ca8a81b7ade3f69f",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/hono.md"]
+    },
+    "backend/spring-boot": {
+      "computedHash": "e0bd687ceb4b70c653ded503d939d5f991013eceeaf91f3b48ee10cad1ea835a",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/spring-boot.md"]
+    },
+    "languages/typescript": {
+      "computedHash": "8125f98fa924692e15174c432238e27825ea704f9d52091cbd8a860687086df7",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/typescript.md"]
+    },
+    "languages/java": {
+      "computedHash": "2565131b3cdcfd7dda6bd60e35477bb11fc11a977f779d4475e3785935e7adab",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/java.md"]
+    },
+    "testing/tests": {
+      "computedHash": "1a4edbadb7f760f9b46ff3f27ab80f2b231d6895abea5374e96d8d098c0af70a",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/tests.md"]
+    },
+    "testing/java-tests": {
+      "computedHash": "e4f947622baf78a7eb1a089bdfcd5ea81c487a6501da28d3576429178ba1249b",
+      "installedAt": "2026-05-12T21:00:00Z",
+      "files": [".agents/rules/java-tests.md"]
+    }
+  },
   "templates": {}
 }

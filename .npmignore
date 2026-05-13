@@ -1,0 +1,35 @@
+# Test fixture agents — not for publication
+.agents/agents/aaa-broken-agent
+.agents/agents/bad-toml-agent
+.agents/agents/fake-bad-toml-agent
+.agents/agents/fake-broken-agent
+.agents/agents/fake-review-runner
+.agents/agents/fake-task-runner
+.agents/agents/zz-broken
+.agents/agents/zzz-broken
+
+# Enterprise skills cache — local only, do not publish
+.claude/.enterprise-skills-cache
+
+# Local settings
+.claude/settings.local.json
+
+# Enterprise rules installed locally (not kspec core rules)
+.agents/rules/angular.md
+.agents/rules/backend
+.agents/rules/frontend
+.agents/rules/hono.md
+.agents/rules/java.md
+.agents/rules/java-tests.md
+.agents/rules/languages
+.agents/rules/spring-boot.md
+.agents/rules/tests.md
+.agents/rules/typescript.md
+
+# Dev-only files
+tests
+scripts
+spec
+src
+tsconfig.json
+tsup.config.ts

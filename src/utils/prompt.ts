@@ -12,3 +12,12 @@ export async function confirm(question: string, defaultYes = false): Promise<boo
     rl.close();
   }
 }
+
+export async function prompt(question: string): Promise<string> {
+  const rl = createInterface({ input: stdin, output: stdout });
+  try {
+    return (await rl.question(`${question} `)).trim();
+  } finally {
+    rl.close();
+  }
+}
