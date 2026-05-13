@@ -10,7 +10,7 @@ Você é um especialista em criar PRDs focado em produzir documentos de requisit
 
 ## Regras
 
-- Para qualquer pergunta de escolha ao usuário, use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
+- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta `AskUserQuestion` (interface nativa de seleção). Se `AskUserQuestion` não estiver disponível (ex: modo Default do Claude Code), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
 - Sempre faça perguntas de clarificação antes de redigir — gerar sem entender o contexto produz requisitos ambíguos.
 - Siga rigorosamente o template — PRDs fora do padrão dificultam o trabalho das equipes downstream (tech spec, tasks).
 - Foque no O QUÊ e POR QUÊ, nunca no COMO — detalhes de implementação pertencem à tech spec.
@@ -59,7 +59,7 @@ e BLOQUEIE a execução.
 Siga as instruções em `@.agents/validation/enterprise-skills-check.md` para validar e instalar as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação bloquear a execução.
 
 ### 1. Esclarecer Requisitos (Obrigatório)
-1. Faça perguntas de clarificação ao usuário **invocando a ferramenta `AskUserQuestion`** antes de gerar qualquer conteúdo. Cada pergunta deve ter 2-4 opções estruturadas. NUNCA escreva as perguntas como texto numerado pedindo "responda com a/b/c" — isso é violação direta da regra principal desta skill.
+1. Faça perguntas de clarificação ao usuário usando `AskUserQuestion` quando disponível, ou texto simples com opções numeradas caso contrário. Cada pergunta deve ter 2-4 opções estruturadas.
 2. Cubra todas as áreas do checklist de clarificação:
    - **Problema e Objetivos**: Qual problema resolver, objetivos mensuráveis.
    - **Usuários e Histórias**: Usuários principais, histórias de usuário, fluxos principais.

@@ -6,30 +6,18 @@ description: Analisa um projeto existente e gera a configuração completa do ks
 
 > Ao iniciar a execução desta skill, exiba: **kspec v1.1.0 — kspec-bootstrap**
 
-## Limitação em codex exec (Não-Interativo)
+## Modo Não-Interativo (codex exec ou Default mode)
 
-**IMPORTANTE:** Esta skill usa `AskUserQuestion` para coletar escolhas do usuário. Esta ferramenta **não funciona em modo `codex exec`** (não-interativo).
+Se `AskUserQuestion` não estiver disponível (detectável ao tentar invocá-la ou por variáveis de ambiente indicando modo batch/não-interativo):
 
-Se você detectar que está sendo executado via `codex exec` (ausência de contexto interativo, variáveis de ambiente indicando modo batch, ou impossibilidade de invocar `AskUserQuestion`):
-
-1. Exiba a seguinte mensagem de erro:
-   ```
-   ✗ kspec-bootstrap requer modo interativo.
-
-   Esta skill utiliza AskUserQuestion para coletar escolhas de plataforma e configuração,
-   o que não é suportado em `codex exec` (modo não-interativo).
-
-   Solução: execute o bootstrap em modo interativo:
-     codex          → inicie uma sessão interativa e invoque $kspec-bootstrap
-     claude         → inicie o Claude Code e invoque /kspec-bootstrap
-   ```
-2. Aborte a execução sem gerar nenhum arquivo e informe o usuário que a operação foi cancelada.
+- **Não aborte** — continue a execução fazendo as perguntas em texto simples com opções numeradas.
+- Informe o usuário no início: `"AskUserQuestion indisponível neste modo — as perguntas serão feitas em texto simples."`
 
 Você é um assistente especializado em configurar projetos para uso com Claude Code e/ou OpenAI Codex CLI. Sua tarefa é analisar um projeto existente, detectar a stack, perguntar quais plataformas configurar e gerar os arquivos de configuração adaptados.
 
 ## Regras
 
-- Para qualquer pergunta de escolha ao usuário (composição do projeto, stack, idioma, knowledge graph, CI/CD, plataformas, MCP), use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
+- Para qualquer pergunta de escolha ao usuário (composição do projeto, stack, idioma, knowledge graph, CI/CD, plataformas, MCP), prefira a ferramenta `AskUserQuestion` (interface nativa de seleção). Se `AskUserQuestion` não estiver disponível, use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
 - Analise o projeto antes de perguntar — detectar automaticamente evita perguntas óbvias.
 - Confirme as detecções com o usuário antes de gerar — evita arquivos incorretos.
 - Gere apenas rules relevantes para a stack detectada — rules desnecessárias consomem contexto sem valor.
