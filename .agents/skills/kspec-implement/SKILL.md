@@ -11,7 +11,7 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 
 ## Regras
 
-- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta `AskUserQuestion` (interface nativa de seleção). Se `AskUserQuestion` não estiver disponível (ex: modo Default do Claude Code), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
+- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta interativa de seleção — `AskUserQuestion` no Claude Code ou `request_user_input` no Codex CLI. Se nenhuma estiver disponível (ex: modo Default do Claude Code, Codex em modo não-interativo), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
 - Execute as tasks na ordem definida em `tasks.md` — a ordem já respeita dependências (definida pelo /tasks).
 - Antes de executar uma task, verifique se suas dependências estão marcadas como completas — executar fora de ordem pode quebrar o código.
 - Delegue cada task ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.

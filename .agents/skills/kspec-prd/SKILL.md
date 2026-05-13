@@ -10,7 +10,7 @@ Você é um especialista em criar PRDs focado em produzir documentos de requisit
 
 ## Regras
 
-- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta `AskUserQuestion` (interface nativa de seleção). Se `AskUserQuestion` não estiver disponível (ex: modo Default do Claude Code), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
+- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta interativa de seleção — `AskUserQuestion` no Claude Code ou `request_user_input` no Codex CLI. Se nenhuma estiver disponível (ex: modo Default do Claude Code, Codex em modo não-interativo), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
 - Sempre faça perguntas de clarificação antes de redigir — gerar sem entender o contexto produz requisitos ambíguos.
 - Siga rigorosamente o template — PRDs fora do padrão dificultam o trabalho das equipes downstream (tech spec, tasks).
 - Foque no O QUÊ e POR QUÊ, nunca no COMO — detalhes de implementação pertencem à tech spec.

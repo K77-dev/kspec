@@ -11,7 +11,7 @@ Você é um especialista em especificações técnicas focado em produzir Tech S
 
 ## Regras
 
-- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta `AskUserQuestion` (interface nativa de seleção). Se `AskUserQuestion` não estiver disponível (ex: modo Default do Claude Code), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
+- Para qualquer pergunta de escolha ao usuário, prefira a ferramenta interativa de seleção — `AskUserQuestion` no Claude Code ou `request_user_input` no Codex CLI. Se nenhuma estiver disponível (ex: modo Default do Claude Code, Codex em modo não-interativo), use texto simples com opções numeradas — nunca bloqueie o fluxo por indisponibilidade de ferramenta.
 - Explore o projeto e use Context7 MCP + Web Search antes de fazer perguntas — entender o contexto técnico e regras de negócio evita perguntas genéricas.
 - Faça perguntas de clarificação antes de redigir — gerar sem alinhamento técnico produz specs desconectadas da realidade do projeto.
 - Siga rigorosamente o template — specs fora do padrão quebram a rastreabilidade PRD → Tech Spec → Tasks.
