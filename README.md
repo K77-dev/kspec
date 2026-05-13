@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@k77-dev/kspec.svg)](https://www.npmjs.com/package/@k77-dev/kspec)
 [![license](https://img.shields.io/npm/l/@k77-dev/kspec.svg)](LICENSE)
 
-Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — para **Claude Code**.
+Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — para **Claude Code** e **OpenAI Codex CLI**.
 
 ```bash
 npm install -g @k77-dev/kspec
@@ -144,11 +144,24 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
 Skills rodam **no contexto principal** (veem o historico da conversa, podem fazer perguntas).
 Agents rodam em **contexto isolado** (nao veem a conversa, recebem apenas os inputs necessarios).
 
-## Agente suportado
+## Matriz de plataformas
 
-| Agente | Diretorio de config | Guia principal | Skills | Agents | Rules | Templates |
-|---|---|---|---|---|---|---|
-| Claude Code | `.claude/` | `CLAUDE.md` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` | `.claude/templates/` |
+| Plataforma | Caminho canônico (source of truth) | Discovery | Guia principal | Invocação de skills |
+|---|---|---|---|---|
+| Claude Code | `.agents/` | `.claude/` (symlinks) | `CLAUDE.md` | `/kspec-<nome>` |
+| OpenAI Codex CLI | `.agents/` | `.codex/` (symlinks + `.toml`) | `AGENTS.md` | `$kspec-<nome>` |
+
+Skills, agents, rules e templates vivem em `.agents/` e são descobertos via symlinks em `.claude/` (Claude Code) e `.codex/` (Codex CLI). Não edite `.claude/` nem `.codex/` diretamente — as alterações vão para `.agents/` primeiro.
+
+## Limitações conhecidas
+
+| Limitação | Impacto |
+|---|---|
+| `codex exec` não é interativo | `AskUserQuestion` e confirmações de readline não funcionam em modo não-interativo — use sessão interativa (`codex`) |
+| Sem slash commands no Codex CLI | Skills devem ser invocadas por linguagem natural ou `$kspec-<nome>`, não por `/kspec-<nome>` |
+| Windows | Symlinks exigem modo desenvolvedor ou privilégios de administrador — o `kspec init` usa cópia (`fs-extra.copy`) como fallback automático |
+| MCP opt-in | Os MCP servers (context7, testsprite) precisam ser registrados manualmente em `.codex/config.toml` — o `/kspec-bootstrap` oferece opt-in durante o setup |
+| Sandbox do Codex | `kspec-review-runner` usa `sandbox_mode = "read-only"`; `kspec-task-runner` e `kspec-qa-runner` usam `workspace-write` — verifique os `.toml` em `.codex/agents/` se precisar ajustar |
 
 ## Stack padrao (para projetos que usam kspec)
 
@@ -164,15 +177,18 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 ## Estrutura do repositorio
 
 ```
-.claude/                        # Configuracao Claude Code
+.agents/                        # Source of truth — skills, agents, rules, templates
 ├── skills/                     # 9 skills invocaveis
 ├── agents/                     # 3 agents (tarefas isoladas)
-├── rules/                      # 4 rules (padroes de codigo)
-├── templates/                  # 6 templates (PRD, techspec, tasks, etc.)
+├── rules/                      # Rules de codigo (padroes por tecnologia)
+├── templates/                  # Templates (PRD, techspec, tasks, etc.)
 └── validation/                 # Validacoes de skills empresariais
+.claude/                        # Discovery para Claude Code (symlinks → .agents/)
+.codex/                         # Discovery para OpenAI Codex CLI (symlinks + .toml)
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
+AGENTS.md                       # Guia principal para OpenAI Codex CLI
 enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 ```
 

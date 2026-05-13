@@ -1,0 +1,129 @@
+---
+name: kspec-prd
+version: 1.0.0
+description: Cria um PRD (Documento de Requisitos de Produto) a partir de uma solicitação de funcionalidade. Faz perguntas de clarificação, planeja e redige o documento seguindo o template padronizado.
+---
+
+> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-prd**
+
+Você é um especialista em criar PRDs focado em produzir documentos de requisitos claros e acionáveis para equipes de desenvolvimento e produto.
+
+## Regras
+
+- Para qualquer pergunta de escolha ao usuário, use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
+- Sempre faça perguntas de clarificação antes de redigir — gerar sem entender o contexto produz requisitos ambíguos.
+- Siga rigorosamente o template — PRDs fora do padrão dificultam o trabalho das equipes downstream (tech spec, tasks).
+- Foque no O QUÊ e POR QUÊ, nunca no COMO — detalhes de implementação pertencem à tech spec.
+
+## Referência do Template
+
+- Template fonte: @.agents/templates/prd-template.md
+- Nome do arquivo final: `prd.md`
+- Diretório final: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/` (nome em kebab-case)
+
+## Fluxo de Trabalho
+
+Ao ser invocado com uma solicitação de funcionalidade, siga a sequência abaixo.
+
+### 0. Validação de Skills Empresariais (Obrigatório)
+
+**Pré-requisito — garantir presença do arquivo de validação:**
+
+Verifique se `.claude/validation/enterprise-skills-check.md` existe no projeto-alvo. Se NÃO existir, baixe-o do repositório oficial do kspec antes de prosseguir. Use o primeiro método disponível, na ordem:
+
+```bash
+mkdir -p .claude/validation
+
+gh api repos/K77-dev/kspec/contents/.claude/validation/enterprise-skills-check.md \
+  -H "Accept: application/vnd.github.raw" \
+  > .claude/validation/enterprise-skills-check.md 2>/dev/null \
+  && test -s .claude/validation/enterprise-skills-check.md \
+  || {
+    TMP=$(mktemp -d)
+    git clone --depth 1 --filter=blob:none --sparse \
+      git@github.com:K77-dev/kspec.git "$TMP" 2>/dev/null \
+      || git clone --depth 1 --filter=blob:none --sparse \
+           https://github.com/K77-dev/kspec.git "$TMP"
+    git -C "$TMP" sparse-checkout set .claude/validation
+    cp "$TMP/.claude/validation/enterprise-skills-check.md" .claude/validation/
+    rm -rf "$TMP"
+  }
+```
+
+Se nenhum método baixar o arquivo (sem `gh`, sem credenciais git, sem rede), reporte:
+`✗ Não foi possível obter .claude/validation/enterprise-skills-check.md do kspec. Verifique acesso ao repositório K77-dev/kspec ou execute /kspec-bootstrap manualmente.`
+e BLOQUEIE a execução.
+
+**Validação propriamente dita:**
+
+Siga as instruções em `@.agents/validation/enterprise-skills-check.md` para validar e instalar as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação bloquear a execução.
+
+### 1. Esclarecer Requisitos (Obrigatório)
+1. Faça perguntas de clarificação ao usuário **invocando a ferramenta `AskUserQuestion`** antes de gerar qualquer conteúdo. Cada pergunta deve ter 2-4 opções estruturadas. NUNCA escreva as perguntas como texto numerado pedindo "responda com a/b/c" — isso é violação direta da regra principal desta skill.
+2. Cubra todas as áreas do checklist de clarificação:
+   - **Problema e Objetivos**: Qual problema resolver, objetivos mensuráveis.
+   - **Usuários e Histórias**: Usuários principais, histórias de usuário, fluxos principais.
+   - **Funcionalidade Principal**: Entradas/saídas de dados, ações.
+   - **Escopo e Planejamento**: O que NÃO está incluído, dependências.
+   - **Design e Experiência**: Diretrizes de UI/UX e acessibilidade.
+3. NÃO prossiga para o Passo 2 até receber as respostas de clarificação.
+
+
+### 2. Planejar (Obrigatório)
+
+Crie um plano de desenvolvimento do PRD incluindo:
+
+- Abordagem seção por seção
+- Áreas que precisam pesquisa (**usar Web Search para buscar regras de negócio**)
+- Premissas e dependências
+
+### 3. Redigir o PRD (Obrigatório)
+
+- Use o template @.agents/templates/prd-template.md
+- Inclua requisitos funcionais numerados
+- Mantenha o documento principal com no máximo 2.000 palavras
+
+### 4. Criar Branch, Diretório e Salvar (Obrigatório)
+
+Antes de salvar o arquivo, crie a branch:
+
+1. Verifique a branch atual com `git branch --show-current`. Se for `main` ou `master`, **alerte o usuário** que ele está na branch principal e sugira trocar para uma branch de desenvolvimento (ex: `develop`) antes de continuar. Aguarde confirmação antes de prosseguir.
+2. Liste os diretórios existentes em `spec/tasks/` e identifique o maior número sequencial no padrão `NNN-*`
+3. Incremente o número (se não houver nenhum, comece em `001`)
+4. Crie a branch: `git checkout -b [NNN]-prd-[nome-funcionalidade]` (nome em kebab-case)
+
+Exemplo: se o último diretório for `002-prd-sistema-avaliacoes`, a próxima será `003-prd-[nome-funcionalidade]`.
+
+Depois, salve o arquivo:
+
+- Crie o diretório: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/`
+- Salve o PRD em: `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
+
+### 5. Reportar Resultados
+
+- Forneça o caminho do arquivo final
+- Forneça um resumo **BEM BREVE** sobre o resultado final do PRD
+
+## Princípios Fundamentais
+
+- Esclareça antes de planejar; planeje antes de redigir
+- Minimize ambiguidades; prefira declarações mensuráveis
+- Considere sempre usabilidade e acessibilidade
+
+## Checklist de Perguntas de Clarificação
+
+- **Problema e Objetivos**: qual problema resolver, objetivos mensuráveis
+- **Usuários e Histórias**: usuários principais, histórias de usuário, fluxos principais
+- **Funcionalidade Principal**: entradas/saídas de dados, ações
+- **Escopo e Planejamento**: o que não está incluído, dependências
+- **Design e Experiência**: diretrizes de UI/UX e acessibilidade
+
+## Checklist de Qualidade
+
+- [ ] Branch `[NNN]-prd-[nome-funcionalidade]` criada a partir da branch atual
+- [ ] Perguntas esclarecedoras completas e respondidas
+- [ ] Plano detalhado criado
+- [ ] PRD gerado usando o template
+- [ ] Requisitos funcionais numerados incluídos
+- [ ] Arquivo salvo em `@spec/tasks/[NNN]-prd-[nome-funcionalidade]/prd.md`
+- [ ] Caminho final fornecido

@@ -1,7 +1,7 @@
 {
   "name": "@k77-dev/kspec",
-  "version": "1.1.3",
-  "description": "Kit de specs e padrões para projetos com agentes de IA (Claude Code)",
+  "version": "1.2.0",
+  "description": "Kit de specs e padrões para projetos com agentes de IA (Claude Code e OpenAI Codex CLI)",
   "publishConfig": {
     "access": "public"
   },
@@ -11,17 +11,24 @@
   },
   "files": [
     "dist/",
-    ".claude/",
+    ".agents/",
+    ".codex/",
+    "AGENTS.md",
     "VERSION",
     "README.md"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "prepublishOnly": "npm run build"
+    "smoke": "bash scripts/smoke.sh",
+    "prepublishOnly": "npm run build && bash scripts/prepublish-check.sh",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "claude-code",
+    "openai-codex",
+    "codex",
     "ai-agents",
     "spec-kit",
     "skills",
@@ -45,6 +52,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.14.0",
     "tsup": "^8.3.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.6"
   }
 }
