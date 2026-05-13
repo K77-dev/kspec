@@ -70,11 +70,33 @@ if [ -d ".codex/skills" ]; then
 fi
 
 echo ""
-echo "--- Resultados: $PASS passou(aram), $FAIL falhou(aram) ---"
+echo "--- Resultados symlinks: $PASS passou(aram), $FAIL falhou(aram) ---"
 
 if [ "$FAIL" -gt 0 ]; then
   echo "✗ Prepublish check falhou. Corrija os symlinks antes de publicar."
   exit 1
 fi
 
-echo "✓ Todos os symlinks resolvem para .agents/ — ok para publicar."
+# Gate de conteúdo: garante que .agents/validation/enterprise-skills-check.md
+# não foi publicado como placeholder (regressão de v1.2.0).
+echo ""
+echo "→ Verificando conteúdo de .agents/validation/enterprise-skills-check.md..."
+VALIDATION_FILE=".agents/validation/enterprise-skills-check.md"
+MIN_LINES=100
+if [ ! -f "$VALIDATION_FILE" ]; then
+  echo "✗ $VALIDATION_FILE não existe."
+  exit 1
+fi
+actual_lines=$(wc -l < "$VALIDATION_FILE" | tr -d ' ')
+if [ "$actual_lines" -lt "$MIN_LINES" ]; then
+  echo "✗ $VALIDATION_FILE tem $actual_lines linhas (esperado >= $MIN_LINES). Conteúdo parece truncado."
+  exit 1
+fi
+if ! grep -q "Validation Algorithm" "$VALIDATION_FILE"; then
+  echo "✗ $VALIDATION_FILE não contém 'Validation Algorithm' — conteúdo incompleto."
+  exit 1
+fi
+echo "✓ $VALIDATION_FILE: $actual_lines linhas, algoritmo presente."
+
+echo ""
+echo "✓ Todos os checks passaram — ok para publicar."

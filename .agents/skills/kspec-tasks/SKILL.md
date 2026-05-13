@@ -34,32 +34,19 @@ Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/ksp
 
 ### 0. Validação de Skills Empresariais (Obrigatório)
 
-**Pré-requisito — garantir presença do arquivo de validação:**
+**Pré-requisito — arquivo de validação presente:**
 
-Verifique se `.claude/validation/enterprise-skills-check.md` existe no projeto-alvo. Se NÃO existir, baixe-o do repositório oficial do kspec antes de prosseguir. Use o primeiro método disponível, na ordem:
+Verifique se `.agents/validation/enterprise-skills-check.md` existe e tem ao menos 100 linhas:
 
 ```bash
-mkdir -p .claude/validation
-
-gh api repos/K77-dev/kspec/contents/.claude/validation/enterprise-skills-check.md \
-  -H "Accept: application/vnd.github.raw" \
-  > .claude/validation/enterprise-skills-check.md 2>/dev/null \
-  && test -s .claude/validation/enterprise-skills-check.md \
-  || {
-    TMP=$(mktemp -d)
-    git clone --depth 1 --filter=blob:none --sparse \
-      git@github.com:K77-dev/kspec.git "$TMP" 2>/dev/null \
-      || git clone --depth 1 --filter=blob:none --sparse \
-           https://github.com/K77-dev/kspec.git "$TMP"
-    git -C "$TMP" sparse-checkout set .claude/validation
-    cp "$TMP/.claude/validation/enterprise-skills-check.md" .claude/validation/
-    rm -rf "$TMP"
-  }
+test -f .agents/validation/enterprise-skills-check.md && [ "$(wc -l < .agents/validation/enterprise-skills-check.md)" -ge 100 ]
 ```
 
-Se nenhum método baixar o arquivo (sem `gh`, sem credenciais git, sem rede), reporte:
-`✗ Não foi possível obter .claude/validation/enterprise-skills-check.md do kspec. Verifique acesso ao repositório K77-dev/kspec ou execute /kspec-bootstrap manualmente.`
-e BLOQUEIE a execução.
+Se faltar ou estiver truncado, o kspec foi instalado de forma incompleta. Reporte ao usuário:
+
+`✗ Arquivo de validação ausente/corrompido. Execute 'npx @k77-dev/kspec install' na raiz do projeto e tente novamente.`
+
+e BLOQUEIE a execução. NÃO tente baixar via `gh api` ou `git clone` — o caminho canônico de distribuição do kspec é o pacote npm.
 
 **Validação propriamente dita:**
 

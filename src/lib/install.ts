@@ -60,6 +60,16 @@ async function copyAgents(sourceAgents: string, targetRoot: string): Promise<voi
   const targetAgents = resolve(targetRoot, ".agents");
   console.log(chalk.dim("→ Instalando .agents/..."));
   await copy(sourceAgents, targetAgents, { overwrite: true });
+
+  const validationPath = resolve(targetAgents, "validation", "enterprise-skills-check.md");
+  const content = await readFile(validationPath, "utf-8").catch(() => "");
+  if (content.length < 1000 || !content.includes("Validation Algorithm")) {
+    console.warn(
+      chalk.yellow(
+        "⚠ .agents/validation/enterprise-skills-check.md parece truncado. Pacote kspec pode estar corrompido — reinstale.",
+      ),
+    );
+  }
 }
 
 async function buildClaudeLinks(
