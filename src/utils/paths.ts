@@ -19,6 +19,22 @@ export function getClaudeSourceDir(): string {
   return resolve(getPackageRoot(), ".claude");
 }
 
+export function getAgentsSourceDir(): string {
+  return resolve(getPackageRoot(), ".agents");
+}
+
+export function getCodexSourceDir(): string {
+  return resolve(getPackageRoot(), ".codex");
+}
+
+export function getAgentsMdSource(): string {
+  return resolve(getPackageRoot(), "AGENTS.md");
+}
+
+export function getClaudeMdSource(): string {
+  return resolve(getPackageRoot(), "CLAUDE.md");
+}
+
 export function getPackageVersion(): string {
   const versionFile = resolve(getPackageRoot(), "VERSION");
   return readFileSync(versionFile, "utf-8").trim();
