@@ -88,13 +88,19 @@ Depois da escrita do arquivo, apresentar ao usuário um **resumo executivo** (po
 
 ### 5. Gerar automaticamente o Pull Request
 
-Gerar automaticamente o **conteúdo final** do Pull Request utilizando o **template oficial de PR da spec**: `@.agents/templates/pr-template.md`.
+Gerar automaticamente o conteúdo final do Pull Request utilizando o template oficial de PR da spec:
 
-- **Não omitir seções** do template; quando não aplicável, usar linha objetiva como «N/A — [motivo]»
-- Preencher com base **somente na análise** desta execução (requisitos, tasks, evidências de testes, escopo extra, riscos)
-- Incluir no final do corpo do PR (após as seções do template) um bloco **«Relatório de alinhamento semântico»** com link ou referência ao arquivo `alignment-report.md`, **Alignment Score** e **Recomendação final**
+`@.agents/templates/pr-template.md`
 
-**Abertura do PR no GitHub:** não abrir PR sem confirmação explícita do usuário quando a recomendação for `REJECTED`. Se **APPROVED** ou **APPROVED WITH WARNINGS**, ofereça abrir via `gh pr create` usando o corpo gerado (heredoc), desde que `gh` esteja disponível e o estado do git permita; caso contrário, entregue **título sugerido** + **markdown pronto para colar**.
+A skill deve:
+
+- Preencher automaticamente todas as seções do template com base na análise realizada
+- Utilizar apenas evidências verificadas durante a execução
+- Referenciar o arquivo `pr-review.md`
+- Adicionar o Alignment Score e a Recomendação Final no corpo do PR
+- Utilizar `N/A — [motivo]` quando alguma seção não for aplicável
+
+A skill NÃO deve redefinir ou duplicar a estrutura do template oficial de PR dentro desta skill.
 
 ---
 
