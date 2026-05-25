@@ -86,6 +86,7 @@ npm run test:watch             # Watch mode para testes
 | `kspec-tasks` | Quebra Tech Spec em tarefas incrementais |
 | `kspec-implement` | Executa todas as tasks pendentes |
 | `kspec-qa` | Quality Assurance (E2E, acessibilidade) |
+| `kspec-pr-review` | Alinhamento semântico spec × implementação e corpo do PR (template oficial) |
 | `kspec-bugfix` | Corrige bugs documentados pelo QA |
 | `kspec-bootstrap` | Gera configuração para projeto existente |
 | `kspec-version` | Exibe versão atual e lista skills/agents |

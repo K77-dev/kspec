@@ -26,7 +26,7 @@ kspec/
 │   ├── skills/<nome>/SKILL.md     # 9 skills
 │   ├── agents/<nome>/AGENT.md     # 3 agents (fonte para gerar .toml)
 │   ├── rules/*.md                 # 4 rules
-│   ├── templates/*.md             # 6 templates
+│   ├── templates/*.md             # 5 templates
 │   └── validation/
 │       └── enterprise-skills-check.md
 ├── .claude/
@@ -64,11 +64,11 @@ Não fazer `git mv` direto: o Claude Code precisa continuar funcionando durante 
 .agents/skills/<nome>/SKILL.md     ← copiar de .claude/skills/<nome>/SKILL.md (9 skills)
 .agents/agents/<nome>/AGENT.md     ← copiar de .claude/agents/<nome>/AGENT.md (3 agents)
 .agents/rules/*.md                  ← copiar de .claude/rules/ (4 arquivos)
-.agents/templates/*.md              ← copiar de .claude/templates/ (6 arquivos)
+.agents/templates/*.md              ← copiar de .claude/templates/ (5 arquivos)
 .agents/validation/enterprise-skills-check.md ← copiar de .claude/validation/
 ```
 
-Verificação: `find .agents -type f | wc -l` retorna **23**.
+Verificação: `find .agents -type f | wc -l` retorna **22**.
 
 ### Passo 1.2 — Substituir refs `@.claude/...` → `@.agents/...`
 
@@ -172,7 +172,7 @@ Verificação:
 
 Novos:
 - `/Users/kelsen/Documents/develpment/git/k77-dev/kspec/AGENTS.md`
-- `/Users/kelsen/Documents/develpment/git/k77-dev/kspec/.agents/` (23 arquivos)
+- `/Users/kelsen/Documents/develpment/git/k77-dev/kspec/.agents/` (22 arquivos)
 - `/Users/kelsen/Documents/develpment/git/k77-dev/kspec/.codex/agents/kspec-task-runner.toml`
 - `/Users/kelsen/Documents/develpment/git/k77-dev/kspec/.codex/agents/kspec-review-runner.toml`
 - `/Users/kelsen/Documents/develpment/git/k77-dev/kspec/.codex/agents/kspec-qa-runner.toml`
@@ -319,7 +319,7 @@ Adicionar linha no output: `Plataformas suportadas: Claude Code, OpenAI Codex CL
 ## Verificação end-to-end
 
 ### Após PR-1
-- [ ] `find .agents -type f | wc -l` → 23
+- [ ] `find .agents -type f | wc -l` → 22
 - [ ] `find .claude -maxdepth 2 -type l | wc -l` ≥ 12
 - [ ] `find .claude/rules -follow -type f | wc -l` → 4
 - [ ] `grep -r "@\.claude" .agents/` → vazio

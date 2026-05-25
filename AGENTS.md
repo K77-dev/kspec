@@ -46,6 +46,7 @@ Para invocar uma skill no Codex CLI, use `$kspec-<nome>` ou descreva a ação em
 | `kspec-tasks` | `$kspec-tasks` ou "quebre em tasks..." | Quebra Tech Spec em tarefas incrementais |
 | `kspec-implement` | `$kspec-implement` ou "implemente as tasks de..." | Executa todas as tasks pendentes |
 | `kspec-qa` | `$kspec-qa` ou "execute QA de..." | Quality Assurance (E2E, acessibilidade) |
+| `kspec-pr-review` | `$kspec-pr-review` ou "revisão semântica da entrega antes do PR" | Alinhamento PRD/Tech Spec/tasks × diff, relatório e corpo do PR |
 | `kspec-bugfix` | `$kspec-bugfix` ou "corrija o bug documentado em..." | Corrige bugs documentados pelo QA |
 | `kspec-bootstrap` | `$kspec-bootstrap` ou "configure o kspec neste projeto" | Gera configuração para projeto existente |
 | `kspec-version` | `$kspec-version` ou "qual a versão do kspec?" | Exibe versão atual e lista skills/agents |

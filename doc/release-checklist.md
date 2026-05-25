@@ -15,13 +15,13 @@ Os itens abaixo exigem instalação local dos CLIs `claude` e/ou `codex`.
 
 ## 1. Claude Code — Verificação de Skills
 
-**Objetivo:** confirmar que as 9 skills do kspec são listadas e invocáveis via Claude Code.
+**Objetivo:** confirmar que as 10 skills do kspec são listadas e invocáveis via Claude Code.
 
 **Passos:**
 1. Abrir Claude Code no diretório do projeto
 2. Digitar `/kspec-version`
 
-**Resultado esperado:** saída lista exatamente 9 skills (`kspec-ideia`, `kspec-prd`, `kspec-techspec`, `kspec-tasks`, `kspec-implement`, `kspec-qa`, `kspec-bugfix`, `kspec-bootstrap`, `kspec-version`) e exibe "Plataformas suportadas: Claude Code, OpenAI Codex CLI".
+**Resultado esperado:** saída lista exatamente 10 skills (`kspec-ideia`, `kspec-prd`, `kspec-techspec`, `kspec-tasks`, `kspec-implement`, `kspec-qa`, `kspec-pr-review`, `kspec-bugfix`, `kspec-bootstrap`, `kspec-version`) e exibe "Plataformas suportadas: Claude Code, OpenAI Codex CLI".
 
 - [ ] Passou
 

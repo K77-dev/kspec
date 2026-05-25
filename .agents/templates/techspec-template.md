@@ -1,5 +1,13 @@
 # Template de Especificação Técnica
 
+## Requisitos Atendidos
+
+[Liste os requisitos do PRD cobertos por esta Tech Spec:
+
+- REQ-001 — [Nome do requisito]
+- REQ-002 — [Nome do requisito]
+]
+
 ## Resumo Executivo
 
 [Forneça uma breve visão técnica da abordagem de solução. Resuma as decisões arquiteturais principais e a estratégia de implementação em 1-2 parágrafos.]

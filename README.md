@@ -46,6 +46,9 @@ Dev: /kspec-qa 001-prd-auth
      → agente testa E2E + acessibilidade
      → aprovado ou bugs documentados
 
+Dev: /kspec-pr-review 001-prd-auth  (antes de abrir o PR)
+     → relatorio alignment-report.md + corpo do PR pelo template oficial
+
 Dev: /kspec-bugfix 001-prd-auth  (se necessario)
      → agente corrige bugs + testes de regressao
 ```
@@ -178,7 +181,7 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 
 ```
 .agents/                        # Source of truth — skills, agents, rules, templates
-├── skills/                     # 9 skills invocaveis
+├── skills/                     # 10 skills invocaveis
 ├── agents/                     # 3 agents (tarefas isoladas)
 ├── rules/                      # Rules de codigo (padroes por tecnologia)
 ├── templates/                  # Templates (PRD, techspec, tasks, etc.)
@@ -247,6 +250,7 @@ O review-runner (agent) le adicionalmente:
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
 | `/kspec-qa` | `prd.md`, `techspec.md`, `tasks.md`, aplicacao rodando em localhost, rules | `qa.md` + `bugs.md` |
+| `/kspec-pr-review` | `prd.md`, `techspec.md`, `*_task.md`, `tasks.md`, `git diff` | `alignment-report.md` + corpo do PR (`.agents/templates/pr-template.md`) |
 | `/kspec-bugfix` | `bugs.md`, `prd.md`, `techspec.md`, `tasks.md`, rules | Correcoes no codigo + testes de regressao + `bugfix.md` + `bugs.md` atualizado |
 
 O qa-runner (agent) le adicionalmente:
@@ -295,6 +299,7 @@ spec/tasks/[NNN]-prd-[nome]/
 ├── review_[num].md   ← agent review-runner    Le: git diff + techspec.md + tasks.md + rules
 ├── qa.md             ← agent qa-runner        Le: prd.md + techspec.md + tasks.md + app rodando
 ├── bugs.md           ← agent qa-runner        Le: (gerado junto com qa.md)
+├── alignment-report.md ← /kspec-pr-review     Le: prd.md + techspec.md + tasks + git diff + template pr
 └── bugfix.md         ← /kspec-bugfix          Le: bugs.md + prd.md + techspec.md
 ```
 

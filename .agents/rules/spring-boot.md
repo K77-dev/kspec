@@ -1,1 +1,0 @@
-../../.agents/rules/spring-boot.md
