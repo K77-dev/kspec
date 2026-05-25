@@ -37,7 +37,7 @@ Bloqueie a execução. NÃO tente baixar via `gh api` ou `git clone`.
 
 Validar semanticamente se a implementação realizada está aderente ao que foi especificado no PRD, Tech Spec e Tasks, gerando um relatório de alinhamento semântico antes da abertura/aprovação do Pull Request.
 
-A skill funciona como uma camada de verificação da entrega.
+A skill funciona como uma camada semântica de verificação da entrega.
 
 ---
 
@@ -69,12 +69,20 @@ A skill funciona como uma camada de verificação da entrega.
 
 ### 4. Gerar relatório estruturado
 
-Persistir em **`spec/tasks/$ARGUMENTS/alignment-report.md`** (sobrescrever se já existir de execuções anteriores desta skill no mesmo slug).
+Persistir em:
+
+`spec/tasks/$ARGUMENTS/pr-review.md`
+
+(sobrescrever se já existir de execuções anteriores desta skill no mesmo slug).
 
 O relatório deve conter obrigatoriamente:
 
 - **Alignment Score (%)** — ver seção «Cálculo do Alignment Score» abaixo; exibir também a **fórmula e os números** usados (ex.: totais de requisitos rastreados, pesos parciais, penalidades), para auditabilidade
 - **Requisitos atendidos** — com vínculo a IDs/seções da spec quando existirem
+- **Rastreabilidade por requisito**
+  - tasks relacionadas
+  - arquivos implementados
+  - testes relacionados
 - **Gaps encontrados** — incluindo parciais e não atendidos, com evidência (arquivo/comportamento) e impacto
 - **Funcionalidades fora do escopo** — lista objetiva do que aparece na implementação/diff sem âncora na spec
 - **Riscos detectados**
@@ -84,7 +92,7 @@ O relatório deve conter obrigatoriamente:
   - `APPROVED WITH WARNINGS`
   - `REJECTED`
 
-Depois da escrita do arquivo, apresentar ao usuário um **resumo executivo** (poucas frases), o **score**, a **recomendação** e o caminho **`alignment-report.md`**.
+Depois da escrita do arquivo, apresentar ao usuário um **resumo executivo** (poucas frases), o **score**, a **recomendação** e o caminho `pr-review.md`.
 
 ### 5. Gerar automaticamente o Pull Request
 
@@ -139,7 +147,7 @@ Esta skill integra a iniciativa **«AI Spec Intelligence»**: validar semanticam
    - **−10 a −25 pontos** por **alto risco técnico** não refletido na spec ou sem compensação descrita nas tasks
 5. Limitar resultado a **`[0, 100]`** após penalidades.
 
-**Mapeamento Score → recomendação (padrão):**
+### Mapeamento Score → recomendação (padrão)
 
 | Faixa | Recomendação |
 | --- | --- |
@@ -147,12 +155,12 @@ Esta skill integra a iniciativa **«AI Spec Intelligence»**: validar semanticam
 | Gaps pontuais, riscos contidos, cobertura de testes incompleta em âmbito não crítico ou scope creep menor documentado | `APPROVED WITH WARNINGS` (tipicamente **70–89%** ou **score alto com alertas materiais**) |
 | Inconsistência crítica, aderência grosseira à spec não demonstrada ou score após penalidades **< 70%** | `REJECTED` |
 
-Qualquer inconsistência que dispare a regra de **«falhar a validação»** force **`REJECTED`**, mesmo que o score numérico fique alto (documentar contradição na seção de gaps).
+Qualquer inconsistência que dispare a regra de **«falhar a validação»** force `REJECTED`, mesmo que o score numérico fique alto (documentar contradição na seção de gaps).
 
 ---
 
 ## Regras gerais (orquestração)
 
 - Para escolhas ao usuário, preferir ferramentas interativas disponíveis na plataforma; se não houver, texto com opções numeradas
-- Não usar heurísticas opacas para «parece ok»: cada conclusão material deve poder ser conferida contra **trecho da spec** ou **trecho do diff**
-- Ao final, se `--no-verify`/skip hooks forem mencionados em contexto de PR, registre como **warning de processo**, não substitua verificação de aderência
+- Não usar heurísticas opacas para «parece ok»: cada conclusão material deve poder ser conferida contra trecho da spec ou trecho do diff
+- Ao final, se `--no-verify`/skip hooks forem mencionados em contexto de PR, registre como warning de processo, não substitua verificação de aderência
