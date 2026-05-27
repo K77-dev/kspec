@@ -1,10 +1,10 @@
 ---
 name: kspec-bootstrap
-version: 1.1.0
+version: 1.2.0
 description: Analisa um projeto existente e gera a configuração completa do kspec (CLAUDE.bootstrap.md e/ou AGENTS.bootstrap.md, rules adaptadas) baseada na stack, estrutura e plataformas escolhidas (Claude Code, Codex CLI ou ambas).
 ---
 
-> Ao iniciar a execução desta skill, exiba: **kspec v1.1.0 — kspec-bootstrap**
+> Ao iniciar a execução desta skill, exiba: **kspec v1.2.0 — kspec-bootstrap**
 
 ## Modo Não-Interativo (codex exec ou Default mode)
 
@@ -21,6 +21,7 @@ Você é um assistente especializado em configurar projetos para uso com Claude 
 - Analise o projeto antes de perguntar — detectar automaticamente evita perguntas óbvias.
 - Confirme as detecções com o usuário antes de gerar — evita arquivos incorretos.
 - Gere apenas rules relevantes para a stack detectada — rules desnecessárias consomem contexto sem valor.
+- **Em projetos existentes (brownfield), o padrão de desenvolvimento do projeto-alvo prevalece sobre os defaults das rules enterprise** — adapte o conteúdo de todas as rules copiadas quando houver conflito comprovado no código-fonte (ex.: DTO POJO vs `record`, Gradle vs Maven, Jest vs Vitest).
 - Gere os arquivos de bootstrap conforme a plataforma escolhida: `CLAUDE.bootstrap.md` para Claude Code, `AGENTS.bootstrap.md` para Codex CLI, ou ambos — nunca sobrescreva `CLAUDE.md` ou `AGENTS.md` existentes.
 - Nunca altere código-fonte, package.json, configs do projeto ou qualquer arquivo fora de `.claude/`, `.agents/`, `.codex/`, `CLAUDE.bootstrap.md`, `AGENTS.bootstrap.md` e `spec/tasks/`.
 
@@ -45,9 +46,10 @@ Antes de qualquer detecção, verificar se já existe configuração no projeto:
 - Verificar se existe `.github/copilot-instructions.md`
 
 Se encontrar configuração existente:
-- **Ler o conteúdo** e extrair: stack, comandos, estrutura, padrões já definidos
+- **Ler o conteúdo** e extrair: stack, comandos, estrutura, **padrões de código já definidos** (ex.: "DTOs como POJO", "Gradle", "Jest", convenções de export)
 - **Usar como base** para o passo 1 — complementar com detecção automática, não ignorar
 - Na apresentação (passo 2), indicar quais informações vieram da configuração existente vs detecção automática
+- Registrar os padrões encontrados para uso no passo **5.6** (adaptação de rules)
 
 Se não encontrar nenhuma configuração, seguir o fluxo normal.
 
@@ -145,6 +147,26 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 **Scripts** — ler scripts do `package.json` (raiz e workspaces):
 - dev, build, test, lint, typecheck, etc.
 
+**Padrões de código (brownfield)** — amostrar arquivos representativos em `src/`, `app/`, `lib/` e `packages/` (ignorar `.claude/`, `.agents/`, `.codex/`, `node_modules/`, `dist/`, `target/`). Registrar evidências para adaptação das rules no passo 5.6:
+
+| Sinal a detectar | Como detectar | Impacto nas rules |
+|---|---|---|
+| DTO POJO vs `record` | Classes `*Dto`/`*DTO` com getters/setters ou Lombok (`@Data`, `@Getter`) vs `public record` | `java.md`, `spring-boot.md` |
+| Lombok | Presença de `@Data`, `@Builder`, `@RequiredArgsConstructor` | Exemplos em `java.md`, `spring-boot.md` |
+| Build tool Java | `pom.xml` vs `build.gradle`/`build.gradle.kts` | `spring-boot.md`, `java-tests.md` |
+| Config Spring | `application.properties` vs `application.yml` | `spring-boot.md` |
+| Estrutura de pacotes | `controllers/`/`services/` vs pacotes por domínio | `spring-boot.md` |
+| Migrations DB | Flyway (`db/migration/`) vs Liquibase (`db/changelog/`) | `spring-boot.md`, `database.md` |
+| Package manager JS/TS | Lockfile presente (bun/pnpm/yarn/npm) | `typescript.md`, `tests.md`, `react.md` |
+| Test runner JS | Dependência `vitest` vs `jest` no `package.json` | `tests.md`, `react.md` |
+| Exports TS | Proporção de `export default` vs `export {`/`export function` | `typescript.md`, `react.md` |
+| CSS/Styling | Tailwind classes vs CSS Modules (`.module.css`) vs styled-components | `react.md` |
+| UI library | shadcn (`components/ui/`), MUI (`@mui/`), Chakra, Radix direto | `react.md` |
+| Assertions Java | `assertThat` (AssertJ) vs `assertEquals` (JUnit) | `java-tests.md` |
+| Naming de testes JS | `*.test.ts` vs `*.spec.ts` predominante | `tests.md` |
+
+Quando config existente (passo 0) e código-fonte divergirem, **priorizar o código-fonte** como evidência.
+
 Após a detecção, seguir para o passo **3B**.
 
 ### 3. Confirmar Stack (Obrigatório)
@@ -178,11 +200,13 @@ Mostrar ao usuário um resumo do que foi detectado:
 - Testes: [unit] + [e2e]
 - Estrutura: [monorepo/single-package]
 - Scripts disponíveis: [lista]
+- Padrões de código detectados: [ex.: DTO POJO, Gradle, Jest, CSS Modules — ou "defaults enterprise (projeto vazio)"]
 ```
 
 Usar `AskUserQuestion` (até 4 perguntas em um único bloco) para:
 - Confirmar se as detecções estão corretas (`Sim` / `Ajustar`)
 - Idioma para specs (`pt-BR (Recomendado)` / outro idioma)
+- **Se padrões de código foram detectados:** confirmar se devem prevalecer na adaptação das rules (`Sim, manter padrão do projeto` / `Ajustar`)
 
 Itens não detectados podem ser adicionados pelo usuário via campo "Other" das respostas ou em turno seguinte.
 
@@ -332,11 +356,81 @@ Não remover estas rules — elas vêm com o core kspec e são technology-agnost
 
 Se existirem rules de stack em `.agents/rules/` que não correspondem a nenhuma tecnologia detectada, removê-las (ex: `react.md` num projeto Angular).
 
-**5.6. Ajustar `paths:` no frontmatter:**
+**5.6. Adaptar conteúdo das rules ao padrão do projeto-alvo (brownfield):**
 
-Após copiar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`). Para projetos vazios, manter os paths genéricos padrão da rule (`**/*.ts`, `**/*.java`, etc.).
+<critical>
+As rules enterprise trazem **opiniões padrão da plataforma** (ex.: DTO como `record`, bun como package manager, Vitest como test runner). Em projetos existentes (passo 2B), **o padrão do código-fonte do projeto-alvo sempre prevalece** — nunca impor convenções da rule que contradigam o que o projeto já usa de forma consistente.
+</critical>
 
-### 5.7. Oferecer Knowledge Graph (Opcional, brownfield apenas)
+**Escopo:**
+- **Projetos existentes (2B):** obrigatório — adaptar **todas** as rules copiadas em 5.3 (e rules core de stack já presentes, se conflitarem).
+- **Projetos vazios (2A):** pular — manter defaults das rules enterprise.
+
+**Processo (para cada rule em `.agents/rules/` copiada do enterprise, exceto `code-standards.md`, `database.md`, `logging.md`, `graphify.md`):**
+
+1. **Ler a rule copiada** e identificar seções que prescrevem estilo, estrutura ou ferramentas (ex.: "Prefira `record`", "Utilize bun", "Nunca Gradle").
+2. **Confrontar com evidências** do passo 0 (config existente) e do passo 2B (amostragem de código).
+3. **Se o projeto usa outro padrão de forma predominante** (≥ 2 ocorrências ou padrão explícito em config existente):
+   - Reescrever a seção conflitante para **prescrever o padrão do projeto**
+   - Inverter exemplos ✅/❌ quando aplicável
+   - Atualizar snippets de código para refletir o estilo real do projeto
+4. **Se inconclusivo** (empate ou amostra insuficiente): manter o default da rule enterprise e registrar como "não adaptado — evidência insuficiente" no relatório final.
+5. **Nunca alterar** princípios universais de qualidade (SOLID, tratamento de erros, independência de testes, AAA/GWT) — apenas convenções de estilo e ferramentas.
+
+**Matriz de adaptação por rule:**
+
+| Rule | Defaults enterprise | Adaptar quando projeto usa |
+|---|---|---|
+| `java.md` | DTOs como `record`, `var`, streams | POJO com getters/setters ou Lombok; estilo legado se predominante |
+| `spring-boot.md` | DTOs `record`, Maven, `application.yml`, pacotes por domínio, Flyway | POJO DTO, Gradle, `.properties`, pacotes por camada, Liquibase |
+| `typescript.md` | bun, `export default`, classes com props privadas | npm/pnpm/yarn, named exports predominantes, convenções locais de export |
+| `react.md` | Tailwind v4, shadcn/ui, Vitest, componentes funcionais | CSS Modules/styled-components/MUI, biblioteca UI detectada, Jest, padrão de componente do projeto |
+| `angular.md` | (defaults da rule) | Estrutura de módulos/standalone, Jest vs Karma, biblioteca UI detectada |
+| `hono.md` | bun, padrões Hono | npm/pnpm/yarn, estrutura de rotas/middleware do projeto |
+| `tests.md` | Vitest, `bun run test` | Jest (ou outro runner detectado), comando de test do `package.json` |
+| `java-tests.md` | AssertJ, `mvn test`, DTOs `record` nos exemplos | JUnit assertions, `./gradlew test`, POJO nos exemplos de fixture |
+| `frontend/*.md`, `backend/*.md`, `styling/*`, `validation/*` | Defaults da rule | Qualquer convenção detectada que conflite com prescrições absolutas ("Nunca X", "Sempre Y") |
+
+**Exemplo — DTO POJO (caso reportado pelo usuário):**
+
+Se o projeto-alvo tem DTOs como POJO:
+```java
+public class UserDTO {
+  private String name;
+  private String email;
+  // getters/setters ou @Data
+}
+```
+
+E a rule copiada prescreve `record`, reescrever em `java.md` e `spring-boot.md`:
+
+- Título/seção: de "Records" / "DTOs com Records" → "DTOs POJO" (ou "DTOs com Lombok" se Lombok for detectado)
+- Inverter ✅/❌ nos exemplos
+- Remover ou suavizar prescrições absolutas como "Nunca classes com getters/setters"
+- Manter validação Bean Validation nos POJOs quando aplicável
+
+**Exemplo — package manager:**
+
+Se lockfile é `pnpm-lock.yaml`, reescrever em `typescript.md` e `tests.md`:
+- "Utilize pnpm" em vez de "Utilize bun"
+- Comandos: `pnpm install`, `pnpm run test`, etc.
+
+**Registro de adaptações:**
+
+Manter lista interna durante o passo 5.6 no formato:
+```
+- java.md: DTO record → POJO (12 classes *Dto em src/main/java)
+- spring-boot.md: Maven → Gradle (build.gradle.kts detectado)
+- tests.md: Vitest → Jest (jest.config.ts + 45 arquivos *.spec.ts)
+```
+
+Usar esta lista no relatório final (passo 8).
+
+**5.7. Ajustar `paths:` no frontmatter:**
+
+Após copiar e adaptar as rules, ajustar o frontmatter `paths:` de cada rule para refletir a estrutura real do projeto (ex: `frontend/src/**/*.tsx` em vez de `**/*.tsx`). Para projetos vazios, manter os paths genéricos padrão da rule (`**/*.ts`, `**/*.java`, etc.).
+
+### 5.8. Oferecer Knowledge Graph (Opcional, brownfield apenas)
 
 Apenas para projetos existentes (passo 2B) com tamanho mínimo. Pular se o projeto é vazio (2A).
 
@@ -427,6 +521,7 @@ Apresentar ao usuário:
 
 - Plataformas configuradas e arquivos de bootstrap gerados
 - Rules criadas e quais foram removidas (com justificativa)
+- **Adaptações de rules ao padrão do projeto** (passo 5.6): listar cada rule adaptada, o conflito detectado e a convenção preservada; se nenhuma adaptação foi necessária ou aplicável, informar explicitamente
 - Se `.codex/config.toml` foi criado (MCP opt-in)
 - Próximos passos conforme plataformas escolhidas:
   - **Claude Code**: "Revise `CLAUDE.bootstrap.md`, renomeie para `CLAUDE.md` quando estiver satisfeito, depois use `/kspec-prd` para criar seu primeiro PRD"
@@ -445,6 +540,7 @@ Apresentar ao usuário:
 - [ ] MCP opt-in perguntado se Codex selecionado; .codex/config.toml criado apenas se usuário aceitou
 - [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
 - [ ] Rules irrelevantes removidas
+- [ ] **Rules adaptadas ao padrão do projeto-alvo (brownfield): DTO POJO/record, build tool, test runner, package manager, styling, etc.**
 - [ ] Path-specific rules configuradas onde aplicável
 - [ ] Knowledge graph oferecido (se brownfield + ≥100 arquivos)
 - [ ] CI/CD oferecido ao usuário (e gerado se aceito)
