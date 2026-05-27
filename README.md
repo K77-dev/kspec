@@ -18,7 +18,8 @@ Agentes de IA produzem codigo melhor quando recebem contexto estruturado. Sem re
 Este repositorio resolve isso fornecendo:
 
 - **Padroes de codigo** — regras consistentes para nomenclatura, formatacao e boas praticas
-- **Fluxo de desenvolvimento estruturado** — do requisito ao bugfix, cada etapa tem uma skill ou agent dedicado
+- **Fluxo de desenvolvimento estruturado** — do requisito ao PR, cada etapa tem uma skill ou agent dedicado
+- **Verificacao semantica (AI Spec Intelligence)** — `/kspec-pr-review` valida aderencia spec × codigo antes do Pull Request
 - **Templates padronizados** — PRD, Tech Spec e Tasks seguem formatos previsiveis que se referenciam entre si
 - **Skills empresariais opcionais** — repositorio de skills/rules/templates corporativos sincronizado via lock file
 
@@ -47,7 +48,8 @@ Dev: /kspec-qa 001-prd-auth
      → aprovado ou bugs documentados
 
 Dev: /kspec-pr-review 001-prd-auth  (antes de abrir o PR)
-     → relatorio alignment-report.md + corpo do PR pelo template oficial
+     → relatorio pr-review.md (Alignment Score + APPROVED/REJECTED)
+     → corpo do PR preenchido pelo template oficial
 
 Dev: /kspec-bugfix 001-prd-auth  (se necessario)
      → agente corrige bugs + testes de regressao
@@ -61,7 +63,8 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
                           │                                             │
                           │  1. Instala kspec no projeto                │
                           │  2. /kspec-bootstrap                        │
-                          │     → detecta stack, gera CLAUDE.md + rules │
+                          │     → detecta stack, adapta rules ao projeto│
+                          │     → gera CLAUDE.bootstrap.md / AGENTS.bootstrap.md │
                           │  3. Dev revisa e ajusta                     │
                           └────────────────────┬────────────────────────┘
                                                │
@@ -106,8 +109,19 @@ Dev: /kspec-bugfix 001-prd-auth  (se necessario)
               │   │  → gera qa.md + bugs.md                             │      │
               │   └──────────────────────────────────────────────────────┘      │
               │                                                                │
-              │   APROVADO ──▶ funcionalidade pronta                            │
+              │   APROVADO ──▶ /kspec-pr-review (AI Spec Intelligence)          │
               │   REPROVADO ──▶ /kspec-bugfix ──▶ roda /kspec-qa novamente     │
+              └────────────────────────────────┬───────────────────────────────┘
+                                               │
+              ┌────────────────────────────────▼───────────────────────────────┐
+              │                     REVISAO SEMANTICA (PR)                     │
+              │                                                                │
+              │   /kspec-pr-review                                              │
+              │   → pr-review.md (Alignment Score, gaps, riscos)               │
+              │   → corpo do PR (.agents/templates/pr-template.md)             │
+              │   → APPROVED / APPROVED WITH WARNINGS / REJECTED               │
+              │                                                                │
+              │   APROVADO ──▶ abrir Pull Request                              │
               └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -160,7 +174,7 @@ Skills, agents, rules e templates vivem em `.agents/` e são descobertos via sym
 
 | Limitação | Impacto |
 |---|---|
-| `codex exec` não é interativo | `AskUserQuestion` e confirmações de readline não funcionam em modo não-interativo — use sessão interativa (`codex`) |
+| `codex exec` não é interativo | `AskUserQuestion` / `request_user_input` não funcionam em modo batch — skills fazem fallback para perguntas em texto numerado; confirmações de readline ainda exigem sessão interativa (`codex`) |
 | Sem slash commands no Codex CLI | Skills devem ser invocadas por linguagem natural ou `$kspec-<nome>`, não por `/kspec-<nome>` |
 | Windows | Symlinks exigem modo desenvolvedor ou privilégios de administrador — o `kspec init` usa cópia (`fs-extra.copy`) como fallback automático |
 | MCP opt-in | Os MCP servers (context7, testsprite) precisam ser registrados manualmente em `.codex/config.toml` — o `/kspec-bootstrap` oferece opt-in durante o setup |
@@ -181,13 +195,13 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 
 ```
 .agents/                        # Source of truth — skills, agents, rules, templates
-├── skills/                     # 10 skills invocaveis
+├── skills/                     # 10 skills kspec + skills empresariais (ex.: cybersecurity-analyst)
 ├── agents/                     # 3 agents (tarefas isoladas)
-├── rules/                      # Rules de codigo (padroes por tecnologia)
-├── templates/                  # Templates (PRD, techspec, tasks, etc.)
-└── validation/                 # Validacoes de skills empresariais
+├── rules/                      # Rules core + rules de stack (enterprise)
+├── templates/                  # Templates (PRD, techspec, tasks, pr, etc.)
+└── validation/                 # Validacao de skills empresariais (enterprise-skills-check.md)
 .claude/                        # Discovery para Claude Code (symlinks → .agents/)
-.codex/                         # Discovery para OpenAI Codex CLI (symlinks + .toml)
+.codex/                         # Discovery para Codex CLI (symlinks + agents/*.toml)
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
@@ -205,7 +219,7 @@ enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 | **Agents** | Isolado — contexto separado, so o resultado volta | Tarefas autocontidas que produzem relatorios |
 | **Rules** | Carregam automaticamente (com ou sem path filter) | Padroes de codigo por dominio |
 
-### Skills — entradas e saidas (9)
+### Skills — entradas e saidas (10 core + empresariais)
 
 Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os caminhos sao relativos a `spec/tasks/[NNN]-prd-[nome]/`.
 
@@ -213,7 +227,7 @@ Cada skill le documentos especificos e produz artefatos rastreaveis. Todos os ca
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-bootstrap` | `package.json`, lockfiles, configs do projeto, `CLAUDE.md` (se existir) | `CLAUDE.bootstrap.md`, rules adaptadas em `.claude/rules/`, `spec/tasks/` (diretorio), CI/CD opcional |
+| `/kspec-bootstrap` | `package.json`, lockfiles, configs do projeto, `CLAUDE.md`/`AGENTS.md` (se existirem), codigo-fonte (brownfield) | `CLAUDE.bootstrap.md` e/ou `AGENTS.bootstrap.md`, rules em `.agents/rules/` (selecionadas e **adaptadas ao padrao do projeto-alvo**), `spec/tasks/`, `.codex/config.toml` (MCP opt-in), CI/CD opcional |
 
 #### Especificacao
 
@@ -250,7 +264,7 @@ O review-runner (agent) le adicionalmente:
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
 | `/kspec-qa` | `prd.md`, `techspec.md`, `tasks.md`, aplicacao rodando em localhost, rules | `qa.md` + `bugs.md` |
-| `/kspec-pr-review` | `prd.md`, `techspec.md`, `*_task.md`, `tasks.md`, `git diff` | `alignment-report.md` + corpo do PR (`.agents/templates/pr-template.md`) |
+| `/kspec-pr-review` | `prd.md`, `techspec.md`, `*_task.md`, `tasks.md`, `git diff` (working tree e branch base) | `pr-review.md` (Alignment Score auditavel, gaps, riscos, recomendacao) + corpo do PR (`.agents/templates/pr-template.md`) |
 | `/kspec-bugfix` | `bugs.md`, `prd.md`, `techspec.md`, `tasks.md`, rules | Correcoes no codigo + testes de regressao + `bugfix.md` + `bugs.md` atualizado |
 
 O qa-runner (agent) le adicionalmente:
@@ -263,7 +277,15 @@ O qa-runner (agent) le adicionalmente:
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-version` | `VERSION`, `.claude/skills/`, `.claude/agents/` | Exibe versao do kspec e lista skills/agents instalados |
+| `/kspec-version` | `VERSION`, `.agents/skills/`, `.agents/agents/` | Exibe versao do kspec e lista skills/agents instalados |
+
+#### Skills empresariais (opcionais)
+
+Instaladas via validacao em `@.agents/validation/enterprise-skills-check.md` durante o bootstrap. Versionadas em `enterprise-skills-lock.json`.
+
+| Skill | Le (entrada) | Produz (saida) |
+|---|---|---|
+| `cybersecurity-analyst` | Eventos, arquitetura ou codigo sob analise de seguranca | Analise STRIDE/MITRE ATT&CK, vetores de ataque, controles e riscos residuais |
 
 ### Agents — entradas e saidas (3)
 
@@ -275,16 +297,31 @@ Os agents rodam em contexto isolado e sao acionados pelas skills — nao precisa
 | `kspec-review-runner` | /kspec-implement | `git diff`, `techspec.md`, `tasks.md`, rules, resultado dos checks | `review_[num].md` (APROVADO / RESSALVAS / REPROVADO) |
 | `kspec-qa-runner` | kspec-qa | `prd.md`, `techspec.md`, `tasks.md`, rules, app rodando | `qa.md` + `bugs.md` |
 
-### Rules (4)
+### Rules
+
+#### Core kspec (sempre presentes)
 
 | Rule | Escopo |
 |---|---|
-| `code-standards.md` | Padroes gerais de codigo (nomenclatura, formatacao, boas praticas) |
+| `code-standards.md` | Padroes gerais de codigo (nomenclatura, formatacao, SOLID) |
 | `database.md` | Padroes de banco de dados |
 | `logging.md` | Padroes de logging |
-| `graphify.md` | Uso do knowledge graph (Graphify) nas skills de analise de codigo |
+| `graphify.md` | Uso do knowledge graph (Graphify) nas skills de analise |
 
-> Rules adicionais especificas de stack (React, TypeScript, HTTP, testes) podem ser adicionadas via repositorio enterprise ou localmente.
+#### Stack enterprise (selecionadas no bootstrap)
+
+| Rule | Escopo |
+|---|---|
+| `typescript.md` | TypeScript, package manager, exports |
+| `java.md` | Convencoes Java (DTOs, estilo, streams) |
+| `react.md` | React, UI, testes frontend |
+| `angular.md` | Angular, modulos, testes |
+| `hono.md` | Backend Hono, rotas, middleware |
+| `spring-boot.md` | Spring Boot, Maven/Gradle, persistencia |
+| `tests.md` | Test runner e convencoes de teste (JS/TS) |
+| `java-tests.md` | Testes Java (JUnit, AssertJ, fixtures) |
+
+> Em projetos existentes (brownfield), o `/kspec-bootstrap` **adapta o conteudo** das rules enterprise ao padrao real do projeto-alvo (ex.: POJO vs `record`, Gradle vs Maven, Jest vs Vitest) — o codigo do projeto prevalece sobre os defaults das rules.
 
 ## Artefatos gerados por funcionalidade
 
@@ -299,7 +336,7 @@ spec/tasks/[NNN]-prd-[nome]/
 ├── review_[num].md   ← agent review-runner    Le: git diff + techspec.md + tasks.md + rules
 ├── qa.md             ← agent qa-runner        Le: prd.md + techspec.md + tasks.md + app rodando
 ├── bugs.md           ← agent qa-runner        Le: (gerado junto com qa.md)
-├── alignment-report.md ← /kspec-pr-review     Le: prd.md + techspec.md + tasks + git diff + template pr
+├── pr-review.md        ← /kspec-pr-review        Le: prd.md + techspec.md + tasks + git diff + template pr
 └── bugfix.md         ← /kspec-bugfix          Le: bugs.md + prd.md + techspec.md
 ```
 
@@ -323,13 +360,18 @@ Na raiz do seu projeto, rode:
 kspec init
 ```
 
-Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.claude/` no seu projeto.
+Isso instala o kspec completo no projeto:
+
+- `.agents/` — source of truth (skills, agents, rules, templates, validation)
+- `.claude/` — symlinks para discovery no Claude Code
+- `.codex/` — symlinks de skills + `agents/*.toml` gerados para Codex CLI
+- `CLAUDE.md` e `AGENTS.md` — criados na raiz se ainda nao existirem
 
 **Comandos disponiveis:**
 
 | Comando | Descricao |
 |---|---|
-| `kspec init` | Instala skills, agents, rules e templates em `.claude/` |
+| `kspec init` | Instala `.agents/`, symlinks em `.claude/` e `.codex/`, e docs na raiz |
 | `kspec init --force` | Sobrescreve sem perguntar caso `.claude/` ja exista |
 | `kspec update` | Atualiza os arquivos kspec no projeto para a versao do CLI instalado |
 | `kspec --version` | Exibe a versao instalada do kspec |
@@ -340,10 +382,10 @@ Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.
 
 ### Configuracao
 
-1. Abra o projeto no seu agente de IA (Claude Code, etc.)
-2. Execute `/kspec-bootstrap` para gerar o guia principal adaptado a sua stack
-3. Revise o arquivo gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
-4. Comece pelo fluxo de desenvolvimento: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement` → `/kspec-qa`
+1. Abra o projeto no seu agente de IA (Claude Code ou Codex CLI)
+2. Execute `/kspec-bootstrap` (ou `$kspec-bootstrap`) — valida skills empresariais, detecta stack, adapta rules e gera `CLAUDE.bootstrap.md` e/ou `AGENTS.bootstrap.md`
+3. Revise os arquivos gerados e incorpore ao guia principal (`CLAUDE.md` / `AGENTS.md`)
+4. Fluxo por funcionalidade: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement` → `/kspec-qa` → `/kspec-pr-review`
 
 ### Atualizacao
 
@@ -366,7 +408,7 @@ npm install -g @k77-dev/kspec@latest
 kspec update
 ```
 
-O comando `kspec update` re-copia skills, agents, rules e templates para `.claude/` sem pedir confirmacao, preservando qualquer outro conteudo do projeto.
+O comando `kspec update` re-sincroniza `.agents/`, symlinks em `.claude/` e `.codex/` (incluindo regeneracao dos `.toml`) sem pedir confirmacao, preservando qualquer outro conteudo do projeto.
 
 > Arquivos customizados **dentro** das pastas `skills/`, `agents/`, `rules/` ou `templates/` serao sobrescritos — mova customizacoes para fora dessas pastas antes de atualizar.
 
@@ -380,6 +422,6 @@ npx @k77-dev/kspec@latest update
 
 - **Linguagem direta** — instrucoes claras com justificativa, sem enfase agressiva
 - **Sem repeticao** — cada regra aparece uma vez, no lugar certo
-- **Rastreabilidade** — PRD → Tech Spec → Tasks → Review → QA → Bugfix
+- **Rastreabilidade** — PRD → Tech Spec → Tasks → Review → QA → PR Review → Bugfix
 - **Codigo em ingles, specs em portugues** — publicos e propositos diferentes
 - **Contexto otimizado** — skills para interacao, agents para trabalho isolado
