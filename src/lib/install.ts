@@ -1,6 +1,6 @@
-import { mkdir, readFile, writeFile, lstat, rm } from "node:fs/promises";
+import { mkdir, readFile, writeFile, lstat, readlink, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import fsExtra from "fs-extra";
 import chalk from "chalk";
 import { linkOrCopy, isOnWindows } from "./platform.js";
@@ -196,8 +196,88 @@ async function readExistingHash(filePath: string): Promise<string | null> {
   }
 }
 
+const ENTERPRISE_CACHE_RULES = ".claude/.enterprise-skills-cache/.agents/rules";
+
+async function isRuleSymlinkBroken(rulePath: string): Promise<boolean> {
+  try {
+    const stat = await lstat(rulePath);
+    if (!stat.isSymbolicLink()) return false;
+    const linkTarget = await readlink(rulePath);
+    const resolved = resolve(dirname(rulePath), linkTarget);
+    if (resolved === rulePath) return true;
+    await readFile(rulePath, "utf-8");
+    return false;
+  } catch (err) {
+    const code =
+      err && typeof err === "object" && "code" in err
+        ? (err as NodeJS.ErrnoException).code
+        : undefined;
+    return code === "ELOOP" || code === "ENOENT";
+  }
+}
+
+async function findEnterpriseCacheRuleFile(
+  targetRoot: string,
+  basename: string,
+): Promise<string | null> {
+  const cacheRulesDir = resolve(targetRoot, ENTERPRISE_CACHE_RULES);
+  if (!(await pathExists(cacheRulesDir))) return null;
+
+  async function walk(dir: string): Promise<string | null> {
+    const entries = await readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = resolve(dir, entry.name);
+      if (entry.isDirectory()) {
+        const found = await walk(full);
+        if (found) return found;
+      } else if (entry.isFile() && entry.name === `${basename}.md`) {
+        return full;
+      }
+    }
+    return null;
+  }
+
+  return walk(cacheRulesDir);
+}
+
+async function repairBrokenRuleSymlinks(targetRoot: string): Promise<void> {
+  const rulesDir = resolve(targetRoot, ".agents", "rules");
+  if (!(await pathExists(rulesDir))) return;
+
+  const entries = await readdir(rulesDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.name.endsWith(".md")) continue;
+    const rulePath = resolve(rulesDir, entry.name);
+    if (!(await isRuleSymlinkBroken(rulePath))) continue;
+
+    const basename = entry.name.replace(/\.md$/, "");
+    const cacheFile = await findEnterpriseCacheRuleFile(targetRoot, basename);
+    if (cacheFile) {
+      const content = await readFile(cacheFile, "utf-8");
+      await rm(rulePath, { force: true });
+      await writeFile(rulePath, content, "utf-8");
+      console.log(
+        chalk.green(`✓ Reparado: .agents/rules/${entry.name} (symlink circular → arquivo real)`),
+      );
+    } else {
+      await rm(rulePath, { force: true });
+      console.warn(
+        chalk.yellow(
+          `⚠ Removido symlink circular: .agents/rules/${entry.name} — reinstale via validação empresarial`,
+        ),
+      );
+    }
+  }
+}
+
 async function copyAgents(sourceAgents: string, targetRoot: string): Promise<void> {
   const targetAgents = resolve(targetRoot, ".agents");
+  if (resolve(sourceAgents) === resolve(targetAgents)) {
+    console.log(
+      chalk.dim("→ .agents/ já é o source of truth neste diretório — pulando cópia."),
+    );
+    return;
+  }
   console.log(chalk.dim("→ Instalando .agents/..."));
   await copy(sourceAgents, targetAgents, { overwrite: true });
 
@@ -412,7 +492,11 @@ async function buildCursorRulesMdc(
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       errors.push(`${name}: ${message}`);
-      console.warn(chalk.yellow(`✗ rule ${name} ignorada: alvo não resolvido`));
+      const hint =
+        message.includes("ELOOP") || message.includes("too many symbolic links")
+          ? `symlink circular ou quebrado em .agents/rules/${entry.name}`
+          : "alvo não resolvido";
+      console.warn(chalk.yellow(`✗ rule ${name} ignorada: ${hint}`));
     }
   }
 
@@ -478,6 +562,7 @@ export async function runInstall(opts: InstallOptions = {}): Promise<InstallRepo
   }
 
   await copyAgents(sourceAgents, targetRoot);
+  await repairBrokenRuleSymlinks(targetRoot);
 
   const targetAgentsDir = resolve(targetRoot, ".agents");
   const skills = await listSubdirectories(resolve(targetAgentsDir, "skills"));

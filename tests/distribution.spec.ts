@@ -7,14 +7,11 @@ import { getPackageRoot } from "../src/utils/paths.js";
 describe("distribution metadata", () => {
   const root = getPackageRoot();
 
-  it("package.json version is 1.3.0", () => {
+  it("VERSION file matches package.json version", () => {
     const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf-8"));
-    expect(pkg.version).toBe("1.3.0");
-  });
-
-  it("VERSION file is 1.3.0", () => {
     const version = readFileSync(resolve(root, "VERSION"), "utf-8").trim();
-    expect(version).toBe("1.3.0");
+    expect(version).toBe(pkg.version);
+    expect(pkg.version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
   it("package.json files includes .cursor/ and CURSOR.md", () => {

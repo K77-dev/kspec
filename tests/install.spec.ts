@@ -261,7 +261,7 @@ describe("runInstall — camada Cursor", () => {
     expect(content).toContain("# Standards");
   });
 
-  it("skips broken rule symlinks with warning and does not fail install", async () => {
+  it("removes broken rule symlinks without cache and does not fail install", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     const rulesDir = resolve(fixture.agentsDir, "rules");
@@ -269,13 +269,48 @@ describe("runInstall — camada Cursor", () => {
 
     const report = await runInstall(baseOpts(fixture));
 
-    expect(report.errors.some((e) => e.includes("broken-enterprise"))).toBe(true);
+    expect(report.errors.some((e) => e.includes("broken-enterprise"))).toBe(false);
+    expect(
+      await pathExists(resolve(fixture.targetRoot, ".agents", "rules", "broken-enterprise.md")),
+    ).toBe(false);
     expect(warnSpy).toHaveBeenCalled();
-    expect(warnSpy.mock.calls.some((call) => String(call[0]).includes("broken-enterprise"))).toBe(true);
-    expect(await pathExists(resolve(fixture.targetRoot, ".cursor", "rules", "code-standards.mdc"))).toBe(true);
+    expect(
+      warnSpy.mock.calls.some((call) => String(call[0]).includes("broken-enterprise")),
+    ).toBe(true);
+    expect(await pathExists(resolve(fixture.targetRoot, ".cursor", "rules", "code-standards.mdc"))).toBe(
+      true,
+    );
 
     warnSpy.mockRestore();
   });
+
+  it.skipIf(process.platform === "win32")(
+    "repairs self-referencing enterprise rule symlinks from cache",
+    async () => {
+      const sourceRulesDir = resolve(fixture.agentsDir, "rules");
+      await symlink("../../.agents/rules/react.md", resolve(sourceRulesDir, "react.md"));
+
+      const cacheDir = resolve(
+        fixture.targetRoot,
+        ".claude/.enterprise-skills-cache/.agents/rules/frontend",
+      );
+      await mkdir(cacheDir, { recursive: true });
+      await writeFile(
+        resolve(cacheDir, "react.md"),
+        "---\ndescription: React rules\npaths:\n  - src/**/*.tsx\n---\n# React\n",
+      );
+
+      const report = await runInstall(baseOpts(fixture));
+
+      const targetRulesDir = resolve(fixture.targetRoot, ".agents", "rules");
+      const reactRule = await readFile(resolve(targetRulesDir, "react.md"), "utf-8");
+      expect(reactRule).toContain("# React");
+      expect(report.errors.some((e) => e.includes("react"))).toBe(false);
+      expect(await pathExists(resolve(fixture.targetRoot, ".cursor", "rules", "react.mdc"))).toBe(
+        true,
+      );
+    },
+  );
 
   it("prunes orphan .mdc files without corresponding .md source", async () => {
     const cursorRulesDir = resolve(fixture.targetRoot, ".cursor", "rules");
