@@ -33,9 +33,32 @@ e BLOQUEIE a execução. NÃO tente baixar via `gh api` ou `git clone` — o cam
 
 Siga as instruções em `@.agents/validation/enterprise-skills-check.md` para validar e instalar as skills empresariais obrigatórias. NÃO prossiga para o próximo passo se a validação bloquear a execução.
 
+## Delegação de Agents
+
 Delegue a execução ao agent `kspec-qa-runner` para rodar em contexto isolado — o QA produz output verboso que não deve consumir o contexto principal.
 
-Passe ao agent:
+| Agent | `subagent_type` (Cursor) |
+| --- | --- |
+| `kspec-qa-runner` | `kspec-qa-runner` |
+
+**Cursor — Task tool:**
+
+```
+Task tool → subagent_type: "kspec-qa-runner"
+prompt: caminho da funcionalidade, PRD, Tech Spec e Tasks
+```
+
+**Fallback (Task tool indisponível):** execute a lógica do agent inline no contexto principal e exiba:
+
+```
+⚠ Task tool indisponível — executando kspec-qa-runner inline no contexto principal.
+```
+
+Agents residem em `.agents/agents/<nome>/AGENT.md` (source of truth).
+
+No Cursor, discovery reforçado via `.cursor/agents/` (symlink) e `.agents/agents/`.
+
+Passe ao agent (via Task tool ou inline):
 - O caminho da funcionalidade: `@spec/tasks/$ARGUMENTS/`
 - O PRD, TechSpec e Tasks da funcionalidade
 

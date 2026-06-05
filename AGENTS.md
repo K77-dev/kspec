@@ -2,13 +2,13 @@
 
 Guia para agentes de IA ao trabalhar com o código deste repositório — plataforma OpenAI Codex CLI.
 
-Este projeto é o **kspec** — um kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code e OpenAI Codex CLI. **Não contém código de aplicação executável.**
+Este projeto é o **kspec** — um kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code, OpenAI Codex CLI e Cursor. **Não contém código de aplicação executável.**
 
-> Para Claude Code, consulte `CLAUDE.md`.
+> Para Claude Code, consulte `CLAUDE.md`. Para Cursor, consulte `CURSOR.md`.
 
 ## Visão Geral
 
-O kspec padroniza o ciclo de vida de desenvolvimento com agentes de IA: da ideia à especificação, das tasks ao código revisado. O source of truth de todo o conteúdo (skills, agents, rules, templates) vive em `.agents/`. As plataformas Claude Code (`.claude/`) e Codex CLI (`.codex/`) apontam para `.agents/` via symlinks.
+O kspec padroniza o ciclo de vida de desenvolvimento com agentes de IA: da ideia à especificação, das tasks ao código revisado. O source of truth de todo o conteúdo (skills, agents, rules, templates) vive em `.agents/`. As plataformas Claude Code (`.claude/`), Codex CLI (`.codex/`) e Cursor (`.cursor/`) apontam para `.agents/` via symlinks e artefatos derivados.
 
 ## Estrutura do projeto
 
@@ -23,6 +23,12 @@ O kspec padroniza o ciclo de vida de desenvolvimento com agentes de IA: da ideia
 ├── .codex/                      # Espelhos de .agents/ (symlinks) — Codex CLI
 │   ├── skills/                  # → .agents/skills/ (symlinks)
 │   └── agents/                  # Arquivos .toml gerados (formato Codex)
+├── .cursor/                     # Discovery para Cursor
+│   ├── skills/                  # → .agents/skills/ (symlinks)
+│   ├── agents/                  # → .agents/agents/ (symlinks)
+│   ├── templates/               # → .agents/templates/ (symlink)
+│   ├── validation/              # → .agents/validation/ (symlink)
+│   └── rules/                   # *.mdc derivados de .agents/rules/*.md
 ├── .github/                     # GitHub Actions, instructions
 ├── spec/
 │   └── tasks/                   # Artefatos gerados (PRDs, techspecs, tasks, reviews)
@@ -30,6 +36,7 @@ O kspec padroniza o ciclo de vida de desenvolvimento com agentes de IA: da ideia
 ├── dist/                        # Build output
 ├── AGENTS.md                    # Este arquivo — guia para Codex CLI
 ├── CLAUDE.md                    # Guia equivalente para Claude Code
+├── CURSOR.md                    # Guia equivalente para Cursor
 ├── README.md                    # Documentação pública do projeto
 └── VERSION                      # Versão do kspec
 ```

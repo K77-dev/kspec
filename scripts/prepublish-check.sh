@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# prepublish-check.sh — Valida que symlinks em .claude/ e .codex/ resolvem para .agents/
+# prepublish-check.sh — Valida que symlinks em .claude/, .codex/ e .cursor/ resolvem para .agents/
 #
-# Mitiga R5: drift entre .agents/, .claude/ e .codex/ no tarball.
+# Mitiga R5: drift entre .agents/, .claude/, .codex/ e .cursor/ no tarball.
 # Chamado automaticamente via hook prepublishOnly antes de npm publish.
 #
 # Exit 0 = todos os symlinks ok
@@ -38,7 +38,7 @@ check_symlink() {
   fi
 }
 
-echo "→ Verificando symlinks em .claude/ e .codex/..."
+echo "→ Verificando symlinks em .claude/, .codex/ e .cursor/..."
 echo ""
 
 # Symlinks de diretorio em .claude/ (rules, templates, validation)
@@ -67,6 +67,27 @@ if [ -d ".codex/skills" ]; then
   while IFS= read -r -d '' link; do
     check_symlink "$link"
   done < <(find .codex/skills -maxdepth 1 -type l -print0 2>/dev/null)
+fi
+
+# Symlinks de diretorio em .cursor/ (templates, validation — rules e derivado)
+for dir_link in .cursor/templates .cursor/validation; do
+  if [ -L "$dir_link" ]; then
+    check_symlink "$dir_link"
+  fi
+done
+
+# Symlinks individuais em .cursor/skills/
+if [ -d ".cursor/skills" ]; then
+  while IFS= read -r -d '' link; do
+    check_symlink "$link"
+  done < <(find .cursor/skills -maxdepth 1 -type l -print0 2>/dev/null)
+fi
+
+# Symlinks individuais em .cursor/agents/
+if [ -d ".cursor/agents" ]; then
+  while IFS= read -r -d '' link; do
+    check_symlink "$link"
+  done < <(find .cursor/agents -maxdepth 1 -type l -print0 2>/dev/null)
 fi
 
 echo ""

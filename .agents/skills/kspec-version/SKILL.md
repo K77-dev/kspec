@@ -33,7 +33,7 @@ Agents:
   {name} v{version} — {description}
   ...
 
-Plataformas suportadas: Claude Code, OpenAI Codex CLI
+Plataformas suportadas: Claude Code, OpenAI Codex CLI, Cursor
 ```
 
 Se algum arquivo tiver `version` diferente do `VERSION`, sinalizar com ⚠️ ao lado.

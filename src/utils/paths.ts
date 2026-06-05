@@ -35,6 +35,14 @@ export function getClaudeMdSource(): string {
   return resolve(getPackageRoot(), "CLAUDE.md");
 }
 
+export function getCursorSourceDir(): string {
+  return resolve(getPackageRoot(), ".cursor");
+}
+
+export function getCursorMdSource(): string {
+  return resolve(getPackageRoot(), "CURSOR.md");
+}
+
 export function getPackageVersion(): string {
   const versionFile = resolve(getPackageRoot(), "VERSION");
   return readFileSync(versionFile, "utf-8").trim();
