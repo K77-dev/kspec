@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, lstat } from "node:fs/promises";
+import { mkdir, readFile, writeFile, lstat, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import fsExtra from "fs-extra";
@@ -14,6 +14,7 @@ import {
   getAgentsSourceDir,
   getAgentsMdSource,
   getClaudeMdSource,
+  getCursorMdSource,
 } from "../utils/paths.js";
 
 const { copy, pathExists, readdir } = fsExtra;
@@ -23,16 +24,155 @@ export interface InstallOptions {
   sourceAgentsDir?: string;
   sourceAgentsMd?: string;
   sourceClaudeMd?: string;
+  sourceCursorMd?: string;
 }
 
 export interface InstallReport {
   linkedSkills: string[];
   linkedAgents: string[];
   generatedTomls: string[];
+  linkedCursorSkills: string[];
+  linkedCursorAgents: string[];
+  generatedMdc: string[];
   errors: string[];
 }
 
 const CLAUDE_DIR_LINKS = ["rules", "templates", "validation"] as const;
+const CURSOR_DIR_LINKS = ["templates", "validation"] as const;
+
+const RULE_FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+
+export interface RuleFrontmatter {
+  description?: string;
+  paths?: string[];
+}
+
+export interface MdcFrontmatter {
+  description: string;
+  globs?: string;
+  alwaysApply: boolean;
+}
+
+function yamlScalar(value: string): string {
+  if (/[:#\n"'&*!?|>@[\]{},]/.test(value) || value.startsWith(" ") || value.endsWith(" ")) {
+    return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+  }
+  return value;
+}
+
+function readableRuleName(name: string): string {
+  return name
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function parseRuleFrontmatterBlock(block: string): RuleFrontmatter {
+  const result: RuleFrontmatter = {};
+  const lines = block.split("\n");
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i]!;
+
+    const descriptionMatch = line.match(/^description:\s*(.+)$/);
+    if (descriptionMatch) {
+      result.description = descriptionMatch[1]!.trim();
+      i++;
+      continue;
+    }
+
+    if (/^paths:\s*$/.test(line)) {
+      const paths: string[] = [];
+      i++;
+      while (i < lines.length) {
+        const itemMatch = lines[i]!.match(/^\s+-\s+(.+)$/);
+        if (!itemMatch) break;
+        let value = itemMatch[1]!.trim();
+        if (
+          (value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))
+        ) {
+          value = value.slice(1, -1);
+        }
+        paths.push(value);
+        i++;
+      }
+      result.paths = paths;
+      continue;
+    }
+
+    i++;
+  }
+
+  return result;
+}
+
+function parseRuleRaw(raw: string): { frontmatter: RuleFrontmatter; body: string } {
+  const match = raw.match(RULE_FRONTMATTER_REGEX);
+  if (!match) {
+    return { frontmatter: {}, body: raw };
+  }
+  return {
+    frontmatter: parseRuleFrontmatterBlock(match[1]!),
+    body: match[2]!,
+  };
+}
+
+function extractDescription(
+  frontmatter: RuleFrontmatter,
+  body: string,
+  name: string,
+): string {
+  if (frontmatter.description) {
+    return frontmatter.description;
+  }
+
+  for (const line of body.split("\n")) {
+    const h1Match = line.match(/^#\s+(.+)$/);
+    if (h1Match) {
+      return h1Match[1]!.trim();
+    }
+  }
+
+  for (const line of body.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.length > 0) {
+      return trimmed;
+    }
+  }
+
+  return readableRuleName(name);
+}
+
+function buildMdcFrontmatter(name: string, frontmatter: RuleFrontmatter, description: string): MdcFrontmatter {
+  const hasPaths = frontmatter.paths !== undefined && frontmatter.paths.length > 0;
+  const mdc: MdcFrontmatter = {
+    description,
+    alwaysApply: name === "code-standards",
+  };
+  if (hasPaths) {
+    mdc.globs = frontmatter.paths!.join(",");
+  }
+  return mdc;
+}
+
+function renderMdcFrontmatter(frontmatter: MdcFrontmatter): string {
+  const lines = ["---", `description: ${yamlScalar(frontmatter.description)}`];
+  if (frontmatter.globs !== undefined) {
+    lines.push(`globs: ${yamlScalar(frontmatter.globs)}`);
+  }
+  lines.push(`alwaysApply: ${frontmatter.alwaysApply}`);
+  lines.push("---");
+  return lines.join("\n");
+}
+
+export function ruleToMdc(name: string, raw: string): string {
+  const { frontmatter, body } = parseRuleRaw(raw);
+  const description = extractDescription(frontmatter, body, name);
+  const mdcFrontmatter = buildMdcFrontmatter(name, frontmatter, description);
+  return `${renderMdcFrontmatter(mdcFrontmatter)}\n${body}`;
+}
 
 async function isRealFile(filePath: string): Promise<boolean> {
   try {
@@ -164,14 +304,132 @@ async function buildCodexAgentsToml(
   return { generatedTomls, errors };
 }
 
+async function buildCursorSkillsLinks(
+  targetRoot: string,
+  skills: string[],
+): Promise<{ linkedCursorSkills: string[] }> {
+  const targetAgents = resolve(targetRoot, ".agents");
+  const cursorSkillsDir = resolve(targetRoot, ".cursor", "skills");
+  const linkedCursorSkills: string[] = [];
+
+  await mkdir(cursorSkillsDir, { recursive: true });
+  for (const skill of skills) {
+    const source = resolve(targetAgents, "skills", skill);
+    const dest = resolve(cursorSkillsDir, skill);
+    const result = await linkOrCopy(source, dest);
+    if (result !== "skipped-idempotent") {
+      console.log(chalk.green(`✓ Symlink criado: .cursor/skills/${skill} → ../../.agents/skills/${skill}`));
+    }
+    linkedCursorSkills.push(skill);
+  }
+
+  return { linkedCursorSkills };
+}
+
+async function buildCursorAgentsLinks(
+  targetRoot: string,
+  agents: string[],
+): Promise<{ linkedCursorAgents: string[] }> {
+  const targetAgents = resolve(targetRoot, ".agents");
+  const cursorAgentsDir = resolve(targetRoot, ".cursor", "agents");
+  const linkedCursorAgents: string[] = [];
+
+  await mkdir(cursorAgentsDir, { recursive: true });
+  for (const agent of agents) {
+    const source = resolve(targetAgents, "agents", agent);
+    const dest = resolve(cursorAgentsDir, agent);
+    const result = await linkOrCopy(source, dest);
+    if (result !== "skipped-idempotent") {
+      console.log(chalk.green(`✓ Symlink criado: .cursor/agents/${agent} → ../../.agents/agents/${agent}`));
+    }
+    linkedCursorAgents.push(agent);
+  }
+
+  return { linkedCursorAgents };
+}
+
+async function buildCursorDirLinks(targetRoot: string): Promise<void> {
+  const targetAgents = resolve(targetRoot, ".agents");
+  const targetCursor = resolve(targetRoot, ".cursor");
+
+  for (const dirName of CURSOR_DIR_LINKS) {
+    const source = resolve(targetAgents, dirName);
+    const dest = resolve(targetCursor, dirName);
+    if (await isRealFile(dest)) continue;
+    if (await pathExists(source)) {
+      const result = await linkOrCopy(source, dest);
+      if (result !== "skipped-idempotent") {
+        console.log(chalk.green(`✓ Symlink criado: .cursor/${dirName} → ../.agents/${dirName}`));
+      }
+    }
+  }
+}
+
+async function buildCursorRulesMdc(
+  targetRoot: string,
+): Promise<{ generatedMdc: string[]; errors: string[] }> {
+  const targetAgents = resolve(targetRoot, ".agents");
+  const rulesDir = resolve(targetAgents, "rules");
+  const cursorRulesDir = resolve(targetRoot, ".cursor", "rules");
+  const generatedMdc: string[] = [];
+  const errors: string[] = [];
+
+  await mkdir(cursorRulesDir, { recursive: true });
+
+  const entries = (await pathExists(rulesDir))
+    ? await readdir(rulesDir, { withFileTypes: true })
+    : [];
+
+  const sourceRuleNames = new Set<string>();
+
+  for (const entry of entries) {
+    if (!entry.name.endsWith(".md")) continue;
+    const name = entry.name.replace(/\.md$/, "");
+    sourceRuleNames.add(name);
+    const rulePath = resolve(rulesDir, entry.name);
+
+    try {
+      const raw = await readFile(rulePath, "utf-8");
+      const mdcContent = ruleToMdc(name, raw);
+      const mdcPath = resolve(cursorRulesDir, `${name}.mdc`);
+      const newHash = hashContent(mdcContent);
+      const existingHash = await readExistingHash(mdcPath);
+      if (newHash !== existingHash) {
+        await writeFile(mdcPath, mdcContent, "utf-8");
+        console.log(chalk.green(`✓ Gerado: .cursor/rules/${name}.mdc`));
+      }
+      generatedMdc.push(name);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      errors.push(`${name}: ${message}`);
+      console.warn(chalk.yellow(`✗ rule ${name} ignorada: alvo não resolvido`));
+    }
+  }
+
+  const cursorEntries = await readdir(cursorRulesDir, { withFileTypes: true });
+  for (const entry of cursorEntries) {
+    if (!entry.name.endsWith(".mdc")) continue;
+    const name = entry.name.replace(/\.mdc$/, "");
+    if (!sourceRuleNames.has(name)) {
+      const orphanPath = resolve(cursorRulesDir, entry.name);
+      await rm(orphanPath, { force: true });
+      console.log(chalk.dim(`→ Removido órfão: .cursor/rules/${entry.name}`));
+    }
+  }
+
+  return { generatedMdc, errors };
+}
+
 async function ensureRootDocs(
   targetRoot: string,
   agentsMdSource: string,
   claudeMdSource: string,
+  cursorMdSource: string,
 ): Promise<void> {
   const docs = [
     { name: "AGENTS.md", source: agentsMdSource },
     { name: "CLAUDE.md", source: claudeMdSource },
+    { name: "CURSOR.md", source: cursorMdSource },
   ];
   for (const { name, source } of docs) {
     const dest = resolve(targetRoot, name);
@@ -195,6 +453,7 @@ export async function runInstall(opts: InstallOptions = {}): Promise<InstallRepo
   const sourceAgents = opts.sourceAgentsDir ?? getAgentsSourceDir();
   const agentsMdSource = opts.sourceAgentsMd ?? getAgentsMdSource();
   const claudeMdSource = opts.sourceClaudeMd ?? getClaudeMdSource();
+  const cursorMdSource = opts.sourceCursorMd ?? getCursorMdSource();
   const targetClaude = resolve(targetRoot, ".claude");
 
   if (!opts.force) {
@@ -222,9 +481,22 @@ export async function runInstall(opts: InstallOptions = {}): Promise<InstallRepo
 
   await buildCodexSkillsLinks(targetRoot, skills);
 
-  const { generatedTomls, errors } = await buildCodexAgentsToml(targetRoot, agents);
+  const { generatedTomls, errors: tomlErrors } = await buildCodexAgentsToml(targetRoot, agents);
 
-  await ensureRootDocs(targetRoot, agentsMdSource, claudeMdSource);
+  const { linkedCursorSkills } = await buildCursorSkillsLinks(targetRoot, skills);
+  const { linkedCursorAgents } = await buildCursorAgentsLinks(targetRoot, agents);
+  await buildCursorDirLinks(targetRoot);
+  const { generatedMdc, errors: mdcErrors } = await buildCursorRulesMdc(targetRoot);
 
-  return { linkedSkills, linkedAgents, generatedTomls, errors };
+  await ensureRootDocs(targetRoot, agentsMdSource, claudeMdSource, cursorMdSource);
+
+  return {
+    linkedSkills,
+    linkedAgents,
+    generatedTomls,
+    linkedCursorSkills,
+    linkedCursorAgents,
+    generatedMdc,
+    errors: [...tomlErrors, ...mdcErrors],
+  };
 }

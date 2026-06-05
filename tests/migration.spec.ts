@@ -15,10 +15,12 @@ async function removeTmpDir(dir: string): Promise<void> {
 describe("detectMigration", () => {
   let tmp: string;
   let claudeDir: string;
+  let cursorDir: string;
 
   beforeEach(async () => {
     tmp = await createTmpDir();
     claudeDir = resolve(tmp, ".claude");
+    cursorDir = resolve(tmp, ".cursor");
     await mkdir(claudeDir, { recursive: true });
   });
 
@@ -154,5 +156,39 @@ describe("detectMigration", () => {
     expect(plan).not.toBeNull();
     expect(plan!.realDirs).toHaveLength(1);
     expect(plan!.realDirs[0]).toContain("skills");
+  });
+
+  it("detects real .cursor/skills/ directory and populates realDirs", async () => {
+    await mkdir(resolve(cursorDir, "skills"), { recursive: true });
+    await writeFile(resolve(cursorDir, "skills", "dummy.md"), "# dummy");
+
+    const plan = await detectMigration(claudeDir);
+
+    expect(plan).not.toBeNull();
+    expect(plan!.realDirs).toHaveLength(1);
+    expect(plan!.realDirs[0]).toContain(".cursor/skills");
+    expect(plan!.actions[0]).toContain(".cursor/skills/");
+  });
+
+  it("does not trigger migration plan for real .cursor/rules/ directory", async () => {
+    await mkdir(resolve(cursorDir, "rules"), { recursive: true });
+    await writeFile(resolve(cursorDir, "rules", "code-standards.mdc"), "---\nalwaysApply: true\n---\n");
+
+    const plan = await detectMigration(claudeDir);
+
+    expect(plan).toBeNull();
+  });
+
+  it("detects real dirs in both .claude/ and .cursor/", async () => {
+    await mkdir(resolve(claudeDir, "agents"), { recursive: true });
+    await mkdir(resolve(cursorDir, "templates"), { recursive: true });
+
+    const plan = await detectMigration(claudeDir);
+
+    expect(plan).not.toBeNull();
+    expect(plan!.realDirs).toHaveLength(2);
+    expect(plan!.realDirs.some((d) => d.includes(".claude/agents"))).toBe(true);
+    expect(plan!.realDirs.some((d) => d.includes(".cursor/templates"))).toBe(true);
+    expect(plan!.actions).toHaveLength(4);
   });
 });

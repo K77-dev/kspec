@@ -1,48 +1,68 @@
 ---
 name: kspec-bootstrap
-version: 1.1.0
-description: Analisa um projeto existente e gera a configuração completa do kspec (CLAUDE.bootstrap.md e/ou AGENTS.bootstrap.md, rules adaptadas) baseada na stack, estrutura e plataformas escolhidas (Claude Code, Codex CLI ou ambas).
+version: 1.3.0
+description: Analisa um projeto existente e gera a configuração completa do kspec (CLAUDE.bootstrap.md, AGENTS.bootstrap.md e/ou CURSOR.bootstrap.md, rules adaptadas) baseada na stack, estrutura e plataformas escolhidas (Claude Code, Codex CLI, Cursor ou combinações).
 ---
 
-> Ao iniciar a execução desta skill, exiba: **kspec v1.1.0 — kspec-bootstrap**
+> Ao iniciar a execução desta skill, exiba: **kspec v1.3.0 — kspec-bootstrap**
 
-## Limitação em codex exec (Não-Interativo)
+## Limitação em Modo Não-Interativo
 
-**IMPORTANTE:** Esta skill usa `AskUserQuestion` para coletar escolhas do usuário. Esta ferramenta **não funciona em modo `codex exec`** (não-interativo).
+**IMPORTANTE:** Esta skill usa ferramentas interativas para coletar escolhas do usuário. Elas **não funcionam em modo não-interativo** (ex.: `codex exec`, automações batch ou sessões sem capacidade de perguntar ao usuário).
 
-Se você detectar que está sendo executado via `codex exec` (ausência de contexto interativo, variáveis de ambiente indicando modo batch, ou impossibilidade de invocar `AskUserQuestion`):
+Se você detectar execução não-interativa (ausência de contexto interativo, variáveis de ambiente indicando modo batch, ou impossibilidade de invocar a ferramenta interativa da plataforma):
 
 1. Exiba a seguinte mensagem de erro:
    ```
    ✗ kspec-bootstrap requer modo interativo.
 
-   Esta skill utiliza AskUserQuestion para coletar escolhas de plataforma e configuração,
-   o que não é suportado em `codex exec` (modo não-interativo).
+   Esta skill utiliza perguntas estruturadas para coletar escolhas de plataforma e configuração,
+   o que não é suportado em modo não-interativo (ex.: codex exec).
 
    Solução: execute o bootstrap em modo interativo:
+     cursor         → invoque kspec-bootstrap no Agent chat
      codex          → inicie uma sessão interativa e invoque $kspec-bootstrap
      claude         → inicie o Claude Code e invoque /kspec-bootstrap
    ```
 2. Aborte a execução sem gerar nenhum arquivo e informe o usuário que a operação foi cancelada.
 
-Você é um assistente especializado em configurar projetos para uso com Claude Code e/ou OpenAI Codex CLI. Sua tarefa é analisar um projeto existente, detectar a stack, perguntar quais plataformas configurar e gerar os arquivos de configuração adaptados.
+Você é um assistente especializado em configurar projetos para uso com Claude Code, OpenAI Codex CLI e/ou Cursor. Sua tarefa é analisar um projeto existente, detectar a stack, perguntar quais plataformas configurar e gerar os arquivos de configuração adaptados.
+
+## Ferramenta Interativa por Plataforma
+
+Para qualquer pergunta de escolha ao usuário (composição do projeto, stack, idioma, knowledge graph, CI/CD, plataformas, MCP), use a ferramenta nativa da plataforma em que você está executando:
+
+| Plataforma | Ferramenta preferida |
+|---|---|
+| **Cursor** | `AskQuestion` |
+| **Claude Code** | `AskUserQuestion` |
+| **Codex CLI** | `request_user_input` ou `AskUserQuestion` |
+
+**Fallback** (somente se a ferramenta nativa estiver indisponível): apresente as opções como lista numerada em texto e peça ao usuário responder com o número correspondente. Use este fallback apenas quando a ferramenta interativa não puder ser invocada — nunca como primeira opção em sessão interativa.
 
 ## Regras
 
-- Para qualquer pergunta de escolha ao usuário (composição do projeto, stack, idioma, knowledge graph, CI/CD, plataformas, MCP), use SEMPRE a ferramenta `AskUserQuestion` (interface nativa de seleção). Não escreva opções em texto pedindo "responda com os números/letras" — isso quebra a UX e é proibido.
+- Use a ferramenta interativa da plataforma conforme a tabela acima; fallback numerado apenas se a ferramenta estiver indisponível.
 - Analise o projeto antes de perguntar — detectar automaticamente evita perguntas óbvias.
 - Confirme as detecções com o usuário antes de gerar — evita arquivos incorretos.
 - Gere apenas rules relevantes para a stack detectada — rules desnecessárias consomem contexto sem valor.
-- Gere os arquivos de bootstrap conforme a plataforma escolhida: `CLAUDE.bootstrap.md` para Claude Code, `AGENTS.bootstrap.md` para Codex CLI, ou ambos — nunca sobrescreva `CLAUDE.md` ou `AGENTS.md` existentes.
-- Nunca altere código-fonte, package.json, configs do projeto ou qualquer arquivo fora de `.claude/`, `.agents/`, `.codex/`, `CLAUDE.bootstrap.md`, `AGENTS.bootstrap.md` e `spec/tasks/`.
+- Gere os arquivos de bootstrap conforme a matriz de plataformas — **nunca sobrescreva** `CLAUDE.md`, `AGENTS.md` ou `CURSOR.md` existentes; escreva apenas `*.bootstrap.md`.
+- MCP opt-in: default **Não** em todas as plataformas; gravar `.codex/config.toml` ou `.cursor/mcp.json` **somente** com confirmação explícita do usuário.
+- Nunca altere código-fonte, package.json, configs do projeto ou qualquer arquivo fora de `.claude/`, `.agents/`, `.codex/`, `.cursor/`, `CLAUDE.bootstrap.md`, `AGENTS.bootstrap.md`, `CURSOR.bootstrap.md` e `spec/tasks/`.
 
 ## Matriz de Geração de Artefatos
 
-| Plataforma escolhida | Arquivos gerados |
+A escolha de plataformas determina quais arquivos `*.bootstrap.md` são gerados. Arquivos finais (`CLAUDE.md`, `AGENTS.md`, `CURSOR.md`) **nunca** são sobrescritos — o usuário renomeia manualmente após revisar.
+
+| Plataforma(s) escolhida(s) | Arquivos gerados |
 |---|---|
 | Claude Code apenas | `CLAUDE.bootstrap.md` |
 | Codex CLI apenas | `AGENTS.bootstrap.md` |
-| Ambas (Recomendado) | `CLAUDE.bootstrap.md` + `AGENTS.bootstrap.md` |
+| Cursor apenas | `CURSOR.bootstrap.md` |
+| Claude + Codex | `CLAUDE.bootstrap.md` + `AGENTS.bootstrap.md` |
+| Claude + Cursor | `CLAUDE.bootstrap.md` + `CURSOR.bootstrap.md` |
+| Codex + Cursor | `AGENTS.bootstrap.md` + `CURSOR.bootstrap.md` |
+| **Todas (Recomendado)** | `CLAUDE.bootstrap.md` + `AGENTS.bootstrap.md` + `CURSOR.bootstrap.md` |
 
 Em todos os casos: rules em `.agents/rules/`, diretório `spec/tasks/`, CI/CD opcional.
 
@@ -52,7 +72,7 @@ Em todos os casos: rules em `.agents/rules/`, diretório `spec/tasks/`, CI/CD op
 
 Antes de qualquer detecção, verificar se já existe configuração no projeto:
 
-- Verificar se existe `CLAUDE.md`, `CLAUDE.bootstrap.md`, `AGENTS.md` ou `AGENTS.bootstrap.md` na raiz
+- Verificar se existe `CLAUDE.md`, `CLAUDE.bootstrap.md`, `AGENTS.md`, `AGENTS.bootstrap.md`, `CURSOR.md` ou `CURSOR.bootstrap.md` na raiz
 - Verificar se existe `.claude/rules/` ou `.agents/rules/` com arquivos `.md`
 - Verificar se existe `.github/copilot-instructions.md`
 
@@ -213,19 +233,23 @@ Itens não detectados podem ser adicionados pelo usuário via campo "Other" das 
 
 ### 4. Escolha de Plataformas (Obrigatório)
 
-Perguntar ao usuário via `AskUserQuestion` quais plataformas devem ser configuradas:
+Perguntar ao usuário via ferramenta interativa da plataforma quais plataformas devem ser configuradas:
 
 - **Pergunta:** "Quais plataformas devem ser configuradas?"
-- **Opções:**
+- **Opções** (conforme matriz de geração):
   - `Claude Code apenas` — gera `CLAUDE.bootstrap.md`
   - `Codex CLI apenas` — gera `AGENTS.bootstrap.md`
-  - `Ambas (Recomendado)` — gera ambos os arquivos
+  - `Cursor apenas` — gera `CURSOR.bootstrap.md`
+  - `Claude + Codex` — gera `CLAUDE.bootstrap.md` + `AGENTS.bootstrap.md`
+  - `Claude + Cursor` — gera `CLAUDE.bootstrap.md` + `CURSOR.bootstrap.md`
+  - `Codex + Cursor` — gera `AGENTS.bootstrap.md` + `CURSOR.bootstrap.md`
+  - `Todas (Recomendado)` — gera os três arquivos bootstrap
 
-Registrar a escolha para uso nos passos seguintes (4A e 4B).
+Registrar a escolha para uso nos passos seguintes (4A, 4B, 4C, 4D e 4E).
 
-### 4A. Gerar CLAUDE.bootstrap.md (Condicional: Claude Code ou Ambas)
+### 4A. Gerar CLAUDE.bootstrap.md (Condicional: escolha inclui Claude Code)
 
-Gerar apenas se a escolha do passo 4 inclui Claude Code.
+Gerar apenas se a escolha do passo 4 inclui Claude Code (opções: Claude apenas, Claude + Codex, Claude + Cursor, Todas).
 
 Sempre gerar `CLAUDE.bootstrap.md` na raiz — nunca sobrescrever um `CLAUDE.md` existente. O usuário decide o que aproveitar.
 
@@ -240,9 +264,9 @@ Seguir a estrutura de seções do template @.agents/templates/claude-md-template
   - Angular: `ng serve`, `ng test`, `ng build`, `ng lint`
 - **Estrutura do projeto**: gerar estrutura recomendada para a stack (não existe árvore real para mapear)
 
-### 4B. Gerar AGENTS.bootstrap.md (Condicional: Codex CLI ou Ambas)
+### 4B. Gerar AGENTS.bootstrap.md (Condicional: escolha inclui Codex CLI)
 
-Gerar apenas se a escolha do passo 4 inclui Codex CLI.
+Gerar apenas se a escolha do passo 4 inclui Codex CLI (opções: Codex apenas, Claude + Codex, Codex + Cursor, Todas).
 
 Sempre gerar `AGENTS.bootstrap.md` na raiz — nunca sobrescrever um `AGENTS.md` existente. O usuário decide o que aproveitar.
 
@@ -258,11 +282,35 @@ Seguir a mesma estrutura de seções de `CLAUDE.bootstrap.md`, com as seguintes 
 - **Seção "Estrutura de discovery"**: `.agents/skills/` (prioridade 1), `.codex/skills/` (prioridade 2)
 - **Rules**: referenciar por caminho `.agents/rules/<nome>.md`, sem duplicar conteúdo
 
-### 4C. MCP Opt-in (Condicional: Codex CLI selecionado)
+### 4C. Gerar CURSOR.bootstrap.md (Condicional: escolha inclui Cursor)
+
+Gerar apenas se a escolha do passo 4 inclui Cursor (opções: Cursor apenas, Claude + Cursor, Codex + Cursor, Todas).
+
+Sempre gerar `CURSOR.bootstrap.md` na raiz — nunca sobrescrever um `CURSOR.md` existente. O usuário decide o que aproveitar.
+
+Seguir a estrutura de seções do template @.agents/templates/cursor-md-template.md, adaptando **todo o conteúdo** ao projeto detectado ou selecionado.
+
+**Adaptações específicas para Cursor:**
+
+- **Seção de invocação de skills**: listar cada skill com forma de invocação no Cursor (linguagem natural ou menção explícita `kspec-<nome>`, ex.: "crie um PRD para...")
+- **Seção "Agents"**: documentar delegação via **Task tool** com `subagent_type` (`kspec-task-runner`, `kspec-review-runner`, `kspec-qa-runner`)
+- **Seção "Limitações conhecidas no Cursor"**: incluir obrigatoriamente:
+  - Ausência de slash commands de projeto (usar linguagem natural ou menção explícita)
+  - Delegação via Task tool; fallback inline se indisponível
+  - Rules derivadas em `.cursor/rules/*.mdc` — editar `.agents/rules/` e rodar `kspec update`
+  - Symlinks em Windows (cópias em `.cursor/skills/` e `.cursor/agents/`)
+  - MCP opt-in em `.cursor/mcp.json` (sem descoberta automática)
+  - Ferramenta interativa `AskQuestion` para skills que requerem modo interativo
+- **Seção "Estrutura de discovery"**: `.agents/skills/` (prioridade 1), `.cursor/skills/` (symlinks), `.cursor/rules/*.mdc` (derivados)
+- **Rules**: referenciar caminho canônico `.agents/rules/<nome>.md` e publicação Cursor `.cursor/rules/<nome>.mdc`
+
+**Para projetos vazios (vindos do passo 2A):** mesmas regras de comandos e estrutura do passo 4A, adaptadas ao contexto Cursor.
+
+### 4D. MCP Opt-in Codex (Condicional: escolha inclui Codex CLI)
 
 Executar apenas se a escolha do passo 4 inclui Codex CLI.
 
-Perguntar ao usuário via `AskUserQuestion`:
+Perguntar ao usuário via ferramenta interativa da plataforma:
 
 - **Pergunta:** "Registrar MCP servers (context7, testsprite) em `.codex/config.toml`?"
 - **Opções:**
@@ -287,6 +335,40 @@ args = ["-y", "@testsprite/mcp"]
 ```
 
 Exibir confirmação: `✓ Criado: .codex/config.toml (context7 + testsprite)`
+
+**Se o usuário responder `Não`**, pular sem criar nenhum arquivo.
+
+### 4E. MCP Opt-in Cursor (Condicional: escolha inclui Cursor)
+
+Executar apenas se a escolha do passo 4 inclui Cursor.
+
+Perguntar ao usuário via ferramenta interativa da plataforma:
+
+- **Pergunta:** "Registrar MCP servers (context7, testsprite) em `.cursor/mcp.json`?"
+- **Opções:**
+  - `Não` — (padrão recomendado) pular criação do mcp.json
+  - `Sim` — criar `.cursor/mcp.json` com os MCP servers configurados
+
+Na ausência de seleção explícita, assumir `Não` e pular a criação do arquivo.
+
+**Se o usuário responder `Sim`**, criar o arquivo `.cursor/mcp.json` com o seguinte conteúdo:
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "testsprite": {
+      "command": "npx",
+      "args": ["-y", "testsprite-mcp"]
+    }
+  }
+}
+```
+
+Exibir confirmação: `✓ Criado: .cursor/mcp.json (context7 + testsprite)`
 
 **Se o usuário responder `Não`**, pular sem criar nenhum arquivo.
 
@@ -392,11 +474,11 @@ Se a resposta for `Construir agora`:
    ```bash
    grep -qxF 'graphify-out/' .gitignore 2>/dev/null || echo 'graphify-out/' >> .gitignore
    ```
-4. Adicionar ao `CLAUDE.bootstrap.md`, na seção "Recursos do projeto", o bloco:
+4. Adicionar ao `CLAUDE.bootstrap.md` e, se gerado, ao `CURSOR.bootstrap.md`, na seção "Recursos do projeto", o bloco:
    ```markdown
    ### Knowledge Graph
 
-   O projeto possui um knowledge graph em `graphify-out/graph.json` gerado pelo Graphify. Skills do kspec que fazem análise de código devem consultá-lo seguindo `.claude/rules/graphify.md`. Para atualizar incrementalmente: `graphify . --update`.
+   O projeto possui um knowledge graph em `graphify-out/graph.json` gerado pelo Graphify. Skills do kspec que fazem análise de código devem consultá-lo seguindo `.agents/rules/graphify.md`. Para atualizar incrementalmente: `graphify . --update`.
    ```
 Se a resposta for `Pular` ou o projeto não atingir 100 arquivos, pular este passo sem comentário.
 
@@ -452,22 +534,27 @@ Apresentar ao usuário:
 
 - Plataformas configuradas e arquivos de bootstrap gerados
 - Rules criadas e quais foram removidas (com justificativa)
-- Se `.codex/config.toml` foi criado (MCP opt-in)
+- Se `.codex/config.toml` foi criado (MCP opt-in Codex)
+- Se `.cursor/mcp.json` foi criado (MCP opt-in Cursor)
 - Próximos passos conforme plataformas escolhidas:
   - **Claude Code**: "Revise `CLAUDE.bootstrap.md`, renomeie para `CLAUDE.md` quando estiver satisfeito, depois use `/kspec-prd` para criar seu primeiro PRD"
   - **Codex CLI**: "Revise `AGENTS.bootstrap.md`, renomeie para `AGENTS.md` quando estiver satisfeito, depois use `$kspec-prd` (ou linguagem natural) para criar seu primeiro PRD"
-  - **Ambas**: apresentar ambas as instruções acima
+  - **Cursor**: "Revise `CURSOR.bootstrap.md`, renomeie para `CURSOR.md` quando estiver satisfeito, depois use `kspec-prd` (ou linguagem natural) para criar seu primeiro PRD"
+  - **Múltiplas plataformas**: apresentar as instruções acima para cada plataforma configurada
 
 ## Checklist de Qualidade
 
-- [ ] Verificação de modo interativo realizada (abortar com mensagem clara se `codex exec`)
+- [ ] Verificação de modo interativo realizada (abortar com mensagem clara se não-interativo)
+- [ ] Ferramenta interativa correta usada por plataforma (`AskQuestion` / `AskUserQuestion` / `request_user_input`)
 - [ ] Projeto vazio: seleção guiada oferecida (se aplicável)
-- [ ] Projeto existente: analisado (package.json, lockfiles, configs — não os arquivos em .claude/ ou .agents/)
+- [ ] Projeto existente: analisado (package.json, lockfiles, configs — não os arquivos em .claude/, .agents/ ou .cursor/)
 - [ ] Stack confirmada com o usuário (seleção guiada ou detecções)
-- [ ] Plataformas escolhidas via AskUserQuestion (Claude Code / Codex CLI / Ambas)
-- [ ] CLAUDE.bootstrap.md gerado se Claude Code selecionado, com conteúdo adaptado à stack real
-- [ ] AGENTS.bootstrap.md gerado se Codex CLI selecionado, com seção de limitações e invocação via `$kspec-<nome>`
-- [ ] MCP opt-in perguntado se Codex selecionado; .codex/config.toml criado apenas se usuário aceitou
+- [ ] Plataformas escolhidas via ferramenta interativa (7 opções incluindo Todas)
+- [ ] CLAUDE.bootstrap.md gerado se Claude selecionado; nunca sobrescreve `CLAUDE.md`
+- [ ] AGENTS.bootstrap.md gerado se Codex selecionado; nunca sobrescreve `AGENTS.md`
+- [ ] CURSOR.bootstrap.md gerado se Cursor selecionado; nunca sobrescreve `CURSOR.md`
+- [ ] MCP opt-in Codex perguntado se Codex selecionado; `.codex/config.toml` criado apenas se usuário aceitou
+- [ ] MCP opt-in Cursor perguntado se Cursor selecionado; `.cursor/mcp.json` criado apenas se usuário aceitou
 - [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
 - [ ] Rules irrelevantes removidas
 - [ ] Path-specific rules configuradas onde aplicável

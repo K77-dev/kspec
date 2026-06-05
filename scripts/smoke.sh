@@ -69,6 +69,30 @@ assert_true() {
   fi
 }
 
+count_resolvable_agent_rules() {
+  local count=0
+  local rule
+  for rule in .agents/rules/*.md; do
+    [ -e "$rule" ] || continue
+    if head -c 1 "$rule" &>/dev/null; then
+      count=$((count + 1))
+    fi
+  done
+  echo "$count"
+}
+
+capture_cursor_state() {
+  {
+    find .cursor -type l 2>/dev/null | sort | while IFS= read -r link; do
+      echo "$link -> $(readlink "$link")"
+    done
+    find .cursor/rules -maxdepth 1 -name '*.mdc' -type f 2>/dev/null | sort | while IFS= read -r file; do
+      md5 -q "$file" 2>/dev/null || md5sum "$file" | awk '{print $1}'
+      echo "$file"
+    done
+  }
+}
+
 echo "=== smoke.sh: kspec integration smoke test ==="
 echo ""
 
@@ -100,6 +124,21 @@ assert_grep "kspec-review-runner.toml tem sandbox_mode read-only" \
   'sandbox_mode = "read-only"'
 assert_true "AGENTS.md e CLAUDE.md existem" "[ -f AGENTS.md ] && [ -f CLAUDE.md ]"
 
+CURSOR_SKILL_SYMLINK_COUNT=$(find .cursor/skills -maxdepth 1 -type l 2>/dev/null | wc -l | tr -d ' ')
+assert_gte "find .cursor/skills -maxdepth 1 -type l >= 11" "$CURSOR_SKILL_SYMLINK_COUNT" 11
+
+CURSOR_AGENT_SYMLINK_COUNT=$(find .cursor/agents -maxdepth 1 -type l 2>/dev/null | wc -l | tr -d ' ')
+assert_gte "find .cursor/agents -maxdepth 1 -type l >= 3" "$CURSOR_AGENT_SYMLINK_COUNT" 3
+
+RESOLVABLE_RULES=$(count_resolvable_agent_rules)
+CURSOR_MDC_COUNT=$(find .cursor/rules -maxdepth 1 -name '*.mdc' -type f 2>/dev/null | wc -l | tr -d ' ')
+assert_gte ".cursor/rules/*.mdc >= .agents/rules/*.md resolviveis" "$CURSOR_MDC_COUNT" "$RESOLVABLE_RULES"
+
+assert_file_exists "CURSOR.md existe" "CURSOR.md"
+assert_grep "code-standards.mdc tem alwaysApply: true" \
+  ".cursor/rules/code-standards.mdc" \
+  'alwaysApply: true'
+
 echo ""
 echo "→ Cenario 2: migracao — .claude/skills/ como dir real sem --force deve abortar"
 mkdir -p "$MIGRATE_DIR"
@@ -125,14 +164,24 @@ echo ""
 echo "→ Cenario 3: idempotencia — kspec update 2x seguidas deve produzir diff zero de symlinks"
 kspec update 2>&1 || true
 SYMLINKS_AFTER_FIRST=$(find . -type l | sort | xargs -I{} sh -c 'echo "{} -> $(readlink "{}")"' 2>/dev/null)
+CURSOR_STATE_AFTER_FIRST=$(capture_cursor_state)
 kspec update 2>&1 || true
 SYMLINKS_AFTER_SECOND=$(find . -type l | sort | xargs -I{} sh -c 'echo "{} -> $(readlink "{}")"' 2>/dev/null)
+CURSOR_STATE_AFTER_SECOND=$(capture_cursor_state)
 
 if [ "$SYMLINKS_AFTER_FIRST" = "$SYMLINKS_AFTER_SECOND" ]; then
   echo "PASS  idempotencia: symlinks inalterados entre 1o e 2o update"
   PASS=$((PASS + 1))
 else
   echo "FAIL  idempotencia: symlinks mudaram entre 1o e 2o update"
+  FAIL=$((FAIL + 1))
+fi
+
+if [ "$CURSOR_STATE_AFTER_FIRST" = "$CURSOR_STATE_AFTER_SECOND" ]; then
+  echo "PASS  idempotencia: .cursor/ (symlinks + .mdc) inalterado entre 1o e 2o update"
+  PASS=$((PASS + 1))
+else
+  echo "FAIL  idempotencia: .cursor/ (symlinks + .mdc) mudou entre 1o e 2o update"
   FAIL=$((FAIL + 1))
 fi
 

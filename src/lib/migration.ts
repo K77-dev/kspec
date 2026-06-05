@@ -2,7 +2,7 @@ import { lstat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
-import { resolve, basename } from "node:path";
+import { resolve, basename, dirname } from "node:path";
 import chalk from "chalk";
 
 export interface MigrationPlan {
@@ -11,7 +11,8 @@ export interface MigrationPlan {
   actions: string[];
 }
 
-const EXPECTED_SUBDIRS = ["skills", "agents", "rules", "templates", "validation"];
+const CLAUDE_EXPECTED_SUBDIRS = ["skills", "agents", "rules", "templates", "validation"];
+const CURSOR_EXPECTED_SUBDIRS = ["skills", "agents", "templates", "validation"];
 const PRESERVED_FILES = ["settings.json", "settings.local.json"];
 
 async function classifyEntry(entryPath: string): Promise<"real-dir" | "symlink" | "absent"> {
@@ -29,13 +30,14 @@ function buildActions(realDirs: string[]): string[] {
   const actions: string[] = [];
   let counter = 1;
   for (const dirPath of realDirs) {
+    const platformDir = basename(dirname(dirPath));
     const sub = basename(dirPath);
     actions.push(
-      `${counter}. Mover \`.claude/${sub}/\` para \`.agents/${sub}/\``,
+      `${counter}. Mover \`${platformDir}/${sub}/\` para \`.agents/${sub}/\``,
     );
     counter++;
     actions.push(
-      `${counter}. Criar symlink \`.claude/${sub}/\` → \`../../.agents/${sub}\``,
+      `${counter}. Criar symlink \`${platformDir}/${sub}/\` → \`../../.agents/${sub}\``,
     );
     counter++;
   }
@@ -48,15 +50,26 @@ function collectPreservedFiles(targetClaude: string): string[] {
   );
 }
 
-export async function detectMigration(targetClaude: string): Promise<MigrationPlan | null> {
+async function detectRealDirs(baseDir: string, subdirs: string[]): Promise<string[]> {
   const realDirs: string[] = [];
-  for (const sub of EXPECTED_SUBDIRS) {
-    const entryPath = resolve(targetClaude, sub);
+  for (const sub of subdirs) {
+    const entryPath = resolve(baseDir, sub);
     const classification = await classifyEntry(entryPath);
     if (classification === "real-dir") {
       realDirs.push(entryPath);
     }
   }
+  return realDirs;
+}
+
+export async function detectMigration(targetClaude: string): Promise<MigrationPlan | null> {
+  const targetRoot = dirname(targetClaude);
+  const targetCursor = resolve(targetRoot, ".cursor");
+
+  const claudeRealDirs = await detectRealDirs(targetClaude, CLAUDE_EXPECTED_SUBDIRS);
+  const cursorRealDirs = await detectRealDirs(targetCursor, CURSOR_EXPECTED_SUBDIRS);
+  const realDirs = [...claudeRealDirs, ...cursorRealDirs];
+
   if (realDirs.length === 0) return null;
   const filesPreserved = collectPreservedFiles(targetClaude);
   const actions = buildActions(realDirs);
@@ -66,7 +79,9 @@ export async function detectMigration(targetClaude: string): Promise<MigrationPl
 export async function confirmMigration(plan: MigrationPlan): Promise<boolean> {
   console.log(chalk.yellow("\n⚠ Migração necessária"));
   console.log(
-    chalk.white("Os seguintes diretórios em .claude/ são reais (não symlinks):"),
+    chalk.white(
+      "Os seguintes diretórios de discovery são reais (não symlinks):",
+    ),
   );
   for (const dir of plan.realDirs) {
     console.log(chalk.white(`  - ${dir}`));

@@ -5,8 +5,10 @@ import {
   getClaudeSourceDir,
   getAgentsSourceDir,
   getCodexSourceDir,
+  getCursorSourceDir,
   getAgentsMdSource,
   getClaudeMdSource,
+  getCursorMdSource,
   getPackageVersion,
 } from "../src/utils/paths.js";
 
@@ -78,6 +80,31 @@ describe("getAgentsMdSource", () => {
   it("is under the package root", () => {
     const root = getPackageRoot();
     expect(getAgentsMdSource().startsWith(root)).toBe(true);
+  });
+});
+
+describe("getCursorSourceDir", () => {
+  it("returns path ending in .cursor", () => {
+    const dir = getCursorSourceDir();
+    expect(dir.endsWith(".cursor")).toBe(true);
+  });
+
+  it("is a subdirectory of the package root", () => {
+    const root = getPackageRoot();
+    const dir = getCursorSourceDir();
+    expect(dir.startsWith(root)).toBe(true);
+  });
+});
+
+describe("getCursorMdSource", () => {
+  it("returns path ending in CURSOR.md", () => {
+    const p = getCursorMdSource();
+    expect(p.endsWith("CURSOR.md")).toBe(true);
+  });
+
+  it("is under the package root", () => {
+    const root = getPackageRoot();
+    expect(getCursorMdSource().startsWith(root)).toBe(true);
   });
 });
 

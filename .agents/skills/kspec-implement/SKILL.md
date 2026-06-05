@@ -16,6 +16,7 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 - Antes de executar uma task, verifique se suas dependências estão marcadas como completas — executar fora de ordem pode quebrar o código.
 - Delegue cada task ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
 - Após cada implementação, delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
+- **No Cursor:** delegue via **Task tool** com `subagent_type` (`kspec-task-runner` ou `kspec-review-runner`). Se a Task tool não estiver disponível, execute inline com aviso `⚠ Task tool indisponível — executando {agent} inline no contexto principal.`
 - Se a review retornar **APROVADO COM RESSALVAS**, gere um diagnóstico estruturado (mesmo formato do Diagnóstico de Causa Raiz) listando cada ressalva como problema a corrigir, e delegue uma única vez ao `kspec-task-runner` com o diagnóstico. Se ainda tiver ressalvas após a correção, reporte ao usuário.
 - Se a review **REPROVAR**, gere um diagnóstico de causa raiz estruturado e delegue uma única vez ao `kspec-task-runner` com o diagnóstico. Se continuar reprovado após a correção, reporte ao usuário.
 - Mantenha apenas o resumo de cada task no contexto principal — os detalhes ficam nos agents.
@@ -25,6 +26,41 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 O slug da funcionalidade é: **$ARGUMENTS**
 
 Se `$ARGUMENTS` estiver vazio, peça ao usuário para informar o slug (ex: `/kspec-implement 001-prd-auth`) e não prossiga até receber.
+
+## Delegação de Agents
+
+| Agent | Momento | `subagent_type` (Cursor) |
+| --- | --- | --- |
+| `kspec-task-runner` | Antes de implementar cada task | `kspec-task-runner` |
+| `kspec-review-runner` | Após cada implementação | `kspec-review-runner` |
+
+**Cursor — Task tool:**
+
+```
+Task tool → subagent_type: "kspec-task-runner"
+prompt: caminho da task ([num]_task.md), PRD, Tech Spec e diagnóstico (se retry)
+```
+
+**Fallback (Task tool indisponível):** execute a lógica do agent inline no contexto principal e exiba:
+
+```
+⚠ Task tool indisponível — executando kspec-task-runner inline no contexto principal.
+```
+
+```
+Task tool → subagent_type: "kspec-review-runner"
+prompt: slug da funcionalidade ($ARGUMENTS) + contexto da task
+```
+
+**Fallback (Task tool indisponível):** execute a lógica do agent inline no contexto principal e exiba:
+
+```
+⚠ Task tool indisponível — executando kspec-review-runner inline no contexto principal.
+```
+
+Agents residem em `.agents/agents/<nome>/AGENT.md` (source of truth).
+
+No Cursor, discovery reforçado via `.cursor/agents/` (symlink) e `.agents/agents/`.
 
 ## Localização dos Arquivos
 

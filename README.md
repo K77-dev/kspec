@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/@k77-dev/kspec.svg)](https://www.npmjs.com/package/@k77-dev/kspec)
 [![license](https://img.shields.io/npm/l/@k77-dev/kspec.svg)](LICENSE)
 
-Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — para **Claude Code** e **OpenAI Codex CLI**.
+Kit de especificações e padrões para projetos desenvolvidos com agentes de IA — para **Claude Code**, **OpenAI Codex CLI** e **Cursor**.
 
 ```bash
 npm install -g @k77-dev/kspec
@@ -149,19 +149,26 @@ Agents rodam em **contexto isolado** (nao veem a conversa, recebem apenas os inp
 | Plataforma | Caminho canônico (source of truth) | Discovery | Guia principal | Invocação de skills |
 |---|---|---|---|---|
 | Claude Code | `.agents/` | `.claude/` (symlinks) | `CLAUDE.md` | `/kspec-<nome>` |
-| OpenAI Codex CLI | `.agents/` | `.codex/` (symlinks + `.toml`) | `AGENTS.md` | `$kspec-<nome>` |
+| OpenAI Codex CLI | `.agents/` | `.codex/` (symlinks + `.toml`) | `AGENTS.md` | `$kspec-<nome>` ou linguagem natural |
+| Cursor | `.agents/` | `.cursor/` (symlinks + `.mdc`) | `CURSOR.md` | linguagem natural ou `kspec-<nome>` |
 
-Skills, agents, rules e templates vivem em `.agents/` e são descobertos via symlinks em `.claude/` (Claude Code) e `.codex/` (Codex CLI). Não edite `.claude/` nem `.codex/` diretamente — as alterações vão para `.agents/` primeiro.
+Skills, agents, rules e templates vivem em `.agents/` e são descobertos via symlinks em `.claude/` (Claude Code), `.codex/` (Codex CLI) e `.cursor/` (Cursor). Rules no Cursor são publicadas como `.cursor/rules/*.mdc` (derivados de `.agents/rules/*.md`). Não edite `.claude/`, `.codex/` nem `.cursor/` diretamente — as alterações vão para `.agents/` primeiro; rode `kspec update` para regenerar artefatos derivados.
 
 ## Limitações conhecidas
 
-| Limitação | Impacto |
+Cada plataforma tem limitações específicas documentadas nos guias principais (`CLAUDE.md`, `AGENTS.md`, `CURSOR.md`). Resumo:
+
+| Plataforma | Limitação principal | Guia |
+|---|---|---|
+| Claude Code | Skills interativas exigem sessão com `AskUserQuestion`; `settings.json` preservado no `update` | `CLAUDE.md` |
+| OpenAI Codex CLI | Sem slash commands de projeto; `codex exec` não é interativo; MCP em `.codex/config.toml` | `AGENTS.md` |
+| Cursor | Sem slash commands de projeto; delegação de agents via Task tool; rules derivadas em `.mdc` | `CURSOR.md` |
+
+| Limitação (todas as plataformas) | Impacto |
 |---|---|
-| `codex exec` não é interativo | `AskUserQuestion` e confirmações de readline não funcionam em modo não-interativo — use sessão interativa (`codex`) |
-| Sem slash commands no Codex CLI | Skills devem ser invocadas por linguagem natural ou `$kspec-<nome>`, não por `/kspec-<nome>` |
-| Windows | Symlinks exigem modo desenvolvedor ou privilégios de administrador — o `kspec init` usa cópia (`fs-extra.copy`) como fallback automático |
-| MCP opt-in | Os MCP servers (context7, testsprite) precisam ser registrados manualmente em `.codex/config.toml` — o `/kspec-bootstrap` oferece opt-in durante o setup |
-| Sandbox do Codex | `kspec-review-runner` usa `sandbox_mode = "read-only"`; `kspec-task-runner` e `kspec-qa-runner` usam `workspace-write` — verifique os `.toml` em `.codex/agents/` se precisar ajustar |
+| Windows | Symlinks exigem modo desenvolvedor ou privilégios de administrador — o `kspec init` usa cópia como fallback automático |
+| MCP opt-in | MCP servers (context7, testsprite) não são descobertos automaticamente — o `kspec-bootstrap` oferece opt-in por plataforma durante o setup |
+| Source of truth | Edite `.agents/rules/`, não `.cursor/rules/*.mdc` — regenere com `kspec update` |
 
 ## Stack padrao (para projetos que usam kspec)
 
@@ -185,10 +192,12 @@ As rules e templates do kspec sao otimizados para esta stack, mas podem ser adap
 └── validation/                 # Validacoes de skills empresariais
 .claude/                        # Discovery para Claude Code (symlinks → .agents/)
 .codex/                         # Discovery para OpenAI Codex CLI (symlinks + .toml)
+.cursor/                        # Discovery para Cursor (symlinks + rules .mdc derivadas)
 spec/
 └── tasks/                      # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 CLAUDE.md                       # Guia principal para Claude Code
 AGENTS.md                       # Guia principal para OpenAI Codex CLI
+CURSOR.md                       # Guia principal para Cursor
 enterprise-skills-lock.json     # Lock de skills empresariais (versionamento)
 ```
 
@@ -259,7 +268,7 @@ O qa-runner (agent) le adicionalmente:
 
 | Skill | Le (entrada) | Produz (saida) |
 |---|---|---|
-| `/kspec-version` | `VERSION`, `.claude/skills/`, `.claude/agents/` | Exibe versao do kspec e lista skills/agents instalados |
+| `/kspec-version` | `VERSION`, `.agents/skills/`, `.agents/agents/` | Exibe versao do kspec e lista skills/agents instalados |
 
 ### Agents — entradas e saidas (3)
 
@@ -318,15 +327,15 @@ Na raiz do seu projeto, rode:
 kspec init
 ```
 
-Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.claude/` no seu projeto.
+Isso copia `.agents/` e gera as camadas de discovery `.claude/`, `.codex/` e `.cursor/`, além dos guias `CLAUDE.md`, `AGENTS.md` e `CURSOR.md`.
 
 **Comandos disponiveis:**
 
 | Comando | Descricao |
 |---|---|
-| `kspec init` | Instala skills, agents, rules e templates em `.claude/` |
-| `kspec init --force` | Sobrescreve sem perguntar caso `.claude/` ja exista |
-| `kspec update` | Atualiza os arquivos kspec no projeto para a versao do CLI instalado |
+| `kspec init` | Instala estrutura tri-plataforma (`.agents/`, `.claude/`, `.codex/`, `.cursor/`) |
+| `kspec init --force` | Sobrescreve sem perguntar caso diretórios kspec já existam |
+| `kspec update` | Atualiza symlinks, `.toml`, `.mdc` e artefatos para a versão do CLI instalado |
 | `kspec --version` | Exibe a versao instalada do kspec |
 | `kspec --help` | Lista comandos e opcoes disponiveis |
 
@@ -335,10 +344,10 @@ Isso copia automaticamente `skills/`, `agents/`, `rules/` e `templates/` para `.
 
 ### Configuracao
 
-1. Abra o projeto no seu agente de IA (Claude Code, etc.)
-2. Execute `/kspec-bootstrap` para gerar o guia principal adaptado a sua stack
-3. Revise o arquivo gerado (ex: `CLAUDE.bootstrap.md`) e renomeie para o guia principal (ex: `CLAUDE.md`)
-4. Comece pelo fluxo de desenvolvimento: `/kspec-prd` → `/kspec-techspec` → `/kspec-tasks` → `/kspec-implement` → `/kspec-qa`
+1. Abra o projeto no seu agente de IA (Claude Code, Codex CLI ou Cursor)
+2. Execute `kspec-bootstrap` para gerar o guia principal adaptado à sua stack e plataforma(s)
+3. Revise o arquivo gerado (ex: `CLAUDE.bootstrap.md`, `AGENTS.bootstrap.md` ou `CURSOR.bootstrap.md`) e renomeie para o guia final
+4. Comece pelo fluxo de desenvolvimento: PRD → tech spec → tasks → implement → QA (invocação conforme a matriz de plataformas acima)
 
 ### Atualizacao
 
@@ -361,15 +370,25 @@ npm install -g @k77-dev/kspec@latest
 kspec update
 ```
 
-O comando `kspec update` re-copia skills, agents, rules e templates para `.claude/` sem pedir confirmacao, preservando qualquer outro conteudo do projeto.
+O comando `kspec update` regenera symlinks, `.codex/agents/*.toml` e `.cursor/rules/*.mdc` sem pedir confirmação, preservando guias finais (`CLAUDE.md`, `AGENTS.md`, `CURSOR.md`) e `settings.json` do Claude Code.
 
-> Arquivos customizados **dentro** das pastas `skills/`, `agents/`, `rules/` ou `templates/` serao sobrescritos — mova customizacoes para fora dessas pastas antes de atualizar.
+> Edite sempre `.agents/` (source of truth). Artefatos derivados em `.cursor/rules/` são sobrescritos no `update`.
 
 #### Alternativa sem instalacao global
 
 ```bash
 npx @k77-dev/kspec@latest update
 ```
+
+## Notas de release
+
+### v1.3.0 — Suporte ao Cursor
+
+- **Nova plataforma:** Cursor como terceira camada de discovery (`.cursor/`), em paridade com Claude Code e Codex CLI.
+- **CLI tri-plataforma:** `kspec init` e `kspec update` geram symlinks, rules `.mdc` derivadas e guia `CURSOR.md`.
+- **Bootstrap:** `kspec-bootstrap` pergunta quais plataformas configurar (incluindo "Todas") e oferece MCP opt-in por plataforma.
+- **Delegação no Cursor:** agents acionados via Task tool com `subagent_type` (`kspec-task-runner`, `kspec-review-runner`, `kspec-qa-runner`).
+- **Retrocompatibilidade:** zero regressão para consumidores Claude-only e Codex-only.
 
 ## Principios de design
 

@@ -2,7 +2,9 @@
 
 Guia para agentes de IA ao trabalhar com o código deste repositório.
 
-Este projeto é o **kspec** — um kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code e OpenAI Codex CLI. **Não contém código de aplicação executável.**
+Este projeto é o **kspec** — um kit de especificações e padrões para projetos desenvolvidos com agentes de IA. Contém skills, agents, rules e templates para Claude Code, OpenAI Codex CLI e Cursor. **Não contém código de aplicação executável.**
+
+> Para OpenAI Codex CLI, consulte `AGENTS.md`. Para Cursor, consulte `CURSOR.md`.
 
 ### Idioma
 
@@ -14,7 +16,7 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 - **`.agents/` é o source of truth** — todas as mudanças em skills, agents, rules e templates devem ser feitas em `.agents/` primeiro
 - **Sempre verifique as skills** antes de implementar — tarefas sem skills relevantes podem ser invalidadas
 - **Não use workarounds** — prefira correções de causa raiz
-- **Mantenha paridade** entre os diretórios de plataforma (`.agents/`, `.claude/`, `.codex/`) — `.agents/` é source of truth; `.claude/` e `.codex/` são camadas de discovery via symlinks
+- **Mantenha paridade** entre os diretórios de plataforma (`.agents/`, `.claude/`, `.codex/`, `.cursor/`) — `.agents/` é source of truth; `.claude/`, `.codex/` e `.cursor/` são camadas de discovery via symlinks e artefatos derivados
 
 ### Estrutura do projeto
 
@@ -34,8 +36,15 @@ Este projeto é o **kspec** — um kit de especificações e padrões para proje
 ├── .codex/                      # Espelhos de .agents/ (symlinks) — discovery para OpenAI Codex CLI
 │   ├── skills/                  # → .agents/skills/
 │   └── agents/                  # Agents no formato TOML para Codex CLI
+├── .cursor/                     # Discovery para Cursor
+│   ├── skills/                  # → .agents/skills/ (symlinks)
+│   ├── agents/                  # → .agents/agents/ (symlinks)
+│   ├── templates/               # → .agents/templates/ (symlink)
+│   ├── validation/              # → .agents/validation/ (symlink)
+│   └── rules/                   # *.mdc derivados de .agents/rules/*.md
 ├── .github/                     # GitHub Actions, instructions
 ├── AGENTS.md                    # Guia para OpenAI Codex CLI (equivalente ao CLAUDE.md)
+├── CURSOR.md                    # Guia para Cursor (equivalente ao CLAUDE.md)
 ├── spec/
 │   └── tasks/                   # Artefatos gerados (PRDs, techspecs, tasks, reviews)
 ├── src/                         # Código-fonte principal
@@ -112,8 +121,8 @@ npm run test:watch             # Watch mode para testes
 - **Não execute** `git restore`, `git reset`, `git clean` ou comandos destrutivos **sem permissão explícita do usuário**
 - **Prioridade de repositórios**:
   - `.agents/` é o source of truth
-  - Mudanças em `.claude/` ou `.codex/` devem estar refletidas em `.agents/` primeiro
-  - Symlinks garantem paridade entre plataformas
+  - Mudanças em `.claude/`, `.codex/` ou `.cursor/` devem estar refletidas em `.agents/` primeiro
+  - Symlinks e artefatos derivados garantem paridade entre plataformas
 
 ### Validação de Skills Empresariais
 
@@ -125,6 +134,18 @@ Antes de qualquer operação:
 4. Instala ou atualiza skills/rules/templates conforme necessário
 
 Sem essa validação, habilidades obrigatórias podem estar faltando.
+
+### Limitações conhecidas no Claude Code
+
+1. **Slash commands de projeto**: o Claude Code suporta `/kspec-<nome>` como invocação nativa — use `/kspec-prd`, não `$kspec-prd` (sintaxe Codex) nem apenas menção textual (padrão Cursor).
+
+2. **Modo interativo obrigatório**: skills como `kspec-prd`, `kspec-techspec`, `kspec-tasks`, `kspec-implement`, `kspec-bugfix` e `kspec-bootstrap` dependem de `AskUserQuestion` — não funcionam em fluxos não-interativos.
+
+3. **Preservação de settings**: `kspec update` nunca altera `settings.json` nem `settings.local.json` do Claude Code.
+
+4. **Symlinks em Windows**: em sistemas Windows, `.claude/skills/` pode usar cópias em vez de symlinks. Após `kspec update`, resincronize manualmente se necessário.
+
+5. **MCP opt-in**: MCPs como context7 e testsprite não são descobertos automaticamente. Configure-os nas settings do Claude Code ou via opt-in no `kspec-bootstrap`.
 
 ### Anti-padrões
 

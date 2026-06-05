@@ -6,6 +6,7 @@ import {
   writeFile,
   readFile,
   lstat,
+  symlink,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve, join } from "node:path";
@@ -79,6 +80,7 @@ async function setupFixture(): Promise<Fixture> {
   await buildFakeAgentsDir(agentsDir);
   await writeFile(resolve(packageRoot, "AGENTS.md"), "# Agents Guide");
   await writeFile(resolve(packageRoot, "CLAUDE.md"), "# Claude Guide");
+  await writeFile(resolve(packageRoot, "CURSOR.md"), "# Cursor Guide");
 
   return { tmp, targetRoot, agentsDir, packageRoot };
 }
@@ -89,6 +91,7 @@ function baseOpts(fixture: Fixture) {
     sourceAgentsDir: fixture.agentsDir,
     sourceAgentsMd: resolve(fixture.packageRoot, "AGENTS.md"),
     sourceClaudeMd: resolve(fixture.packageRoot, "CLAUDE.md"),
+    sourceCursorMd: resolve(fixture.packageRoot, "CURSOR.md"),
   };
 }
 
@@ -174,14 +177,18 @@ describe("runInstall — fluxo feliz", () => {
     expect(taskContent).toContain('developer_instructions = """');
   });
 
-  it("creates AGENTS.md and CLAUDE.md in target root when absent", async () => {
+  it("creates AGENTS.md, CLAUDE.md and CURSOR.md in target root when absent", async () => {
     await runInstall(baseOpts(fixture));
 
     expect(await pathExists(resolve(fixture.targetRoot, "AGENTS.md"))).toBe(true);
     expect(await pathExists(resolve(fixture.targetRoot, "CLAUDE.md"))).toBe(true);
+    expect(await pathExists(resolve(fixture.targetRoot, "CURSOR.md"))).toBe(true);
 
     const agentsContent = await readFile(resolve(fixture.targetRoot, "AGENTS.md"), "utf-8");
     expect(agentsContent).toBe("# Agents Guide");
+
+    const cursorContent = await readFile(resolve(fixture.targetRoot, "CURSOR.md"), "utf-8");
+    expect(cursorContent).toBe("# Cursor Guide");
   });
 
   it("returns report with linked skills, agents and no errors", async () => {
@@ -191,7 +198,126 @@ describe("runInstall — fluxo feliz", () => {
     expect(report.linkedSkills).toContain("fake-skill-b");
     expect(report.linkedAgents).toContain("fake-task-runner");
     expect(report.generatedTomls).toContain("fake-task-runner");
+    expect(report.linkedCursorSkills).toContain("fake-skill-a");
+    expect(report.linkedCursorAgents).toContain("fake-task-runner");
+    expect(report.generatedMdc).toContain("code-standards");
     expect(report.errors).toHaveLength(0);
+  });
+});
+
+describe("runInstall — camada Cursor", () => {
+  let fixture: Fixture;
+  let cwdSpy: MockInstance;
+
+  beforeEach(async () => {
+    fixture = await setupFixture();
+    cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(fixture.targetRoot);
+  });
+
+  afterEach(async () => {
+    cwdSpy.mockRestore();
+    await removeTmpDir(fixture.tmp);
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "creates symlinks for skills in .cursor/skills/",
+    async () => {
+      await runInstall(baseOpts(fixture));
+
+      expect(await isSymlink(resolve(fixture.targetRoot, ".cursor", "skills", "fake-skill-a"))).toBe(true);
+      expect(await isSymlink(resolve(fixture.targetRoot, ".cursor", "skills", "fake-skill-b"))).toBe(true);
+    },
+  );
+
+  it.skipIf(process.platform === "win32")(
+    "creates symlinks for agents in .cursor/agents/",
+    async () => {
+      await runInstall(baseOpts(fixture));
+
+      expect(await isSymlink(resolve(fixture.targetRoot, ".cursor", "agents", "fake-task-runner"))).toBe(true);
+      expect(await isSymlink(resolve(fixture.targetRoot, ".cursor", "agents", "fake-review-runner"))).toBe(true);
+    },
+  );
+
+  it.skipIf(process.platform === "win32")(
+    "creates directory symlinks for templates and validation in .cursor/",
+    async () => {
+      await runInstall(baseOpts(fixture));
+
+      expect(await isSymlink(resolve(fixture.targetRoot, ".cursor", "templates"))).toBe(true);
+      expect(await isSymlink(resolve(fixture.targetRoot, ".cursor", "validation"))).toBe(true);
+      expect(await pathExists(resolve(fixture.targetRoot, ".cursor", "rules"))).toBe(true);
+    },
+  );
+
+  it("generates .mdc files from .agents/rules/*.md", async () => {
+    await runInstall(baseOpts(fixture));
+
+    const mdcPath = resolve(fixture.targetRoot, ".cursor", "rules", "code-standards.mdc");
+    expect(await pathExists(mdcPath)).toBe(true);
+
+    const content = await readFile(mdcPath, "utf-8");
+    expect(content).toContain("alwaysApply: true");
+    expect(content).toContain("# Standards");
+  });
+
+  it("skips broken rule symlinks with warning and does not fail install", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const rulesDir = resolve(fixture.agentsDir, "rules");
+    await symlink("/nonexistent/broken-rule-target.md", resolve(rulesDir, "broken-enterprise.md"));
+
+    const report = await runInstall(baseOpts(fixture));
+
+    expect(report.errors.some((e) => e.includes("broken-enterprise"))).toBe(true);
+    expect(warnSpy).toHaveBeenCalled();
+    expect(warnSpy.mock.calls.some((call) => String(call[0]).includes("broken-enterprise"))).toBe(true);
+    expect(await pathExists(resolve(fixture.targetRoot, ".cursor", "rules", "code-standards.mdc"))).toBe(true);
+
+    warnSpy.mockRestore();
+  });
+
+  it("prunes orphan .mdc files without corresponding .md source", async () => {
+    const cursorRulesDir = resolve(fixture.targetRoot, ".cursor", "rules");
+    await mkdir(cursorRulesDir, { recursive: true });
+    await writeFile(
+      resolve(cursorRulesDir, "removed-rule.mdc"),
+      "---\ndescription: Orphan\nalwaysApply: false\n---\n# Orphan\n",
+    );
+
+    await runInstall(baseOpts(fixture));
+
+    expect(await pathExists(resolve(cursorRulesDir, "removed-rule.mdc"))).toBe(false);
+    expect(await pathExists(resolve(cursorRulesDir, "code-standards.mdc"))).toBe(true);
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "second runInstall does not recreate .cursor symlinks (mtime unchanged)",
+    async () => {
+      const opts = baseOpts(fixture);
+      await runInstall(opts);
+
+      const linkPath = resolve(fixture.targetRoot, ".cursor", "skills", "fake-skill-a");
+      const statBefore = await lstat(linkPath);
+
+      await runInstall(opts);
+
+      const statAfter = await lstat(linkPath);
+      expect(statAfter.mtimeMs).toBe(statBefore.mtimeMs);
+    },
+  );
+
+  it("second runInstall does not rewrite .mdc when content is unchanged", async () => {
+    const opts = baseOpts(fixture);
+    await runInstall(opts);
+
+    const mdcPath = resolve(fixture.targetRoot, ".cursor", "rules", "code-standards.mdc");
+    const statBefore = await lstat(mdcPath);
+
+    await runInstall(opts);
+
+    const statAfter = await lstat(mdcPath);
+    expect(statAfter.mtimeMs).toBe(statBefore.mtimeMs);
   });
 });
 
@@ -249,6 +375,19 @@ describe("runInstall — idempotência", () => {
 
     const content = await readFile(agentsMdPath, "utf-8");
     expect(content).toBe("# Custom Content");
+  });
+
+  it("second runInstall does not overwrite existing CURSOR.md", async () => {
+    const opts = baseOpts(fixture);
+    await runInstall(opts);
+
+    const cursorMdPath = resolve(fixture.targetRoot, "CURSOR.md");
+    await writeFile(cursorMdPath, "# Custom Cursor Content");
+
+    await runInstall(opts);
+
+    const content = await readFile(cursorMdPath, "utf-8");
+    expect(content).toBe("# Custom Cursor Content");
   });
 });
 

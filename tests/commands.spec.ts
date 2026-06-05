@@ -86,6 +86,9 @@ describe("runInit", () => {
       linkedSkills: ["kspec-prd"],
       linkedAgents: ["kspec-task-runner"],
       generatedTomls: ["kspec-task-runner"],
+      linkedCursorSkills: ["kspec-prd"],
+      linkedCursorAgents: ["kspec-task-runner"],
+      generatedMdc: ["code-standards"],
       errors: [],
     });
 
@@ -102,6 +105,9 @@ describe("runInit", () => {
       linkedSkills: [],
       linkedAgents: [],
       generatedTomls: [],
+      linkedCursorSkills: [],
+      linkedCursorAgents: [],
+      generatedMdc: [],
       errors: [],
     });
 
@@ -117,6 +123,9 @@ describe("runInit", () => {
       linkedSkills: [],
       linkedAgents: [],
       generatedTomls: [],
+      linkedCursorSkills: [],
+      linkedCursorAgents: [],
+      generatedMdc: [],
       errors: [],
     });
 
@@ -163,6 +172,9 @@ describe("runUpdate", () => {
       linkedSkills: ["kspec-prd"],
       linkedAgents: ["kspec-task-runner"],
       generatedTomls: ["kspec-task-runner"],
+      linkedCursorSkills: ["kspec-prd"],
+      linkedCursorAgents: ["kspec-task-runner"],
+      generatedMdc: ["code-standards"],
       errors: [],
     });
 
@@ -179,6 +191,9 @@ describe("runUpdate", () => {
       linkedSkills: [],
       linkedAgents: [],
       generatedTomls: [],
+      linkedCursorSkills: [],
+      linkedCursorAgents: [],
+      generatedMdc: [],
       errors: [],
     });
 
