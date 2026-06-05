@@ -84,7 +84,7 @@ describe("docs tri-platform coherence (REQ-006 / task 9.0)", () => {
     expect(cursor).toContain(".cursor/rules/");
   });
 
-  it("all three platform guides list the nine kspec skills", () => {
+  it("all three platform guides list the ten kspec skills", () => {
     const skillNames = [
       "kspec-ideia",
       "kspec-prd",
@@ -92,12 +92,13 @@ describe("docs tri-platform coherence (REQ-006 / task 9.0)", () => {
       "kspec-tasks",
       "kspec-implement",
       "kspec-qa",
+      "kspec-pr-review",
       "kspec-bugfix",
       "kspec-bootstrap",
       "kspec-version",
     ];
 
-    for (const path of [DOCS.agents, DOCS.cursor]) {
+    for (const path of [DOCS.agents, DOCS.cursor, DOCS.claude]) {
       const doc = readDoc(path);
       for (const skill of skillNames) {
         expect(doc, `${path} must list ${skill}`).toContain(skill);

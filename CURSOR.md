@@ -53,6 +53,7 @@ Para invocar uma skill no Cursor Agent, descreva a ação em linguagem natural o
 | `kspec-tasks` | "quebre em tasks..." ou `kspec-tasks` | Quebra Tech Spec em tarefas incrementais |
 | `kspec-implement` | "implemente as tasks de..." ou `kspec-implement` | Executa todas as tasks pendentes |
 | `kspec-qa` | "execute QA de..." ou `kspec-qa` | Quality Assurance (E2E, acessibilidade) |
+| `kspec-pr-review` | "revisão semântica da entrega antes do PR" ou `kspec-pr-review` | Alinhamento PRD/Tech Spec/tasks × diff, relatório e corpo do PR |
 | `kspec-bugfix` | "corrija o bug documentado em..." ou `kspec-bugfix` | Corrige bugs documentados pelo QA |
 | `kspec-bootstrap` | "configure o kspec neste projeto" ou `kspec-bootstrap` | Gera configuração para projeto existente |
 | `kspec-version` | "qual a versão do kspec?" ou `kspec-version` | Exibe versão atual e lista skills/agents |

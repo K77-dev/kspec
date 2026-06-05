@@ -19,6 +19,7 @@ const KSPEC_SKILLS = [
   "kspec-tasks",
   "kspec-implement",
   "kspec-qa",
+  "kspec-pr-review",
   "kspec-bugfix",
   "kspec-bootstrap",
   "kspec-version",
@@ -33,7 +34,7 @@ const SUBAGENT_TYPES = [
 const ORCHESTRATION_SKILLS = ["kspec-implement", "kspec-qa", "kspec-version"];
 
 describe("skills coherence (REQ-005 / task 8.0)", () => {
-  it("lists exactly 9 invocable kspec-* skills in .agents/skills/", () => {
+  it("lists exactly 10 invocable kspec-* skills in .agents/skills/", () => {
     const dirs = readdirSync(SKILLS_DIR, { withFileTypes: true })
       .filter((d) => d.isDirectory() && d.name.startsWith("kspec-"))
       .map((d) => d.name)
