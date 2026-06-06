@@ -65,7 +65,10 @@ Edite sempre em `.agents/rules/` (source of truth). O Cursor lê as rules public
 
 | Rule | Caminho canônico | Publicação Cursor | Escopo |
 | --- | --- | --- | --- |
+| **Clean Code e SOLID** | `.agents/rules/code-standards.md` | `.cursor/rules/code-standards.mdc` (`alwaysApply: true`) | **Clean Code, SOLID, limites mensuráveis** — rule core obrigatória, sempre aplicável |
 | [Nome legível] | `.agents/rules/[nome].md` | `.cursor/rules/[nome].mdc` | [Escopo detectado] |
+
+**`code-standards.md` é inegociável** — não remova em projetos brownfield. O artefato `.cursor/rules/code-standards.mdc` mantém `alwaysApply: true` após `kspec update`. Apenas convenções de estilo em rules enterprise são adaptáveis no bootstrap; princípios universais de Clean Code e SOLID permanecem intactos.
 
 ## MCP Opt-in
 

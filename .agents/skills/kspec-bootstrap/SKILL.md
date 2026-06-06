@@ -291,6 +291,7 @@ Seguir a mesma estrutura de seções de `CLAUDE.bootstrap.md`, com as seguintes 
   - Necessidade de MCP em `.codex/config.toml` para Context7 e TestSprite
   - Agents exigem sandbox compatível: `kspec-task-runner` e `kspec-qa-runner` → `workspace-write`; `kspec-review-runner` → `read-only`
 - **Seção "Estrutura de discovery"**: `.agents/skills/` (prioridade 1), `.codex/skills/` (prioridade 2)
+- **Seção "Rules — Padrões de Código"**: incluir obrigatoriamente `code-standards.md` como rule core com descrição "Clean Code, SOLID, limites mensuráveis"; documentar que é inegociável em brownfield
 - **Rules**: referenciar por caminho `.agents/rules/<nome>.md`, sem duplicar conteúdo
 
 ### 4C. Gerar CURSOR.bootstrap.md (Condicional: escolha inclui Cursor)
@@ -436,15 +437,27 @@ Em full-stack: usar a união dos dois conjuntos (sem duplicatas).
 cp .claude/.enterprise-skills-cache/.agents/rules/{category}/{rule}.md .agents/rules/{rule}.md
 ```
 
-**5.4. Rules do core kspec (sempre presentes):**
+**5.4. Rules do core kspec (sempre presentes — obrigatório validar):**
 
-| Rule | Descrição |
-|---|---|
-| `code-standards.md` | Nomenclatura, formatação, SOLID — universal |
-| `database.md` | Padrões genéricos de ORM/DB |
-| `logging.md` | Níveis e estrutura de logging |
+Antes de prosseguir, **confirmar presença** de `code-standards.md` em `.agents/rules/`:
 
-Não remover estas rules — elas vêm com o core kspec e são technology-agnostic.
+```bash
+test -f .agents/rules/code-standards.md && echo "OK: code-standards.md presente"
+```
+
+Se ausente, o kspec foi instalado de forma incompleta. Reporte ao usuário:
+
+`✗ Rule core ausente: .agents/rules/code-standards.md. Execute 'npx @k77-dev/kspec install' na raiz do projeto e tente novamente.`
+
+e BLOQUEIE o bootstrap.
+
+| Rule | Descrição | Obrigatória |
+|---|---|---|
+| `code-standards.md` | **Clean Code, SOLID, limites mensuráveis** — rule core universal | **Sim** — listar nos guias gerados; nunca remover |
+| `database.md` | Padrões genéricos de ORM/DB | Sim |
+| `logging.md` | Níveis e estrutura de logging | Sim |
+
+Não remover estas rules — elas vêm com o core kspec e são technology-agnostic. Nos guias `*.bootstrap.md`, a seção **"Rules — Padrões de Código"** deve listar `code-standards.md` como rule core obrigatória com a descrição acima. Documentar que, no Cursor, a rule equivalente usa `alwaysApply: true` e **não deve ser removida** em projetos brownfield.
 
 **5.5. Remover rules que não se aplicam:**
 
@@ -469,7 +482,7 @@ As rules enterprise trazem **opiniões padrão da plataforma** (ex.: DTO como `r
    - Inverter exemplos ✅/❌ quando aplicável
    - Atualizar snippets de código para refletir o estilo real do projeto
 4. **Se inconclusivo** (empate ou amostra insuficiente): manter o default da rule enterprise e registrar como "não adaptado — evidência insuficiente" no relatório final.
-5. **Nunca alterar** princípios universais de qualidade (SOLID, tratamento de erros, independência de testes, AAA/GWT) — apenas convenções de estilo e ferramentas.
+5. **Nunca alterar** princípios universais de Clean Code e SOLID definidos em `code-standards.md` — nomenclatura expressiva, SRP, DIP, DRY, early returns, tratamento explícito de erros, limites mensuráveis e classificação de violações são **inegociáveis**. Apenas convenções de estilo e ferramentas em rules enterprise são adaptáveis (ex.: DTO `record` vs POJO, bun vs pnpm, Vitest vs Jest).
 
 **Matriz de adaptação por rule:**
 
@@ -614,6 +627,7 @@ Adaptar os comandos ao package manager e scripts detectados no passo de análise
 Apresentar ao usuário:
 
 - Plataformas configuradas e arquivos de bootstrap gerados
+- **Rule core `code-standards.md`**: confirmada presente em `.agents/rules/` — Clean Code, SOLID, limites mensuráveis (listada nos guias; `alwaysApply: true` no Cursor; inegociável em brownfield)
 - Rules criadas e quais foram removidas (com justificativa)
 - **Adaptações de rules ao padrão do projeto** (passo 5.6): listar cada rule adaptada, o conflito detectado e a convenção preservada; se nenhuma adaptação foi necessária ou aplicável, informar explicitamente
 - Se `.codex/config.toml` foi criado (MCP opt-in Codex)
@@ -637,6 +651,7 @@ Apresentar ao usuário:
 - [ ] CURSOR.bootstrap.md gerado se Cursor selecionado; nunca sobrescreve `CURSOR.md`
 - [ ] MCP opt-in Codex perguntado se Codex selecionado; `.codex/config.toml` criado apenas se usuário aceitou
 - [ ] MCP opt-in Cursor perguntado se Cursor selecionado; `.cursor/mcp.json` criado apenas se usuário aceitou
+- [ ] `code-standards.md` validada em `.agents/rules/` (passo 5.4) e listada nos guias gerados
 - [ ] Rules geradas/atualizadas apenas para tecnologias detectadas
 - [ ] Rules irrelevantes removidas
 - [ ] **Rules adaptadas ao padrão do projeto-alvo (brownfield): DTO POJO/record, build tool, test runner, package manager, styling, etc.**
