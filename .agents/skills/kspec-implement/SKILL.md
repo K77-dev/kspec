@@ -15,7 +15,8 @@ Você é um orquestrador de tarefas. Sua responsabilidade é executar todas as t
 - Execute as tasks na ordem definida em `tasks.md` — a ordem já respeita dependências (definida pelo /tasks).
 - Antes de executar uma task, verifique se suas dependências estão marcadas como completas — executar fora de ordem pode quebrar o código.
 - Delegue cada task ao agent `kspec-task-runner` — contexto isolado evita estourar o contexto principal.
-- Após cada implementação, delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
+- **Gate obrigatório:** nenhuma task é considerada concluída sem passar pela auto-verificação Clean Code/SOLID do task-runner (etapa 7.5 em `AGENT.md`). Se o task-runner reportar violações bloqueantes não corrigidas, a task **não** avança para review — exija correção antes de delegar ao `kspec-review-runner`.
+- Após cada implementação (incluindo auto-verificação 7.5), delegue ao agent `kspec-review-runner` — código sem review não pode ser marcado como completo.
 - **No Cursor:** delegue via **Task tool** com `subagent_type` (`kspec-task-runner` ou `kspec-review-runner`). Se a Task tool não estiver disponível, execute inline com aviso `⚠ Task tool indisponível — executando {agent} inline no contexto principal.`
 - Se a review retornar **APROVADO COM RESSALVAS**, gere um diagnóstico estruturado (mesmo formato do Diagnóstico de Causa Raiz) listando cada ressalva como problema a corrigir, e delegue uma única vez ao `kspec-task-runner` com o diagnóstico. Se ainda tiver ressalvas após a correção, reporte ao usuário.
 - Se a review **REPROVAR**, gere um diagnóstico de causa raiz estruturado e delegue uma única vez ao `kspec-task-runner` com o diagnóstico. Se continuar reprovado após a correção, reporte ao usuário.
@@ -116,8 +117,8 @@ Para cada lote:
      - Se sim → gerar diagnóstico de causa raiz (ver formato abaixo) para incluir na delegação
   1. Delegar TODAS as tasks do lote ao agent `kspec-task-runner` em paralelo
      - Se retry: incluir diagnóstico de causa raiz + instrução "Este é um retry. NÃO repita a abordagem anterior."
-  2. Aguardar todos os resultados
-  3. Para cada task concluída, delegar ao agent `kspec-review-runner` com slug da funcionalidade ($ARGUMENTS) + contexto da task
+  2. Aguardar todos os resultados — confirmar que cada task passou pela etapa 7.5 (auto-verificação Clean Code/SOLID) sem violações bloqueantes pendentes
+  3. Para cada task concluída (auto-verificação OK), delegar ao agent `kspec-review-runner` com slug da funcionalidade ($ARGUMENTS) + contexto da task
   4. Avaliar resultados:
      - APROVADO → marcar task como completa em tasks.md
      - APROVADO COM RESSALVAS → gerar diagnóstico de causa raiz (ver formato abaixo) listando cada ressalva como problema a corrigir, e delegar uma única vez (sequencial) com o diagnóstico estruturado
@@ -140,7 +141,7 @@ Para cada task na ordem do arquivo:
      - Caminho do arquivo da task ([num]_task.md)
      - Caminho do PRD e Tech Spec
      - Se retry: diagnóstico de causa raiz + instrução "Este é um retry. NÃO repita a abordagem anterior."
-  3. Aguardar resultado do implement
+  3. Aguardar resultado do implement — confirmar que a etapa 7.5 (auto-verificação Clean Code/SOLID) foi concluída sem violações bloqueantes pendentes
   4. Delegar ao agent `kspec-review-runner` com slug da funcionalidade ($ARGUMENTS) + contexto da task
   5. Avaliar resultado da review:
      - APROVADO → marcar task como completa em tasks.md
@@ -207,6 +208,7 @@ Para cada task que teve ressalvas (corrigidas ou não), listar:
 - [ ] tasks.md lido e tasks pendentes identificadas
 - [ ] Lista de tasks apresentada ao usuário para confirmação
 - [ ] Cada task delegada ao agent `kspec-task-runner` (contexto isolado)
+- [ ] Cada task passou pela auto-verificação Clean Code/SOLID (etapa 7.5 do task-runner) antes do review
 - [ ] Cada task validada pelo agent review
 - [ ] Tasks aprovadas marcadas como completas em tasks.md
 - [ ] Relatório final apresentado

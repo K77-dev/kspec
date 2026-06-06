@@ -53,6 +53,8 @@ Siga as instruções em `@.agents/validation/enterprise-skills-check.md` para va
 
 ### 2. Análise da Tarefa
 
+**Ler obrigatoriamente** `@.agents/rules/code-standards.md` — rule core universal de Clean Code, SOLID e limites mensuráveis. Identifique os princípios **relevantes ao escopo** da task (nomenclatura, SRP, DIP, DRY, tratamento de erros, limites 50/10/4) e inclua-os no resumo da etapa 3.
+
 Se `graphify-out/graph.json` existir no projeto, **antes de ler arquivos com Read/Grep**, consultar o grafo seguindo `.claude/rules/graphify.md`:
 
 - `graphify query "onde está implementada a camada de [domínio relevante à task]?"` — localizar pontos de extensão sem amostragem manual
@@ -80,6 +82,7 @@ Requisitos Tech Spec: [Requisitos técnicos principais]
 Dependências: [Lista de dependências]
 Objetivos Principais: [Objetivos primários]
 Riscos/Desafios: [Riscos ou desafios identificados]
+Princípios Clean Code/SOLID aplicáveis: [lista dos critérios de code-standards.md relevantes ao escopo — ex.: nomenclatura expressiva, SRP em novos módulos, DIP se houver injeção, limites 50 linhas / complexidade 10 / 4 parâmetros]
 ```
 
 ### 4. Plano de Abordagem
@@ -111,6 +114,41 @@ Toda task deve incluir testes que validem o código implementado. Escrever teste
 - **Cenários de erro**: falhas esperadas retornam erros adequados (não silenciam)
 
 Os testes devem ser significativos — testar comportamento real, não apenas que o código executa sem erro.
+
+### 7.5. Verificação Clean Code/SOLID (Obrigatório)
+
+Antes da verificação final de testes (etapa 7), auto-verificar **todo código novo ou alterado** contra `@.agents/rules/code-standards.md`. Critérios alinhados ao `kspec-review-runner` (Step 8) — violações bloqueantes devem ser **corrigidas aqui**, não delegadas ao review.
+
+#### Checklist de auto-verificação
+
+| Item | Critério | Referência |
+|------|----------|------------|
+| Nomenclatura | Nomes revelam intenção; booleanos com `is`/`has`/`can`; sem abreviações obscuras | `code-standards.md § 2` |
+| Funções pequenas | Cada função faz uma coisa; sem responsabilidades misturadas | `code-standards.md § 3` |
+| SRP | Módulos/classe novos com um único motivo para mudar | `code-standards.md § 9` |
+| Tratamento de erros | Sem `catch` vazio; erros propagados ou tratados com contexto | `code-standards.md § 7` |
+| DRY | Sem blocos > 6 linhas idênticos em 2+ locais no escopo da task | `code-standards.md § 5` |
+| DIP | Dependências injetáveis via abstração — não `new ConcreteImpl()` em domínio/serviço | `code-standards.md § 13` |
+
+#### Limites mensuráveis (estimativa manual)
+
+| Métrica | Limite | Severidade se violado |
+|---------|--------|----------------------|
+| Linhas úteis por função | ≤ 50 | **Bloqueante** — corrigir antes de entregar |
+| Complexidade ciclomática estimada | ≤ 10 | **Bloqueante** — corrigir antes de entregar |
+| Parâmetros por função/método | ≤ 4 | Aviso — corrigir se possível |
+| Profundidade de aninhamento | ≤ 3 | Aviso — corrigir se possível |
+| God Class | > 300 linhas OU > 15 métodos públicos | Aviso — documentar se inevitável |
+| Duplicação | > 6 linhas idênticas em 2+ locais | **Bloqueante** — extrair antes de entregar |
+
+<critical>
+**Violações bloqueantes** (função > 50 linhas, complexidade > 10, SRP violado em código novo, DIP com dependência concreta injetável, duplicação > 6 linhas) **devem ser corrigidas nesta etapa** — não delegar ao `kspec-review-runner`. Refatore, extraia funções, injete abstrações e elimine duplicação antes de prosseguir.
+</critical>
+
+Confirmar que:
+- Nenhum critério bloqueante permanece no diff
+- Avisos foram corrigidos ou documentados com justificativa no resumo de entrega
+- Código alterado cumpre os princípios listados no resumo da etapa 3
 
 ### 7. Verificação
 
