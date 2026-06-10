@@ -1,0 +1,133 @@
+---
+description: Arquitetura padrão para projetos novos — DDD com Bounded Contexts e camadas (domain/application/infrastructure/presentation)
+---
+
+# Arquitetura DDD com Bounded Contexts
+
+Padrão arquitetural para **projetos novos (greenfield)** no kspec. Combina Domain-Driven Design com Hexagonal/Ports-and-Adapters, organizando o código por contexto delimitado e separando camadas de forma estrita.
+
+## Quando aplicar esta rule
+
+Aplicar quando **todas** as condições forem verdadeiras:
+
+1. O projeto é greenfield (sem código de aplicação consolidado), ou está em refactor explicitamente para esta arquitetura
+2. A skill `kspec-bootstrap` registrou DDD como arquitetura padrão (resposta do usuário em modo interativo)
+3. Existe ou será criado `src/modules/` na raiz do código-fonte
+
+Em projetos brownfield que já adotam outra arquitetura de forma consistente (MVC tradicional, package-by-layer, screaming architecture sem bounded contexts), **não impor** esta estrutura — o padrão do projeto-alvo prevalece. Nesses casos a rule deve ser removida pelo bootstrap (passo 5.5 de `kspec-bootstrap`).
+
+## Estrutura canônica
+
+```
+src/
+├── modules/
+│   ├── <bounded-context-1>/
+│   │   ├── domain/           # entidades, value objects, domain services, PORTAS (interfaces)
+│   │   ├── application/      # use cases / orquestradores (consomem portas)
+│   │   ├── infrastructure/   # ADAPTERS concretos (DB, HTTP clients, fila, filesystem)
+│   │   └── presentation/     # controllers, rotas HTTP, DTOs, adaptadores de entrada
+│   ├── <bounded-context-2>/
+│   │   └── (mesmas 4 camadas)
+│   └── ...
+└── shared/
+    ├── kernel/               # AggregateRoot, Result<T,E>, DomainEvent, Id<T> (primitivos DDD)
+    ├── contracts/            # interfaces/eventos cross-context (quando necessário)
+    ├── infrastructure/       # DB client/schema/migrations, logging, middlewares HTTP, etc.
+    ├── routes/               # rotas que dependem de múltiplos contextos (ex.: /health)
+    └── test/                 # utilitários compartilhados de teste (factories, fixtures)
+```
+
+## Responsabilidade de cada camada
+
+### `domain/`
+
+- **Contém**: entidades de domínio, value objects, agregados, domain services, eventos de domínio, **portas** (interfaces que descrevem necessidades do domínio).
+- **Não contém**: chamadas a banco, HTTP, filesystem, libs de framework. Zero dependência de infra.
+- Regras de negócio puras vivem aqui.
+- Portas são **interfaces** (ex.: `UserRepository`, `EmailSender`) — implementadas em `infrastructure/`.
+
+### `application/`
+
+- **Contém**: use cases / application services / orquestradores. Coordenam o fluxo entre `domain/` e as portas, sem regras de negócio próprias.
+- Cada use case expõe um único método público (`execute`, `handle`) com input/output claros.
+- Consome **apenas** abstrações de `domain/` (entidades, portas) — nunca implementações concretas.
+- Tratamento transacional e idempotência ficam aqui.
+
+### `infrastructure/`
+
+- **Contém**: adapters concretos das portas de `domain/`. Implementações de repositórios (Prisma, Drizzle, JPA), HTTP clients, publishers de fila, integrações com filesystem/cloud, etc.
+- **Não contém**: regras de negócio. Apenas tradução entre o domínio e o mundo externo.
+- DTOs de persistência (rows, documents) ficam aqui, separados dos DTOs de apresentação.
+
+### `presentation/`
+
+- **Contém**: controllers HTTP, handlers de fila/CLI, schemas de request/response, validação de input (Zod, Bean Validation), DTOs de entrada/saída, middlewares específicos do contexto.
+- Faz **adapter de entrada** entre o protocolo externo e os use cases de `application/`.
+- Não acessa `infrastructure/` diretamente — sempre via use case.
+
+## Regras de dependência
+
+Direção permitida das dependências (setas indicam "depende de"):
+
+```
+presentation/ ──► application/ ──► domain/
+                       ▲                ▲
+                       │                │
+infrastructure/ ───────┘                │
+infrastructure/ ────────────────────────┘
+```
+
+- `domain/` **não** depende de ninguém (exceto `shared/kernel/`).
+- `application/` depende **apenas** de `domain/` (e `shared/kernel/`).
+- `infrastructure/` depende de `domain/` (para implementar portas) e pode depender de `shared/infrastructure/`.
+- `presentation/` depende de `application/` (para chamar use cases) e de `domain/` (para tipos).
+- **Proibido**: `domain/` → qualquer outra camada; `application/` → `infrastructure/` ou `presentation/`.
+
+A injeção dos adapters (`infrastructure/`) nos use cases (`application/`) acontece na composição (composition root), fora das camadas — geralmente em `src/main.ts`, `src/bootstrap.ts` ou equivalente.
+
+## Limites entre Bounded Contexts
+
+- Cada `modules/<context>/` é um **bounded context** independente. Ubiquitous language local — `Order` em `billing/` pode ter forma diferente de `Order` em `shipping/`.
+- **Não importar diretamente** de outro contexto (`modules/A/` não importa `modules/B/`).
+- Comunicação cross-context acontece via:
+  1. **Eventos de domínio** publicados em `shared/contracts/events/` e consumidos por handlers em `application/` do contexto interessado;
+  2. **Interfaces de contrato** declaradas em `shared/contracts/` quando há acoplamento síncrono necessário;
+  3. **Anti-corruption layer (ACL)** em `infrastructure/` quando integrando com contexto legado/externo.
+- `shared/routes/` agrega rotas que **legitimamente** dependem de múltiplos contextos (ex.: `/health`, agregadores de leitura). Use com parcimônia — frequência de uso indica que o limite entre contextos foi mal traçado.
+
+## `shared/`
+
+- **`shared/kernel/`**: primitivos DDD usados por todos os contextos — `AggregateRoot`, `Entity`, `ValueObject`, `Result<T,E>` (railway-oriented), `DomainEvent`, `Id<T>` (UUID/ULID tipado). Sem regra de negócio.
+- **`shared/contracts/`**: interfaces e eventos cross-context. Cada arquivo declara um contrato — implementações ficam em `infrastructure/` do contexto que publica/consome.
+- **`shared/infrastructure/`**: cliente de DB, schema central (se ORM exige), config de logging, middlewares HTTP transversais (autenticação base, CORS, request-id), client factories.
+- **`shared/routes/`**: rotas multi-contexto (preferir contextos auto-contidos sempre que possível).
+- **`shared/test/`**: factories, builders, fixtures e helpers compartilhados entre suítes.
+
+## Testes por camada
+
+| Camada | O que testar | Como |
+| --- | --- | --- |
+| `domain/` | Entidades, value objects, invariantes, domain services | Unit puro, sem mocks (entidades não têm dependências externas) |
+| `application/` | Use cases | Unit com **fakes/in-memory adapters** das portas (preferir fakes a mocks) |
+| `infrastructure/` | Adapters concretos | Integração contra DB/serviço real (Testcontainers) ou contrato (Pact) |
+| `presentation/` | Validação de input, mapeamento DTO → use case | Unit do schema + smoke test do controller |
+| E2E | Fluxo cross-context completo | TestSprite ou equivalente — passando pelas rotas reais |
+
+Use cases devem ser testados **sem tocar em infra** — se um teste de use case precisa do DB real, a porta está mal desenhada.
+
+## Anti-padrões
+
+1. **Importar `infrastructure/` em `application/` ou `domain/`** — viola inversão de dependência. Use a porta declarada em `domain/`.
+2. **Lógica de negócio em controller** — controller só recebe input, valida formato, chama use case, devolve response.
+3. **Use case chamando outro use case** — em vez disso, extraia a lógica comum para um domain service ou publique um evento de domínio.
+4. **Importar de outro `modules/<context>/`** — todo cross-context passa por `shared/contracts/` ou eventos.
+5. **DTO de banco vazando para `presentation/`** — sempre mapear no boundary do contexto.
+6. **Criar contexto por entidade** — bounded context é fronteira de **modelo e linguagem**, não tabela. `User` provavelmente está em `iam/` ou `accounts/`, não em `users/`.
+7. **`shared/` virando lixeira** — qualquer código que não tem dono claro vai parar lá; revisar periodicamente e mover para o contexto adequado.
+
+## Integração com kspec
+
+- `kspec-bootstrap`: oferece DDD como padrão em projetos vazios; remove esta rule em projetos brownfield com outra arquitetura.
+- `kspec-techspec`: a seção "Arquitetura do Sistema" deve identificar **em qual bounded context** a feature vive e quais camadas serão tocadas; portas novas devem ser listadas em "Interfaces Principais".
+- `kspec-tasks`: a sequência de tasks deve respeitar a direção das dependências — `domain/` → `application/` → `infrastructure/` → `presentation/`.
+- `kspec-review-runner`: deve sinalizar violações de dependência (ex.: `infrastructure/` importado em `application/`) como bloqueantes.

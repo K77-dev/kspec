@@ -75,6 +75,7 @@ As rules ficam em `.agents/rules/`. Consulte-as diretamente pelo caminho — o c
 | Rule | Caminho | Escopo |
 | --- | --- | --- |
 | Padrões de código | `.agents/rules/code-standards.md` | Nomenclatura, formatação, SOLID |
+| Arquitetura DDD | `.agents/rules/architecture-ddd.md` | DDD + Bounded Contexts (default em projetos novos) |
 | Banco de dados | `.agents/rules/database.md` | ORM, queries, migrations |
 | Logging | `.agents/rules/logging.md` | Níveis e estrutura de log |
 | Graphify | `.agents/rules/graphify.md` | Knowledge graph para análise |

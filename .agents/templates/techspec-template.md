@@ -14,6 +14,16 @@
 
 ## Arquitetura do Sistema
 
+### Bounded Context e Camadas
+
+[**Preencher apenas se o projeto adota DDD com Bounded Contexts** (ver `.agents/rules/architecture-ddd.md`). Caso contrário, remover esta seção.
+
+- **Contexto**: nome do bounded context (`src/modules/<context>/`) — criar novo apenas se a linguagem ubíqua diverge dos existentes
+- **Camadas tocadas**: `domain/` | `application/` | `infrastructure/` | `presentation/` (listar e justificar)
+- **Portas novas**: interfaces em `domain/<context>/ports/` que serão introduzidas
+- **Adapters novos**: implementações concretas em `infrastructure/`
+- **Comunicação cross-context**: via `shared/contracts/` ou eventos de domínio (se aplicável)]
+
 ### Visão Geral dos Componentes
 
 [Breve descrição dos componentes principais e suas responsabilidades:

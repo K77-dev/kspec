@@ -113,6 +113,7 @@ npm run test:watch             # Watch mode para testes
 | Rule | Escopo | Verificar em |
 | --- | --- | --- |
 | `code-standards.md` | Nomenclatura, formatação, SOLID | Todos os arquivos `.ts`, `.tsx` |
+| `architecture-ddd.md` | DDD + Bounded Contexts (default para projetos novos) | `src/modules/**`, `src/shared/**` |
 | `database.md` | ORM, queries, migrations | `src/**/*db*`, `src/**/*repo*` |
 | `logging.md` | Níveis e estrutura | `src/**/*log*`, `src/**/*service*` |
 | `graphify.md` | Knowledge graph (skills análise) | `.agents/`, se `graphify-out/graph.json` existe |

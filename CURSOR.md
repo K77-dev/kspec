@@ -75,6 +75,7 @@ Edite sempre em `.agents/rules/` (source of truth). O Cursor lê as rules public
 | Rule | Caminho canônico | Publicação Cursor | Escopo |
 | --- | --- | --- | --- |
 | Padrões de código | `.agents/rules/code-standards.md` | `.cursor/rules/code-standards.mdc` | Nomenclatura, formatação, SOLID |
+| Arquitetura DDD | `.agents/rules/architecture-ddd.md` | `.cursor/rules/architecture-ddd.mdc` | DDD + Bounded Contexts (default em projetos novos) |
 | Banco de dados | `.agents/rules/database.md` | `.cursor/rules/database.mdc` | ORM, queries, migrations |
 | Logging | `.agents/rules/logging.md` | `.cursor/rules/logging.mdc` | Níveis e estrutura de log |
 | Graphify | `.agents/rules/graphify.md` | `.cursor/rules/graphify.mdc` | Knowledge graph para análise |

@@ -433,6 +433,14 @@ npx @k77-dev/kspec@latest update
 
 ## Notas de release
 
+### v1.4.0 — Arquitetura DDD padrão para projetos novos
+
+- **Nova rule:** `architecture-ddd.md` documenta DDD + Bounded Contexts (`src/modules/<context>/{domain,application,infrastructure,presentation}` + `src/shared/{kernel,contracts,infrastructure,routes,test}`) como arquitetura padrão para projetos novos.
+- **`kspec-bootstrap`:** em projetos vazios, pergunta entre `DDD + Bounded Contexts (Recomendado)` e `Flat / pragmática`. Em projetos brownfield, detecta DDD automaticamente via `src/modules/<x>/{domain,application,...}` e mantém ou remove a rule conforme a evidência.
+- **`kspec-techspec`:** quando a rule está ativa, alinha a Tech Spec ao bounded context — identifica contexto, camadas tocadas, portas novas, adapters e comunicação cross-context. Recusa designs que violem a direção de dependência.
+- **Template de techspec:** nova seção condicional "Bounded Context e Camadas".
+- **Retrocompatibilidade:** projetos com arquitetura `flat` (ou brownfield com outra estrutura) seguem inalterados — a rule é removida pelo bootstrap.
+
 ### v1.3.0 — Suporte ao Cursor
 
 - **Nova plataforma:** Cursor como terceira camada de discovery (`.cursor/`), em paridade com Claude Code e Codex CLI.

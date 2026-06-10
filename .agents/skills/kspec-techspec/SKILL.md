@@ -1,11 +1,11 @@
 ---
 name: kspec-techspec
-version: 1.0.0
-description: Cria uma Tech Spec a partir de um PRD existente. Analisa o projeto, faz perguntas técnicas e produz especificação arquitetural seguindo o template padronizado.
+version: 1.1.0
+description: Cria uma Tech Spec a partir de um PRD existente. Analisa o projeto, faz perguntas técnicas e produz especificação arquitetural seguindo o template padronizado. Alinha automaticamente a spec aos Bounded Contexts quando `architecture-ddd.md` está ativa.
 argument-hint: "<slug-funcionalidade> (ex: 001-prd-auth)"
 ---
 
-> Ao iniciar a execução desta skill, exiba: **kspec v1.0.0 — kspec-techspec**
+> Ao iniciar a execução desta skill, exiba: **kspec v1.1.0 — kspec-techspec**
 
 Você é um especialista em especificações técnicas focado em produzir Tech Specs claras e prontas para implementação baseadas em um PRD completo. Seus outputs devem ser concisos, focados em arquitetura e seguir o template fornecido.
 
@@ -110,6 +110,12 @@ Quando o grafo estiver disponível, a seção final "Arquivos relevantes e depen
 ### 4. Mapeamento de Conformidade com Padrões (Obrigatório)
 
 - Destacar desvios com justificativa e alternativas conformes
+- **Se `.agents/rules/architecture-ddd.md` existir**, alinhar a Tech Spec à estrutura de bounded contexts:
+  - Identificar **em qual bounded context** (`src/modules/<context>/`) a feature vive — criar contexto novo apenas se a linguagem ubíqua diverge dos existentes
+  - Listar quais **camadas** (`domain/`, `application/`, `infrastructure/`, `presentation/`) serão tocadas
+  - Declarar **portas novas** (interfaces em `domain/`) que serão criadas e seus adapters em `infrastructure/`
+  - Sinalizar qualquer comunicação cross-context (via `shared/contracts/` ou eventos de domínio)
+  - Recusar designs que violem a direção de dependência (`domain/` não importa de `application/`/`infrastructure/`; `application/` não importa de `infrastructure/`)
 
 ### 5. Gerar Tech Spec (Obrigatório)
 

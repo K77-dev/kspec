@@ -1,10 +1,10 @@
 ---
 name: kspec-bootstrap
-version: 1.3.0
-description: Analisa um projeto existente e gera a configuração completa do kspec (CLAUDE.bootstrap.md, AGENTS.bootstrap.md e/ou CURSOR.bootstrap.md, rules adaptadas) baseada na stack, estrutura e plataformas escolhidas (Claude Code, Codex CLI, Cursor ou combinações).
+version: 1.4.0
+description: Analisa um projeto existente e gera a configuração completa do kspec (CLAUDE.bootstrap.md, AGENTS.bootstrap.md e/ou CURSOR.bootstrap.md, rules adaptadas) baseada na stack, estrutura e plataformas escolhidas (Claude Code, Codex CLI, Cursor ou combinações). Em projetos novos, oferece DDD com Bounded Contexts como arquitetura padrão.
 ---
 
-> Ao iniciar a execução desta skill, exiba: **kspec v1.3.0 — kspec-bootstrap**
+> Ao iniciar a execução desta skill, exiba: **kspec v1.4.0 — kspec-bootstrap**
 
 ## Limitação em Modo Não-Interativo
 
@@ -146,6 +146,12 @@ Apresente cada pergunta abaixo invocando a ferramenta `AskUserQuestion`, com as 
 
 **Pergunta 4 — Idioma para specs** (padrão: português Brasil)
 
+**Pergunta 5 — Arquitetura padrão para o código-fonte** (padrão recomendado: DDD + Bounded Contexts):
+1. `DDD + Bounded Contexts (Recomendado)` — `src/modules/<context>/{domain,application,infrastructure,presentation}` + `src/shared/{kernel,contracts,infrastructure,routes,test}`. Adiciona a rule `architecture-ddd.md`.
+2. `Flat / pragmática` — sem prescrição arquitetural além de `code-standards.md`. Útil para CLIs, libs e projetos muito pequenos.
+
+Registrar a resposta como `architecture_choice` (`ddd` ou `flat`) para uso nos passos **4A/4B/4C** (estrutura recomendada) e **5.4/5.5** (inclusão/remoção da rule `architecture-ddd.md`).
+
 Após as respostas, seguir para o passo **3A**.
 
 #### 2B. Detecção Automática (Projeto Existente)
@@ -178,6 +184,17 @@ Detectar automaticamente a partir do código-fonte e arquivos de configuração:
 
 **Scripts** — ler scripts do `package.json` (raiz e workspaces):
 - dev, build, test, lint, typecheck, etc.
+
+**Arquitetura (brownfield)** — detectar se o projeto já adota DDD com Bounded Contexts:
+
+| Sinal | Como detectar | Conclusão |
+|---|---|---|
+| `src/modules/<x>/{domain,application,infrastructure,presentation}` | Listar diretórios em 2+ módulos | `architecture_choice = ddd` (manter rule) |
+| `src/shared/{kernel,contracts}` | `ls src/shared/` | Reforça DDD |
+| Pacotes por camada (`controllers/`, `services/`, `repositories/` na raiz de `src/`) ou pacotes por feature sem 4 camadas | Estrutura predominante | `architecture_choice = flat` (remover rule) |
+| Sem `src/` ou estrutura inconsistente | — | `architecture_choice = flat` |
+
+Registrar `architecture_choice` para uso nos passos **5.4/5.5**.
 
 **Padrões de código (brownfield)** — amostrar arquivos representativos em `src/`, `app/`, `lib/` e `packages/` (ignorar `.claude/`, `.agents/`, `.codex/`, `node_modules/`, `dist/`, `target/`). Registrar evidências para adaptação das rules no passo 5.6:
 
@@ -273,7 +290,10 @@ Seguir a estrutura de seções do template @.agents/templates/claude-md-template
   - Spring Boot: `./mvnw spring-boot:run`, `./mvnw test`, `./mvnw package`, `./mvnw verify`
   - React (Vite): `bun install`, `bun dev`, `bun test`, `bun run build`
   - Angular: `ng serve`, `ng test`, `ng build`, `ng lint`
-- **Estrutura do projeto**: gerar estrutura recomendada para a stack (não existe árvore real para mapear)
+- **Estrutura do projeto**: gerar estrutura recomendada conforme `architecture_choice`:
+  - `architecture_choice = ddd` — usar o layout canônico documentado em `.agents/rules/architecture-ddd.md` (`src/modules/<context>/{domain,application,infrastructure,presentation}` + `src/shared/{kernel,contracts,infrastructure,routes,test}`). Para frontend (React/Angular), adaptar `modules/<context>/{domain,application,infrastructure,presentation}` para componentes por feature, mantendo a separação entre regras de UI (`presentation/`) e estado/serviços (`application/` + `infrastructure/`).
+  - `architecture_choice = flat` — usar o layout idiomático mínimo da stack (`src/` plano, sem `modules/`).
+- **Referência à rule arquitetural** (apenas quando `architecture_choice = ddd`): incluir entrada `architecture-ddd.md` na tabela de rules do bootstrap e adicionar nas "Prioridades": "**Respeite os limites de bounded context** — detalhes em `.agents/rules/architecture-ddd.md`".
 
 ### 4B. Gerar AGENTS.bootstrap.md (Condicional: escolha inclui Codex CLI)
 
@@ -446,9 +466,19 @@ cp .claude/.enterprise-skills-cache/.agents/rules/{category}/{rule}.md .agents/r
 
 Não remover estas rules — elas vêm com o core kspec e são technology-agnostic.
 
+**Rule arquitetural condicional:**
+
+| Rule | Manter quando | Remover quando |
+|---|---|---|
+| `architecture-ddd.md` | `architecture_choice = ddd` (greenfield com DDD escolhido OU brownfield com `src/modules/<x>/{domain,application,infrastructure,presentation}` detectado) | `architecture_choice = flat` (greenfield "flat" OU brownfield sem estrutura DDD) |
+
+A rule é distribuída por padrão em `.agents/rules/architecture-ddd.md`. Em `architecture_choice = flat`, **remover** o arquivo no passo 5.5 e não referenciá-lo nos documentos bootstrap.
+
 **5.5. Remover rules que não se aplicam:**
 
 Se existirem rules de stack em `.agents/rules/` que não correspondem a nenhuma tecnologia detectada, removê-las (ex: `react.md` num projeto Angular).
+
+Adicionalmente, se `architecture_choice = flat`, remover `.agents/rules/architecture-ddd.md` (e seus derivados em `.cursor/rules/architecture-ddd.mdc` e `.claude/rules/architecture-ddd.md`, se existirem).
 
 **5.6. Adaptar conteúdo das rules ao padrão do projeto-alvo (brownfield):**
 
@@ -615,6 +645,7 @@ Apresentar ao usuário:
 
 - Plataformas configuradas e arquivos de bootstrap gerados
 - Rules criadas e quais foram removidas (com justificativa)
+- **Arquitetura padrão escolhida ou detectada** (`architecture_choice`): `ddd` (com `architecture-ddd.md` ativa) ou `flat` (rule removida)
 - **Adaptações de rules ao padrão do projeto** (passo 5.6): listar cada rule adaptada, o conflito detectado e a convenção preservada; se nenhuma adaptação foi necessária ou aplicável, informar explicitamente
 - Se `.codex/config.toml` foi criado (MCP opt-in Codex)
 - Se `.cursor/mcp.json` foi criado (MCP opt-in Cursor)
@@ -631,6 +662,7 @@ Apresentar ao usuário:
 - [ ] Projeto vazio: seleção guiada oferecida (se aplicável)
 - [ ] Projeto existente: analisado (package.json, lockfiles, configs — não os arquivos em .claude/, .agents/ ou .cursor/)
 - [ ] Stack confirmada com o usuário (seleção guiada ou detecções)
+- [ ] **Arquitetura padrão registrada** (`architecture_choice`): pergunta apresentada em projetos vazios; detecção feita em projetos brownfield; rule `architecture-ddd.md` mantida ou removida conforme escolha
 - [ ] Plataformas escolhidas via ferramenta interativa (7 opções incluindo Todas)
 - [ ] CLAUDE.bootstrap.md gerado se Claude selecionado; nunca sobrescreve `CLAUDE.md`
 - [ ] AGENTS.bootstrap.md gerado se Codex selecionado; nunca sobrescreve `AGENTS.md`
