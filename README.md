@@ -433,7 +433,7 @@ npx @k77-dev/kspec@latest update
 
 ## Notas de release
 
-### v1.4.0 — Arquitetura DDD padrão para projetos novos
+### v1.4.1 — Arquitetura DDD padrão para projetos novos
 
 - **Nova rule:** `architecture-ddd.md` documenta DDD + Bounded Contexts (`src/modules/<context>/{domain,application,infrastructure,presentation}` + `src/shared/{kernel,contracts,infrastructure,routes,test}`) como arquitetura padrão para projetos novos.
 - **`kspec-bootstrap`:** em projetos vazios, pergunta entre `DDD + Bounded Contexts (Recomendado)` e `Flat / pragmática`. Em projetos brownfield, detecta DDD automaticamente via `src/modules/<x>/{domain,application,...}` e mantém ou remove a rule conforme a evidência.

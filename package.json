@@ -1,6 +1,6 @@
 {
   "name": "@k77-dev/kspec",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Kit de specs e padrões para projetos com agentes de IA (Claude Code, OpenAI Codex CLI e Cursor)",
   "publishConfig": {
     "access": "public"
